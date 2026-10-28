@@ -34,9 +34,14 @@ for pattern in "${FORBIDDEN_FILES[@]}"; do
 done
 
 # 2. Verify no rotated test credentials exist in tracked files
-if git grep -qi "AutoOpsPass"; then
+EXCLUDE_SPECS=(
+  ":!scripts/check_secrets.sh"
+  ":!tests/test_ci_workflow.py"
+)
+
+if git grep -qi "AutoOpsPass" -- "${EXCLUDE_SPECS[@]}"; then
   echo "ERROR: Found rotated credential reference 'AutoOpsPass' in tracked files:"
-  git grep -n -i "AutoOpsPass"
+  git grep -n -i "AutoOpsPass" -- "${EXCLUDE_SPECS[@]}"
   VIOLATIONS=$((VIOLATIONS + 1))
 fi
 
@@ -49,9 +54,9 @@ PATTERNS=(
 )
 
 for pattern in "${PATTERNS[@]}"; do
-  if git grep -E -q -i "${pattern}"; then
+  if git grep -E -q -i "${pattern}" -- "${EXCLUDE_SPECS[@]}"; then
     echo "ERROR: Tracked file matches suspicious credential pattern '${pattern}':"
-    git grep -E -n -i "${pattern}"
+    git grep -E -n -i "${pattern}" -- "${EXCLUDE_SPECS[@]}"
     VIOLATIONS=$((VIOLATIONS + 1))
   fi
 done
