@@ -1,0 +1,150 @@
+==============================================================================
+         AutoOps — Milestone 06 Final QA & Verification Log                   
+==============================================================================
+Timestamp       : 2026-10-28T12:41:18Z
+Host Kernel     : Linux 6.18.54.1-microsoft-standard-WSL2 x86_64
+Working Branch  : main
+Git Commit HEAD : c29c2fa76ac7c89fdc4717e460e27e0b670dbb13
+==============================================================================
+
+--- Step 1: Secret Scanning & Repository Hygiene ---
+=== AutoOps: Secret Scanning & Repository Hygiene Check ===
+Scanning tracked git files in: /mnt/d/files/OneDrive/Desktop/AutoOps
+Repository hygiene check: PASSED (Zero tracked secrets or credentials detected)
+=== Secret Scanning Complete ===
+
+--- Step 2: Python Bytecode, Flake8 & Pytest Suite (12 Tests) ---
+compileall: PASSED (0 errors)
+flake8: PASSED (0 violations)
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- /mnt/d/files/OneDrive/Desktop/AutoOps/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/d/files/OneDrive/Desktop/AutoOps
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 12 items
+
+tests/test_ci_workflow.py::test_ci_workflow_file_exists PASSED           [  8%]
+tests/test_ci_workflow.py::test_ci_workflow_valid_yaml PASSED            [ 16%]
+tests/test_ci_workflow.py::test_ci_workflow_triggers PASSED              [ 25%]
+tests/test_ci_workflow.py::test_ci_workflow_permissions PASSED           [ 33%]
+tests/test_ci_workflow.py::test_ci_workflow_required_jobs PASSED         [ 41%]
+tests/test_ci_workflow.py::test_ci_workflow_no_hardcoded_secrets PASSED  [ 50%]
+tests/test_health.py::test_health_status_code_200 PASSED                 [ 58%]
+tests/test_health.py::test_health_payload_contract PASSED                [ 66%]
+tests/test_health.py::test_health_timestamp_validity PASSED              [ 75%]
+tests/test_health.py::test_root_endpoint PASSED                          [ 83%]
+tests/test_health.py::test_invalid_route_returns_404 PASSED              [ 91%]
+tests/test_health.py::test_health_method_not_allowed PASSED              [100%]
+
+============================== 12 passed in 7.38s ==============================
+
+--- Step 3: GitHub Actions CI Workflow Validation ---
+actionlint: PASSED (0 errors)
+Validating workflow file: /mnt/d/files/OneDrive/Desktop/AutoOps/.github/workflows/ci.yml
+  [+] Job verified: hygiene -> 'Repository Hygiene & Secret Scanning'
+  [+] Job verified: python-quality -> 'Python Quality & Unit Tests'
+  [+] Job verified: terraform-validate -> 'Terraform Format & Schema Validation'
+  [+] Job verified: ansible-validate -> 'Ansible Syntax & Playbook Validation'
+  [+] Job verified: puppet-validate -> 'Puppet Manifest & Template Validation'
+  [+] Job verified: nagios-validate -> 'Nagios Core Configuration Check'
+SUCCESS: Workflow validated. All 6 quality gates confirmed.
+
+--- Step 4: Terraform Format, Validate & Drift Check ---
+[32m[1mSuccess![0m The configuration is valid.
+[0m
+docker_volume.data_storage: Refreshing state... [id=autoops-data-storage]
+docker_image.sandbox_image: Refreshing state... [id=sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07python:3.12-slim]
+docker_network.infra_network: Refreshing state... [id=6dc38dde4a1069b590b59d9d6f643bbc3b5eded5e234ba3d4f8b34a55984efec]
+docker_container.infra_sandbox: Refreshing state... [id=873cf1e5dbb909a2c32c23e38c7231f07a396babdae5bff038f0e9d777817813]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+
+--- Step 5: Puppet Syntax, Template & Lint Validation ---
+puppet: ALL CHECKS PASSED (0 errors, 0 warnings)
+
+--- Step 6: Ansible Syntax Check Across All 5 Playbooks ---
+
+playbook: ansible/playbooks/01_preflight.yml
+
+playbook: ansible/playbooks/02_deploy.yml
+
+playbook: ansible/playbooks/03_smoke_test.yml
+
+playbook: ansible/playbooks/04_verify.yml
+
+playbook: ansible/playbooks/99_error_handling.yml
+ansible: ALL PLAYBOOKS PASSED SYNTAX CHECK
+
+--- Step 7: Container Security Hardening Inspection ---
+autoops-app -> ReadonlyRootfs: true, CapDrop: [ALL], SecurityOpt: [no-new-privileges:true], MemoryLimit: 536870912, Health: healthy
+autoops-nagios -> SecurityOpt: [no-new-privileges:true], MemoryLimit: 1073741824, Health: healthy
+
+--- Step 8: Live Service HTTP Probes ---
+{
+    "status": "healthy",
+    "service": "autoops",
+    "version": "0.1.0",
+    "timestamp": "2026-10-28T12:41:56.061906+00:00",
+    "uptime_seconds": 97.49
+}
+Querying Nagios dashboard on port 8080...
+HTTP/1.1 200 OK
+Date: Wed, 28 Oct 2026 12:41:56 GMT
+Server: Apache/2.4.58 (Ubuntu)
+Content-Type: text/html; charset=UTF-8
+
+
+--- Step 9: Nagios Active Failure Detection & Recovery Verification ---
+=== AutoOps: Nagios Observability & Recovery Verification ===
+Repository: /mnt/d/files/OneDrive/Desktop/AutoOps
+
+--- Step 1: Validating Compose and Nagios Configuration ---
+Compose configuration syntax: PASSED
+Nagios pre-flight configuration check: PASSED (0 errors, 0 warnings)
+
+--- Step 2: Verifying Running Services & Health ---
+autoops-app health: healthy
+autoops-nagios status: running
+
+--- Step 3: Direct Container-to-Container HTTP Probe via check_http ---
+HTTP OK: Status line output matched "HTTP/1.1 200" - 274 bytes in 0.005 second response time |time=0.004724s;;;0.000000 size=274B;;;0 
+Intra-network HTTP probe: PASSED
+
+--- Step 4: Verifying Initial Healthy State in Nagios Engine ---
+AutoOps_Microservice_Health state: 0 (0=OK)
+Initial health verification: PASSED (OK)
+
+--- Step 5: Verifying Nagios Web Dashboard on Port 8080 ---
+Dashboard HTTP response: 200
+Dashboard availability: PASSED (HTTP 200 OK on http://127.0.0.1:8080/nagios/)
+
+--- Step 6: Injecting Controlled Failure (Stopping autoops-app) ---
+autoops-app
+autoops-app container stopped.
+Waiting for Nagios detection cycle...
+Controlled failure DETECTED by Nagios! State: 2 (2=CRITICAL)
+[1793191330] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;CRITICAL;SOFT;1;Temporary failure in name resolution
+[1793191335] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;CRITICAL;HARD;2;Temporary failure in name resolution
+
+--- Step 7: Restoring Service & Verifying Recovery Detection ---
+Starting autoops-app...
+autoops-app
+Waiting for Nagios recovery detection cycle...
+Recovery DETECTED by Nagios! State: 0 (0=OK)
+[1793191021] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;OK;HARD;1;HTTP OK: Status line output matched "HTTP/1.1 200" - 272 bytes in 0.022 second response time
+[1793191345] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;OK;HARD;1;HTTP OK: Status line output matched "HTTP/1.1 200" - 272 bytes in 0.004 second response time
+
+--- Step 8: Direct Health Endpoint Validation ---
+Direct HTTP GET /health response:
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T12:42:27.857082+00:00","uptime_seconds":8.39}
+
+=== Nagios Verification Complete: ALL TESTS PASSED ===
+--- Cleanup Trap: Ensuring autoops-app is running ---
+
+==============================================================================
+         AutoOps Milestone 06 Verification: ALL CHECKS COMPLETED              
+==============================================================================

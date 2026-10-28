@@ -143,6 +143,7 @@ AutoOps/
 │   ├── check_secrets.sh          # Secret scanning & repository hygiene auditor
 │   ├── validate_ci.py            # GitHub Actions workflow schema and trigger validator
 │   ├── test_ci_local.sh          # Local CI quality gates simulation and verification runner
+│   ├── run_milestone_06_qa.sh    # Milestone 06 final comprehensive QA runner
 │   ├── verify_app.sh             # Health check verification shell script
 │   ├── test_local_server.sh      # Background server spawn and integration test script
 │   ├── test_docker_container.sh  # Docker container execution, health and user audit script
@@ -167,8 +168,15 @@ AutoOps/
 │   │   ├── puppet_verification.txt
 │   │   ├── ansible_verification.txt
 │   │   ├── nagios_verification.txt
-│   │   └── ci_verification.txt
+│   │   ├── ci_verification.txt
+│   │   └── milestone-06-verification.txt
 │   └── report/                   # Academic report chapters and analysis
+│       ├── AutoOps_Final_Project_Report.md # Main comprehensive project report
+│       ├── architecture.md       # Full architecture & component responsibility spec
+│       ├── security_and_risk_assessment.md # STRIDE threat model & hardening audit
+│       ├── testing_and_evaluation.md # Test pyramid & evidence records
+│       ├── milestone-06-baseline.md # Pre-hardening inspection baseline
+│       └── final_acceptance_matrix.md # Traceability & acceptance verification matrix
 ├── .dockerignore                 # Excludes caches, venv, git, and local tests from image
 ├── .env.example                  # Environment configuration template (tracked)
 ├── .gitignore                    # Excludes venv, pycache, tfstate, credentials, logs
@@ -323,7 +331,56 @@ make test
 
 # Local CI quality gates simulation runner
 ./scripts/test_ci_local.sh
+
+# Comprehensive Milestone 06 QA and verification runner
+./scripts/run_milestone_06_qa.sh
 ```
+
+### Viva & Project Evaluation Demonstration Checklist
+For project demonstration or viva evaluation, follow this structured execution procedure:
+
+1. **Verify Static Code Quality & CI Quality Gates**:
+   ```bash
+   make ci-test
+   ```
+   *Validates secret scanning, Flake8 PEP8 linting, 12 Pytest tests, Terraform schema, Ansible syntax across 5 playbooks, Puppet lint, and Nagios pre-flight check.*
+
+2. **Inspect Runtime Application & Health Endpoint**:
+   ```bash
+   make compose-ps
+   curl -s http://127.0.0.1:5000/health | python3 -m json.tool
+   ```
+   *Demonstrates non-root containerized FastAPI app returning dynamic uptime and UTC ISO 8601 timestamps.*
+
+3. **Verify Container Security Hardening**:
+   ```bash
+   docker inspect autoops-app --format 'Readonly: {{.HostConfig.ReadonlyRootfs}}, CapDrop: {{.HostConfig.CapDrop}}, SecurityOpt: {{.HostConfig.SecurityOpt}}, Memory: {{.HostConfig.Memory}}'
+   ```
+   *Confirms immutable root filesystem (`Readonly: true`), all kernel capabilities dropped (`CapDrop: [ALL]`), and 512 MB memory limit.*
+
+4. **Demonstrate Terraform Local Infrastructure (Zero Drift)**:
+   ```bash
+   cd terraform && terraform plan -no-color
+   ```
+   *Confirms isolated infrastructure network and auxiliary volume remain managed with 0 drift.*
+
+5. **Demonstrate Puppet Desired-State Policy Enforcement & Drift Healing**:
+   ```bash
+   make puppet-test
+   ```
+   *Applies host policy, asserts idempotency, injects unauthorized port modification, and observes automatic drift recovery.*
+
+6. **Demonstrate Ansible Deployment Automation & Error Handling**:
+   ```bash
+   make ansible-test
+   ```
+   *Executes preflight check, rolling deploy, HTTP smoke tests, architecture boundary audit, and graceful error interception.*
+
+7. **Demonstrate Nagios Observability, Failure Detection & Recovery**:
+   ```bash
+   make nagios-test
+   ```
+   *Executes intra-container probe, stops autoops-app, observes Nagios detect CRITICAL failure, restarts autoops-app, and observes automated recovery back to OK.*
 
 ---
 
@@ -389,12 +446,13 @@ flowchart TD
 | **Milestone 03** | Puppet Configuration & Ansible Deployment | **COMPLETED** | `docs/evidence/puppet_verification.txt`, `docs/evidence/ansible_verification.txt` |
 | **Milestone 04** | Nagios Observability & Failure Recovery | **COMPLETED** | `docs/evidence/nagios_verification.txt` |
 | **Milestone 05** | Continuous Integration (GitHub Actions) | **COMPLETED** | `.github/workflows/ci.yml`, `docs/evidence/ci_verification.txt` |
-| **Milestone 06** | Hardening, Project Report & Final Delivery | *Upcoming* | `docs/report/` |
+| **Milestone 06** | Hardening, Project Report & Final Delivery | **COMPLETED** | `docs/report/AutoOps_Final_Project_Report.md`, `docs/evidence/milestone-06-verification.txt` |
 
 ---
 
 ## 11. Troubleshooting & Technical Notes
 
+- **Container Security Hardening**: The production application container executes with an immutable root filesystem (`read_only: true`), temporary volatile in-memory storage (`tmpfs: /tmp`), all kernel capabilities dropped (`cap_drop: [ALL]`), no privilege escalation (`no-new-privileges: true`), and explicit memory boundaries (`mem_limit: 512m`).
 - **Docker Daemon API Compatibility**: Docker 29.x enforces a minimum API version of 1.44 by default. To maintain compatibility with the `kreuzwerker/docker` provider (which issues API 1.41 calls), `/etc/docker/daemon.json` is configured with `"min-api-version": "1.41"`.
 - **Air-Gapped / Restricted Provider Installation**: In restricted enterprise or university networks blocking `release-assets.githubusercontent.com`, Terraform providers are served via a verified local filesystem mirror (`~/.terraformrc` pointing to `~/.terraform.d/plugins`) verified against official HashiCorp SHA-256 checksums.
 - **Port 80 Avoidance**: The host Apache instance binds to port 80; AutoOps binds to port `5000` (application) and port `8080` (monitoring) to prevent bind conflicts.

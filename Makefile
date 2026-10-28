@@ -1,4 +1,4 @@
-.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets ci-test clean
+.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets ci-test qa-verify clean
 
 -include .env
 export
@@ -54,6 +54,7 @@ help:
 	@echo "  make nagios-dashboard  Check Nagios web dashboard availability"
 	@echo "  make check-secrets     Scan repository for exposed secrets & credentials"
 	@echo "  make ci-test           Run complete local suite of CI quality gates"
+	@echo "  make qa-verify         Run comprehensive Milestone 06 final QA verification"
 	@echo "  make clean             Clean local caches and temporary files"
 
 venv:
@@ -157,6 +158,9 @@ check-secrets:
 
 ci-test:
 	./scripts/test_ci_local.sh
+
+qa-verify:
+	./scripts/run_milestone_06_qa.sh
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache
