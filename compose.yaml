@@ -36,7 +36,7 @@ services:
         condition: service_healthy
     environment:
       - NAGIOSADMIN_USER=${NAGIOSADMIN_USER:-nagiosadmin}
-      - NAGIOSADMIN_PASS=${NAGIOSADMIN_PASS:-AutoOpsPass2026!}
+      - NAGIOSADMIN_PASS=${NAGIOSADMIN_PASS:-ChangeMeToAStrongPassword123!}
       - NAGIOS_TIMEZONE=${NAGIOS_TIMEZONE:-UTC}
     volumes:
       - ./nagios/nagios.cfg:/opt/nagios/etc/nagios.cfg:ro
@@ -45,7 +45,7 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "-u", "${NAGIOSADMIN_USER:-nagiosadmin}:${NAGIOSADMIN_PASS:-AutoOpsPass2026!}", "http://127.0.0.1/nagios/"]
+      test: ["CMD-SHELL", "curl -s -f -u \"$${NAGIOSADMIN_USER:-nagiosadmin}:$${NAGIOSADMIN_PASS:-ChangeMeToAStrongPassword123!}\" http://127.0.0.1/nagios/ || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3

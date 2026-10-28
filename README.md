@@ -101,11 +101,15 @@ To eliminate state collisions and conflicting lifecycle operations, ownership is
 
 ```text
 AutoOps/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                # GitHub Actions automated quality gates pipeline
 ├── app/
 │   ├── __init__.py               # Package metadata and version definition
 │   └── main.py                   # FastAPI microservice with /health and request logging
 ├── tests/
-│   └── test_health.py            # Pytest test suite for health, contract, and routes
+│   ├── test_health.py            # Pytest test suite for health, contract, and routes
+│   └── test_ci_workflow.py       # Pytest test suite for CI workflow schema & security
 ├── terraform/
 │   ├── versions.tf               # Terraform version & kreuzwerker/docker provider constraints
 │   ├── main.tf                   # Docker network, volume, image, and sandbox container resources
@@ -136,6 +140,9 @@ AutoOps/
 │   │   └── autoops.cfg           # Host autoops-app and HTTP /health, root, TCP services
 │   └── .env.example              # Credentials template (NAGIOSADMIN_USER, NAGIOSADMIN_PASS)
 ├── scripts/
+│   ├── check_secrets.sh          # Secret scanning & repository hygiene auditor
+│   ├── validate_ci.py            # GitHub Actions workflow schema and trigger validator
+│   ├── test_ci_local.sh          # Local CI quality gates simulation and verification runner
 │   ├── verify_app.sh             # Health check verification shell script
 │   ├── test_local_server.sh      # Background server spawn and integration test script
 │   ├── test_docker_container.sh  # Docker container execution, health and user audit script
@@ -159,9 +166,11 @@ AutoOps/
 │   │   ├── terraform_safe_destroy.txt
 │   │   ├── puppet_verification.txt
 │   │   ├── ansible_verification.txt
-│   │   └── nagios_verification.txt
+│   │   ├── nagios_verification.txt
+│   │   └── ci_verification.txt
 │   └── report/                   # Academic report chapters and analysis
 ├── .dockerignore                 # Excludes caches, venv, git, and local tests from image
+├── .env.example                  # Environment configuration template (tracked)
 ├── .gitignore                    # Excludes venv, pycache, tfstate, credentials, logs
 ├── compose.yaml                  # Docker Compose orchestration definition
 ├── Dockerfile                    # Pinned Python 3.12-slim non-root container image
@@ -273,6 +282,18 @@ make nagios-logs
 make nagios-test
 ```
 
+### Continuous Integration & Quality Gates (Local Simulation)
+```bash
+# Run complete local suite of CI quality gates
+make ci-test
+
+# Scan repository for exposed secrets & hygiene
+make check-secrets
+
+# Validate GitHub Actions workflow syntax & triggers
+python3 scripts/validate_ci.py
+```
+
 ---
 
 ## 8. Automated Testing & Verification
@@ -299,11 +320,66 @@ make test
 
 # Nagios monitoring and recovery test
 ./scripts/test_nagios.sh
+
+# Local CI quality gates simulation runner
+./scripts/test_ci_local.sh
 ```
 
 ---
 
-## 9. Milestone Status
+## 9. Continuous Integration Architecture & Quality Gates
+
+AutoOps implements an automated continuous integration pipeline defined in `.github/workflows/ci.yml`.
+
+### Workflow Purpose & Design Principles
+- **Automated Quality Gates**: Enforces code quality, type correctness, unit tests, IaC schemas, playbook syntax, and policy compliance on every commit.
+- **Non-Destructive Validation**: CI jobs execute in isolation without modifying host state, applying live infrastructure, or mutating production configurations.
+- **Zero Committed Secrets**: Strict scanning for API keys, private keys, and credential leaks.
+- **Least Privilege**: Restricted to read-only repository permissions (`permissions: contents: read`).
+
+### Workflow Triggers
+- **Push**: Triggered on pushes to the `main` branch.
+- **Pull Request**: Triggered on pull requests targeting the `main` branch.
+- **Manual Dispatch**: Supports `workflow_dispatch` for on-demand pipeline execution.
+
+### CI Quality Gates Matrix
+
+| Job Name | Identifier | Purpose & Tools | Runner Environment |
+| :--- | :--- | :--- | :--- |
+| **Repository Hygiene** | `hygiene` | Scans for tracked `.env`, private keys, and rotated test secrets via `scripts/check_secrets.sh` | `ubuntu-latest` |
+| **Python Quality** | `python-quality` | Bytecode compilation (`compileall`), Flake8 PEP8 linting, and Pytest unit tests | `ubuntu-latest` (Python 3.12) |
+| **Terraform Validation**| `terraform-validate` | Canonical HCL formatting check (`fmt -check`), init without backend, schema validation | `ubuntu-latest` (TF 1.9.8) |
+| **Ansible Validation** | `ansible-validate` | Inventory check and playbook syntax validation across all 5 playbooks via `ansible-playbook --syntax-check` | `ubuntu-latest` (Ansible Core) |
+| **Puppet Validation** | `puppet-validate` | Manifest syntax (`parser validate`), EPP template validation, and `puppet-lint` | `ubuntu-latest` (Ruby 3.2) |
+| **Nagios Validation** | `nagios-validate` | Pre-flight syntax and object check using pinned container `jasonrivers/nagios:latest` | `ubuntu-latest` (Docker) |
+
+### CI vs. Local Integration Test Boundaries
+
+```mermaid
+flowchart TD
+    subgraph CI_Boundaries ["GitHub-Hosted CI Pipeline (Ephemeral & Non-Destructive)"]
+        direction TB
+        CI1["hygiene: Secret scanning & tracking checks"]
+        CI2["python-quality: Flake8 & Pytest"]
+        CI3["terraform-validate: fmt -check & validate (No apply/destroy)"]
+        CI4["ansible-validate: Playbook syntax checks (No execution)"]
+        CI5["puppet-validate: Manifest parser & puppet-lint (No host apply)"]
+        CI6["nagios-validate: Pre-flight syntax check (No network probes)"]
+    end
+
+    subgraph Local_Boundaries ["Local Integration Runtime (Host / Docker Engine)"]
+        direction TB
+        LOC1["Docker Compose runtime startup & health probes"]
+        LOC2["Terraform infrastructure provisioning & volume attachment"]
+        LOC3["Puppet live policy apply to /etc/autoops/ with drift remediation"]
+        LOC4["Ansible deployment orchestration against live services"]
+        LOC5["Nagios real-time failure injection & automated recovery cycle"]
+    end
+```
+
+---
+
+## 10. Milestone Status
 
 | Milestone | Title | Status | Evidence Location |
 | :--- | :--- | :--- | :--- |
@@ -312,12 +388,12 @@ make test
 | **Milestone 02** | Docker Compose & Terraform Local Infrastructure | **COMPLETED** | `docs/evidence/` |
 | **Milestone 03** | Puppet Configuration & Ansible Deployment | **COMPLETED** | `docs/evidence/puppet_verification.txt`, `docs/evidence/ansible_verification.txt` |
 | **Milestone 04** | Nagios Observability & Failure Recovery | **COMPLETED** | `docs/evidence/nagios_verification.txt` |
-| **Milestone 05** | Continuous Integration (GitHub Actions) | *Upcoming* | `.github/workflows/` |
+| **Milestone 05** | Continuous Integration (GitHub Actions) | **COMPLETED** | `.github/workflows/ci.yml`, `docs/evidence/ci_verification.txt` |
 | **Milestone 06** | Hardening, Project Report & Final Delivery | *Upcoming* | `docs/report/` |
 
 ---
 
-## 10. Troubleshooting & Technical Notes
+## 11. Troubleshooting & Technical Notes
 
 - **Docker Daemon API Compatibility**: Docker 29.x enforces a minimum API version of 1.44 by default. To maintain compatibility with the `kreuzwerker/docker` provider (which issues API 1.41 calls), `/etc/docker/daemon.json` is configured with `"min-api-version": "1.41"`.
 - **Air-Gapped / Restricted Provider Installation**: In restricted enterprise or university networks blocking `release-assets.githubusercontent.com`, Terraform providers are served via a verified local filesystem mirror (`~/.terraformrc` pointing to `~/.terraform.d/plugins`) verified against official HashiCorp SHA-256 checksums.

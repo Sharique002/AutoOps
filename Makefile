@@ -1,4 +1,7 @@
-.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard clean
+.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets ci-test clean
+
+-include .env
+export
 
 VENV := .venv
 PYTHON := $(VENV)/bin/python
@@ -9,7 +12,10 @@ UVICORN := $(VENV)/bin/uvicorn
 IMAGE_NAME := autoops-app
 IMAGE_TAG := latest
 CONTAINER_NAME := autoops-app-instance
-APP_PORT := 5000
+APP_PORT ?= 5000
+NAGIOS_PORT ?= 8080
+NAGIOSADMIN_USER ?= nagiosadmin
+NAGIOSADMIN_PASS ?= ChangeMeToAStrongPassword123!
 ANSIBLE_CFG := $(CURDIR)/ansible/ansible.cfg
 
 help:
@@ -46,6 +52,8 @@ help:
 	@echo "  make nagios-test       Run full Nagios monitoring & recovery test suite"
 	@echo "  make nagios-logs       Follow Nagios service logs in Docker Compose"
 	@echo "  make nagios-dashboard  Check Nagios web dashboard availability"
+	@echo "  make check-secrets     Scan repository for exposed secrets & credentials"
+	@echo "  make ci-test           Run complete local suite of CI quality gates"
 	@echo "  make clean             Clean local caches and temporary files"
 
 venv:
@@ -141,7 +149,14 @@ nagios-logs:
 	docker compose logs -f autoops-nagios
 
 nagios-dashboard:
-	curl -s -I -u nagiosadmin:AutoOpsPass2026! http://127.0.0.1:8080/nagios/
+	@echo "Querying Nagios dashboard on port $(NAGIOS_PORT)..."
+	@curl -s -I -u "$(NAGIOSADMIN_USER):$(NAGIOSADMIN_PASS)" http://127.0.0.1:$(NAGIOS_PORT)/nagios/
+
+check-secrets:
+	./scripts/check_secrets.sh
+
+ci-test:
+	./scripts/test_ci_local.sh
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache

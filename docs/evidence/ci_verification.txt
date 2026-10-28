@@ -1,0 +1,93 @@
+==============================================================================
+               AutoOps — Local CI Quality Gates Runner                        
+==============================================================================
+Repository Root : /mnt/d/files/OneDrive/Desktop/AutoOps
+Execution Time  : 2026-10-28T12:10:10Z
+Host Kernel     : Linux 6.18.54.1-microsoft-standard-WSL2 x86_64
+Python Version  : Python 3.12.3
+Terraform Ver   : Terraform v1.9.8
+Ansible Version : ansible [core 2.16.3]
+Puppet Version  : 8.4.0
+==============================================================================
+
+--- Quality Gate 1: GitHub Actions Workflow Validation ---
+[PASS] actionlint: Zero parse or syntax errors detected in ci.yml
+Validating workflow file: /mnt/d/files/OneDrive/Desktop/AutoOps/.github/workflows/ci.yml
+  [+] Job verified: hygiene -> 'Repository Hygiene & Secret Scanning'
+  [+] Job verified: python-quality -> 'Python Quality & Unit Tests'
+  [+] Job verified: terraform-validate -> 'Terraform Format & Schema Validation'
+  [+] Job verified: ansible-validate -> 'Ansible Syntax & Playbook Validation'
+  [+] Job verified: puppet-validate -> 'Puppet Manifest & Template Validation'
+  [+] Job verified: nagios-validate -> 'Nagios Core Configuration Check'
+SUCCESS: Workflow validated. All 6 quality gates confirmed.
+[PASS] Workflow specification and trigger rules verified.
+
+--- Quality Gate 2: Secret Scanning & Repository Hygiene ---
+=== AutoOps: Secret Scanning & Repository Hygiene Check ===
+Scanning tracked git files in: /mnt/d/files/OneDrive/Desktop/AutoOps
+Repository hygiene check: PASSED (Zero tracked secrets or credentials detected)
+=== Secret Scanning Complete ===
+[PASS] Repository hygiene verified: Zero secrets or forbidden files tracked.
+
+--- Quality Gate 3: Python Bytecode, Flake8 & Unit Testing ---
+[PASS] Python bytecode compilation: Clean (0 errors)
+[PASS] Flake8 linter: Clean (0 violations)
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- /mnt/d/files/OneDrive/Desktop/AutoOps/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/d/files/OneDrive/Desktop/AutoOps
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 12 items
+
+tests/test_ci_workflow.py::test_ci_workflow_file_exists PASSED           [  8%]
+tests/test_ci_workflow.py::test_ci_workflow_valid_yaml PASSED            [ 16%]
+tests/test_ci_workflow.py::test_ci_workflow_triggers PASSED              [ 25%]
+tests/test_ci_workflow.py::test_ci_workflow_permissions PASSED           [ 33%]
+tests/test_ci_workflow.py::test_ci_workflow_required_jobs PASSED         [ 41%]
+tests/test_ci_workflow.py::test_ci_workflow_no_hardcoded_secrets PASSED  [ 50%]
+tests/test_health.py::test_health_status_code_200 PASSED                 [ 58%]
+tests/test_health.py::test_health_payload_contract PASSED                [ 66%]
+tests/test_health.py::test_health_timestamp_validity PASSED              [ 75%]
+tests/test_health.py::test_root_endpoint PASSED                          [ 83%]
+tests/test_health.py::test_invalid_route_returns_404 PASSED              [ 91%]
+tests/test_health.py::test_health_method_not_allowed PASSED              [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /mnt/d/files/OneDrive/Desktop/AutoOps/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 12 passed, 1 warning in 8.97s =========================
+[PASS] Pytest test suite: All tests passed successfully.
+
+--- Quality Gate 4: Terraform Formatting & Schema Validation ---
+[PASS] terraform fmt: Codebase formatted to canonical HCL style.
+[32m[1mSuccess![0m The configuration is valid.
+[0m
+[PASS] terraform validate: Configuration syntax and resource schemas valid.
+
+--- Quality Gate 5: Ansible Syntax & Inventory Verification ---
+[PASS] Ansible inventory syntax verified.
+
+playbook: ansible/playbooks/01_preflight.yml
+
+playbook: ansible/playbooks/02_deploy.yml
+
+playbook: ansible/playbooks/03_smoke_test.yml
+
+playbook: ansible/playbooks/04_verify.yml
+
+playbook: ansible/playbooks/99_error_handling.yml
+[PASS] Ansible playbooks: All 5 playbooks passed syntax check.
+
+--- Quality Gate 6: Puppet Policy Manifest & Template Validation ---
+[PASS] Puppet manifests and EPP template: Validated with 0 warnings/errors.
+
+--- Quality Gate 7: Nagios Core Configuration Pre-Flight Check ---
+[PASS] Nagios Core configuration: Pre-flight check passed (0 errors, 0 warnings).
+
+==============================================================================
+       AutoOps CI Verification Result: ALL QUALITY GATES PASSED (7/7)        
+==============================================================================

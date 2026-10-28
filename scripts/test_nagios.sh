@@ -7,6 +7,22 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+# Load environment variables from .env if present
+if [[ -f "${REPO_DIR}/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "${REPO_DIR}/.env"
+  set +a
+elif [[ -f "${REPO_DIR}/nagios/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "${REPO_DIR}/nagios/.env"
+  set +a
+fi
+
+NAGIOS_USER="${NAGIOSADMIN_USER:-nagiosadmin}"
+NAGIOS_PASS="${NAGIOSADMIN_PASS:-ChangeMeToAStrongPassword123!}"
+
 echo "=== AutoOps: Nagios Observability & Recovery Verification ==="
 echo "Repository: ${REPO_DIR}"
 echo ""
@@ -83,7 +99,7 @@ echo "Initial health verification: PASSED (OK)"
 echo ""
 
 echo "--- Step 5: Verifying Nagios Web Dashboard on Port 8080 ---"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "nagiosadmin:AutoOpsPass2026!" http://127.0.0.1:8080/nagios/)
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${NAGIOS_USER}:${NAGIOS_PASS}" http://127.0.0.1:8080/nagios/)
 echo "Dashboard HTTP response: ${HTTP_CODE}"
 if [[ "${HTTP_CODE}" != "200" ]]; then
   echo "FAIL: Dashboard returned HTTP ${HTTP_CODE}, expected 200."

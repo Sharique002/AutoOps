@@ -1,0 +1,154 @@
+name: AutoOps CI Quality Gates
+
+'on':
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hygiene:
+    name: Repository Hygiene & Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Secret Leak and Hygiene Checks
+        run: |
+          chmod +x scripts/check_secrets.sh
+          ./scripts/check_secrets.sh
+
+  python-quality:
+    name: Python Quality & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Check Python bytecode compilation
+        run: python -m compileall -q app tests
+
+      - name: Check code formatting and linting (Flake8)
+        run: flake8 app tests
+
+      - name: Run Pytest test suite
+        run: pytest -v tests
+
+  terraform-validate:
+    name: Terraform Format & Schema Validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform CLI
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.8'
+
+      - name: Check Terraform formatting (fmt -check)
+        run: terraform fmt -check -diff
+
+      - name: Initialize Terraform (syntax validation only, no backend)
+        run: terraform init -backend=false
+
+      - name: Validate Terraform configuration
+        run: terraform validate
+
+  ansible-validate:
+    name: Ansible Syntax & Playbook Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Ansible Core
+        run: |
+          python -m pip install --upgrade pip
+          pip install "ansible-core>=2.16.0,<2.17.0"
+
+      - name: Validate Ansible inventory
+        run: ansible-inventory -i ansible/inventory/hosts.ini --list
+
+      - name: Validate Playbook Syntax
+        env:
+          ANSIBLE_CONFIG: ${{ github.workspace }}/ansible/ansible.cfg
+        run: |
+          ansible-playbook -i ansible/inventory/hosts.ini --syntax-check \
+            ansible/playbooks/01_preflight.yml \
+            ansible/playbooks/02_deploy.yml \
+            ansible/playbooks/03_smoke_test.yml \
+            ansible/playbooks/04_verify.yml \
+            ansible/playbooks/99_error_handling.yml
+
+  puppet-validate:
+    name: Puppet Manifest & Template Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: false
+
+      - name: Install Puppet and Puppet-Lint
+        run: gem install puppet puppet-lint --no-document
+
+      - name: Lint Puppet manifests
+        run: puppet-lint --fail-on-warnings puppet/manifests/site.pp puppet/modules/autoops_policy/manifests/init.pp
+
+      - name: Validate Puppet manifests syntax
+        run: puppet parser validate puppet/manifests/site.pp puppet/modules/autoops_policy/manifests/init.pp
+
+      - name: Validate Puppet EPP template syntax
+        run: puppet epp validate puppet/modules/autoops_policy/templates/autoops_policy.conf.epp
+
+  nagios-validate:
+    name: Nagios Core Configuration Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull verified Nagios Core Docker image
+        run: docker pull jasonrivers/nagios:latest
+
+      - name: Validate Nagios syntax and object definitions
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/nagios/nagios.cfg:/opt/nagios/etc/nagios.cfg:ro" \
+            -v "${{ github.workspace }}/nagios/conf.d:/opt/nagios/etc/conf.d:ro" \
+            jasonrivers/nagios:latest /usr/local/bin/nagios -v /opt/nagios/etc/nagios.cfg
