@@ -1,0 +1,120 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create[0m
+
+Terraform will perform the following actions:
+
+[1m  # docker_container.infra_sandbox[0m will be created
+[0m  [32m+[0m[0m resource "docker_container" "infra_sandbox" {
+      [32m+[0m[0m attach                                      = false
+      [32m+[0m[0m bridge                                      = (known after apply)
+      [32m+[0m[0m command                                     = [
+          [32m+[0m[0m "python",
+          [32m+[0m[0m "-c",
+          [32m+[0m[0m "import os; os.makedirs('/var/autoops/data', exist_ok=True); open('/var/autoops/data/iac_verified.txt', 'w').write('Terraform IaC storage verified\\n'); print('IaC storage and network verification successful.')",
+        ]
+      [32m+[0m[0m container_logs                              = (known after apply)
+      [32m+[0m[0m container_read_refresh_timeout_milliseconds = 15000
+      [32m+[0m[0m entrypoint                                  = (known after apply)
+      [32m+[0m[0m env                                         = (known after apply)
+      [32m+[0m[0m exit_code                                   = (known after apply)
+      [32m+[0m[0m hostname                                    = (known after apply)
+      [32m+[0m[0m id                                          = (known after apply)
+      [32m+[0m[0m image                                       = "python:3.12-slim"
+      [32m+[0m[0m init                                        = (known after apply)
+      [32m+[0m[0m ipc_mode                                    = (known after apply)
+      [32m+[0m[0m log_driver                                  = (known after apply)
+      [32m+[0m[0m logs                                        = false
+      [32m+[0m[0m must_run                                    = false
+      [32m+[0m[0m name                                        = "autoops-infra-sandbox"
+      [32m+[0m[0m network_data                                = (known after apply)
+      [32m+[0m[0m read_only                                   = false
+      [32m+[0m[0m remove_volumes                              = true
+      [32m+[0m[0m restart                                     = "no"
+      [32m+[0m[0m rm                                          = false
+      [32m+[0m[0m runtime                                     = (known after apply)
+      [32m+[0m[0m security_opts                               = (known after apply)
+      [32m+[0m[0m shm_size                                    = (known after apply)
+      [32m+[0m[0m start                                       = true
+      [32m+[0m[0m stdin_open                                  = false
+      [32m+[0m[0m stop_signal                                 = (known after apply)
+      [32m+[0m[0m stop_timeout                                = (known after apply)
+      [32m+[0m[0m tty                                         = false
+      [32m+[0m[0m wait                                        = false
+      [32m+[0m[0m wait_timeout                                = 60
+
+      [32m+[0m[0m healthcheck (known after apply)
+
+      [32m+[0m[0m labels (known after apply)
+
+      [32m+[0m[0m networks_advanced {
+          [32m+[0m[0m aliases      = []
+          [32m+[0m[0m name         = "autoops-infra-net"
+            [90m# (2 unchanged attributes hidden)[0m[0m
+        }
+
+      [32m+[0m[0m volumes {
+          [32m+[0m[0m container_path = "/var/autoops/data"
+          [32m+[0m[0m volume_name    = "autoops-data-storage"
+            [90m# (2 unchanged attributes hidden)[0m[0m
+        }
+    }
+
+[1m  # docker_network.infra_network[0m will be created
+[0m  [32m+[0m[0m resource "docker_network" "infra_network" {
+      [32m+[0m[0m driver      = "bridge"
+      [32m+[0m[0m id          = (known after apply)
+      [32m+[0m[0m internal    = (known after apply)
+      [32m+[0m[0m ipam_driver = "default"
+      [32m+[0m[0m name        = "autoops-infra-net"
+      [32m+[0m[0m options     = (known after apply)
+      [32m+[0m[0m scope       = (known after apply)
+
+      [32m+[0m[0m ipam_config {
+          [32m+[0m[0m subnet   = "172.28.0.0/16"
+            [90m# (2 unchanged attributes hidden)[0m[0m
+        }
+
+      [32m+[0m[0m labels {
+          [32m+[0m[0m label = "environment"
+          [32m+[0m[0m value = "local-dev"
+        }
+      [32m+[0m[0m labels {
+          [32m+[0m[0m label = "managed_by"
+          [32m+[0m[0m value = "terraform"
+        }
+    }
+
+[1m  # docker_volume.data_storage[0m will be created
+[0m  [32m+[0m[0m resource "docker_volume" "data_storage" {
+      [32m+[0m[0m driver     = (known after apply)
+      [32m+[0m[0m id         = (known after apply)
+      [32m+[0m[0m mountpoint = (known after apply)
+      [32m+[0m[0m name       = "autoops-data-storage"
+
+      [32m+[0m[0m labels {
+          [32m+[0m[0m label = "environment"
+          [32m+[0m[0m value = "local-dev"
+        }
+      [32m+[0m[0m labels {
+          [32m+[0m[0m label = "managed_by"
+          [32m+[0m[0m value = "terraform"
+        }
+    }
+
+[1mPlan:[0m 3 to add, 0 to change, 0 to destroy.
+[0m
+Changes to Outputs:
+  [32m+[0m[0m network_id           = (known after apply)
+  [32m+[0m[0m network_name         = "autoops-infra-net"
+  [32m+[0m[0m network_subnet       = "172.28.0.0/16"
+  [32m+[0m[0m sandbox_container_id = (known after apply)
+  [32m+[0m[0m volume_name          = "autoops-data-storage"
+[90m
+─────────────────────────────────────────────────────────────────────────────[0m
+
+Saved the plan to: tfplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "tfplan"

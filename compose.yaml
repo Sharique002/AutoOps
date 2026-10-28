@@ -1,0 +1,30 @@
+services:
+  autoops-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: autoops-app:latest
+    container_name: autoops-app
+    ports:
+      - "5000:5000"
+    networks:
+      - autoops-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5000/health').getcode() == 200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  autoops-network:
+    name: autoops-network
+    driver: bridge

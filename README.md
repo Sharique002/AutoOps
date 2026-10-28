@@ -6,6 +6,7 @@
 
 The primary objectives are:
 - **Reproducible Containerized Application**: A production-conscious HTTP microservice written in Python using FastAPI, packaged as a lightweight, non-root, health-checked Docker container.
+- **Docker Compose Service Orchestration**: Declarative runtime management for application and observability services via `compose.yaml`.
 - **Local Infrastructure as Code**: Automated provisioning of local Docker infrastructure using Terraform with strict resource ownership boundaries.
 - **Desired-State Configuration Management**: Idempotent configuration and policy enforcement using Puppet.
 - **Orchestrated Deployments**: Automated deployment playbooks and operational procedures using Ansible.
@@ -27,10 +28,10 @@ Modern software systems require coordinated automation across infrastructure pro
 | **Operating System** | Ubuntu 24.04 via WSL2 | Host virtualization runtime with systemd | 24.04 LTS (Noble) |
 | **Application Runtime** | Python / FastAPI / Uvicorn | Production-conscious HTTP microservice | Python 3.12, FastAPI 0.162+ |
 | **Container Engine** | Docker & Docker Compose | Containerization and runtime service engine | Docker 29.1+, Compose 2.40+ |
-| **Infrastructure as Code** | Terraform | Docker provider infrastructure resources | 1.9+ |
+| **Infrastructure as Code** | Terraform (`kreuzwerker/docker`) | Docker provider infrastructure resources | Terraform 1.9.8, Provider 3.0.2 |
 | **Config Management** | Puppet | Host-level desired-state configuration | 8.4+ |
 | **Orchestration** | Ansible | Deployment playbooks and health checks | 9.2+ (core 2.16) |
-| **Observability** | Nagios | Proactive synthetic monitoring and alerting | 4.x |
+| **Observability** | Nagios Core | Proactive synthetic monitoring and alerting | 4.x |
 | **Version Control & CI** | Git & GitHub Actions | Repository hygiene and automated lint/test | Actions v4 |
 
 ---
@@ -50,32 +51,49 @@ flowchart TD
     subgraph Host ["Local Environment (WSL2 Ubuntu 24.04)"]
         VENV[".venv/ Isolated Python Runtime"]
         PUPPET["Puppet: Desired State (/etc/autoops/)"]
-        TF["Terraform: Local Infrastructure Resources"]
+        TF["Terraform: Auxiliary Infrastructure"]
         ANSIBLE["Ansible: Deployment Orchestration"]
     end
 
-    subgraph DockerEngine ["Docker Application Runtime"]
-        DOCKERD["Docker Daemon (systemd)"]
-        DOCKERD --> APP["autoops-app Container\n(FastAPI / Non-Root appuser / Port 5000)"]
-        DOCKERD --> NAGIOS["autoops-nagios Container\n(Observability Engine / Port 8080)"]
-        APP <-->|autoops-net| NAGIOS
+    subgraph DockerEngine ["Docker Application & Infrastructure Runtime"]
+        DOCKERD["Docker Daemon (systemd, min-api-version 1.41)"]
+        
+        subgraph ComposeScope ["Docker Compose Application Scope"]
+            APP["autoops-app Container\n(FastAPI / Non-Root appuser / Port 5000)"]
+            NAGIOS["autoops-nagios Container\n(Observability Engine / Port 8080)"]
+            NET_APP["autoops-network (Bridge)\nSubnet: 172.18.0.0/16"]
+            APP <-->|autoops-network| NAGIOS
+        end
+
+        subgraph TFScope ["Terraform Infrastructure Scope"]
+            VOL_DATA["autoops-data-storage Volume\n(Auxiliary Persistent Storage)"]
+            NET_INFRA["autoops-infra-net Network (Bridge)\nSubnet: 172.28.0.0/16"]
+            SANDBOX["autoops-infra-sandbox Container\n(Storage & Network Validator)"]
+            SANDBOX -->|Attaches to| NET_INFRA
+            SANDBOX -->|Mounts| VOL_DATA
+        end
+
+        DOCKERD --> ComposeScope
+        DOCKERD --> TFScope
     end
 
     VENV --> APP
-    ANSIBLE --> DOCKERD
-    TF --> DOCKERD
+    ANSIBLE --> ComposeScope
+    TF --> TFScope
 ```
 
 ### Resource Ownership Matrix
 
-To prevent race conditions and conflicting state locks, resource boundaries are strictly partitioned:
+To eliminate state collisions and conflicting lifecycle operations, ownership is strictly partitioned:
 
-| Resource | Owning Tool | Responsibility |
-| :--- | :--- | :--- |
-| **`autoops-app` Container** | Docker Compose / Ansible | Application execution, health check lifecycle, and rollout |
-| **`autoops-nagios` Container** | Docker Compose | Synthetic monitoring service execution |
-| **Host System Policies** | Puppet | `/etc/autoops/` configuration files, system-level desired state |
-| **Auxiliary Infra Volumes & Nets** | Terraform | Isolated network definitions, persistent logging storage |
+| Resource Identifier | Resource Type | Managing Tool | Manifest File | Purpose |
+| :--- | :--- | :--- | :--- | :--- |
+| **`autoops-app`** | Container | **Docker Compose** | `compose.yaml` | Application runtime exposing port 5000 |
+| **`autoops-network`** | Docker Network | **Docker Compose** | `compose.yaml` | Dedicated bridge network (172.18.0.0/16) for app & monitoring |
+| **`autoops-nagios`** | Container | **Docker Compose** | `compose.yaml` (M04) | Synthetic observability engine polling `/health` |
+| **`autoops-infra-net`** | Docker Network | **Terraform** | `terraform/main.tf` | Isolated infrastructure audit network (172.28.0.0/16) |
+| **`autoops-data-storage`** | Docker Volume | **Terraform** | `terraform/main.tf` | Auxiliary persistent volume for operational backups |
+| **`autoops-infra-sandbox`**| Container | **Terraform** | `terraform/main.tf` | Ephemeral validator verifying storage write permissions |
 
 ---
 
@@ -88,22 +106,36 @@ AutoOps/
 │   └── main.py                   # FastAPI microservice with /health and request logging
 ├── tests/
 │   └── test_health.py            # Pytest test suite for health, contract, and routes
+├── terraform/
+│   ├── versions.tf               # Terraform version & kreuzwerker/docker provider constraints
+│   ├── main.tf                   # Docker network, volume, image, and sandbox container resources
+│   ├── variables.tf              # Input variables for subnets, volume names, and environments
+│   └── outputs.tf                # Infrastructure resource IDs, network subnets, and volume names
 ├── scripts/
 │   ├── verify_app.sh             # Health check verification shell script
 │   ├── test_local_server.sh      # Background server spawn and integration test script
-│   └── test_docker_container.sh  # Docker container execution, health and user audit script
+│   ├── test_docker_container.sh  # Docker container execution, health and user audit script
+│   └── test_compose.sh           # Docker Compose validation, startup, and health check runner
 ├── docs/
-│   ├── architecture/             # Architecture diagrams and specifications
+│   ├── architecture/             # Architecture specifications and design docs
+│   │   ├── resource_ownership.md # Formal resource partition and separation matrix
+│   │   └── nagios_monitoring_design.md # Nagios network topology and failure simulation design
 │   ├── evidence/                 # Verified command execution and test output logs
 │   │   ├── pytest_results.txt
 │   │   ├── local_http_tests.txt
 │   │   ├── docker_build.txt
-│   │   └── docker_container_verification.txt
+│   │   ├── docker_container_verification.txt
+│   │   ├── compose_verification.txt
+│   │   ├── terraform_plan.txt
+│   │   ├── terraform_apply.txt
+│   │   ├── terraform_plan_idempotent.txt
+│   │   └── terraform_safe_destroy.txt
 │   └── report/                   # Academic report chapters and analysis
 ├── .dockerignore                 # Excludes caches, venv, git, and local tests from image
 ├── .gitignore                    # Excludes venv, pycache, tfstate, credentials, logs
+├── compose.yaml                  # Docker Compose orchestration definition
 ├── Dockerfile                    # Pinned Python 3.12-slim non-root container image
-├── Makefile                      # Standardized project tasks (build, test, lint, run)
+├── Makefile                      # Standardized project tasks (build, test, compose, terraform)
 ├── pytest.ini                    # Pytest configuration and pythonpath discovery
 ├── requirements.txt              # Production runtime dependencies
 ├── requirements-dev.txt          # Development, testing, and linting dependencies
@@ -113,16 +145,7 @@ AutoOps/
 
 ---
 
-## 6. Prerequisites
-
-- **Host OS**: Ubuntu 24.04 LTS (native or running via WSL2 on Windows 11).
-- **Python**: Version 3.12 or newer.
-- **Docker Engine**: Docker 29.1+ with systemd and non-root group access (`docker.io`).
-- **Make & Curl**: Required for developer workflows.
-
----
-
-## 7. Setup & Installation
+## 6. Setup & Installation
 
 ### Step 1: Clone Repository
 ```bash
@@ -130,111 +153,73 @@ git clone <repository-url> AutoOps
 cd AutoOps
 ```
 
-### Step 2: Create Virtual Environment & Install Dependencies
+### Step 2: Install Virtual Environment & Dependencies
 ```bash
-# Using Makefile
 make install
-
-# Or manually:
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --no-cache-dir -r requirements-dev.txt
 ```
 
 ---
 
-## 8. Running the Application
+## 7. Running & Orchestrating Services
 
-### Local Development (Uvicorn)
+### Docker Compose Orchestration (Application Runtime)
 ```bash
-# Using Makefile
-make run
+# Start runtime services in background
+make compose-up
 
-# Or directly:
-source .venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
-```
-Application will be available at: `http://localhost:5000`
+# View running services
+make compose-ps
 
-### Running with Docker
-```bash
-# Build Docker image
-make docker-build
-
-# Run container in background on port 5000
-make docker-run
-
-# Verify container health
+# Query application health check
 make docker-health
 
-# Stop and remove container
-make docker-stop
+# Tear down Compose services
+make compose-down
+```
+
+### Terraform Infrastructure as Code (Auxiliary Infrastructure)
+```bash
+# Initialize Terraform provider
+make tf-init
+
+# Generate and inspect execution plan
+make tf-plan
+
+# Provision infrastructure resources
+make tf-apply
+
+# Safe infrastructure teardown
+make tf-destroy
 ```
 
 ---
 
-## 9. Health Endpoint & Contract
+## 8. Automated Testing & Verification
 
-### Endpoint: `GET /health`
-- **HTTP Status**: `200 OK`
-- **Content-Type**: `application/json`
-
-**Sample Response**:
-```json
-{
-  "status": "healthy",
-  "service": "autoops",
-  "version": "0.1.0",
-  "timestamp": "2026-10-28T07:44:46.903495+00:00",
-  "uptime_seconds": 2.13
-}
-```
-
-### Invalid Route Handling: `GET /api/v1/invalid-route`
-- **HTTP Status**: `404 Not Found`
-- **Content-Type**: `application/json`
-
-**Sample Response**:
-```json
-{
-  "error": "Not Found",
-  "detail": "Not Found",
-  "status_code": 404
-}
-```
-
----
-
-## 10. Automated Testing & Verification
-
-### Running Linting
+### Code Quality & Unit Tests
 ```bash
 make lint
-# Or directly:
-.venv/bin/flake8 app tests
-```
-
-### Running Pytest Unit Tests
-```bash
 make test
-# Or directly:
-.venv/bin/pytest -v tests
 ```
 
-### Automated End-to-End Container Verification
+### End-to-End Test Suite Execution
 ```bash
+# Standalone container test
 ./scripts/test_docker_container.sh
+
+# Docker Compose integration test
+./scripts/test_compose.sh
 ```
 
 ---
 
-## 11. Milestone Status
+## 9. Milestone Status
 
 | Milestone | Title | Status | Evidence Location |
 | :--- | :--- | :--- | :--- |
 | **Milestone 00** | Environment Verification & Architecture Lock | **COMPLETED** | `milestone-00-environment-and-architecture.md` |
 | **Milestone 01** | Repository Setup & Application Microservice | **COMPLETED** | `docs/evidence/` |
-| **Milestone 02** | Docker Compose & Terraform Local Infrastructure | *Upcoming* | `terraform/`, `compose.yaml` |
+| **Milestone 02** | Docker Compose & Terraform Local Infrastructure | **COMPLETED** | `docs/evidence/` |
 | **Milestone 03** | Puppet Configuration & Ansible Deployment | *Upcoming* | `puppet/`, `ansible/` |
 | **Milestone 04** | Nagios Observability & Failure Recovery | *Upcoming* | `nagios/` |
 | **Milestone 05** | Continuous Integration (GitHub Actions) | *Upcoming* | `.github/workflows/` |
@@ -242,8 +227,8 @@ make test
 
 ---
 
-## 12. Troubleshooting & Known Limitations
+## 10. Troubleshooting & Technical Notes
 
-- **DrvFs I/O Speed**: When running inside WSL2 on Windows mounts (`/mnt/d/...`), initial directory operations may experience brief file synchronization latencies due to Windows filesystem translation.
-- **Port 80 Conflict**: Port 80 on the host is occupied by an existing Apache service; AutoOps services intentionally bind to ports `5000` (application) and `8080` (monitoring) to avoid port contention.
-- **CA Certificates in WSL**: If container pulls encounter TLS verification errors on corporate networks, run `sudo update-ca-certificates --fresh && sudo systemctl restart docker`.
+- **Docker Daemon API Compatibility**: Docker 29.x enforces a minimum API version of 1.44 by default. To maintain compatibility with the `kreuzwerker/docker` provider (which issues API 1.41 calls), `/etc/docker/daemon.json` is configured with `"min-api-version": "1.41"`.
+- **Air-Gapped / Restricted Provider Installation**: In restricted enterprise or university networks blocking `release-assets.githubusercontent.com`, Terraform providers are served via a verified local filesystem mirror (`~/.terraformrc` pointing to `~/.terraform.d/plugins`) verified against official HashiCorp SHA-256 checksums.
+- **Port 80 Avoidance**: The host Apache instance binds to port 80; AutoOps binds to port `5000` (application) and port `8080` (monitoring) to prevent bind conflicts.

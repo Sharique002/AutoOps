@@ -1,0 +1,78 @@
+=== Docker Compose Verification Log ===
+Execution timestamp: Wed Oct 28 07:53:47 UTC 2026
+name: autoops
+services:
+  autoops-app:
+    build:
+      context: /mnt/d/files/OneDrive/Desktop/AutoOps
+      dockerfile: Dockerfile
+    container_name: autoops-app
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5000/health').getcode() == 200 else 1)
+      timeout: 5s
+      interval: 10s
+      retries: 3
+      start_period: 5s
+    image: autoops-app:latest
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 10m
+    networks:
+      autoops-network: null
+    ports:
+      - mode: ingress
+        target: 5000
+        published: "5000"
+        protocol: tcp
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+networks:
+  autoops-network:
+    name: autoops-network
+    driver: bridge
+ Network autoops-network  Creating
+ Network autoops-network  Created
+ Container autoops-app  Creating
+ Container autoops-app  Created
+ Container autoops-app  Starting
+ Container autoops-app  Started
+
+--- Docker Compose PS ---
+NAME          IMAGE                COMMAND                  SERVICE       CREATED         STATUS                   PORTS
+autoops-app   autoops-app:latest   "uvicorn app.main:ap…"   autoops-app   8 seconds ago   Up 7 seconds (healthy)   0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
+
+--- Network Inspection ---
+Name: autoops-network, Driver: bridge, Subnet: 172.18.0.0/16
+
+--- HTTP GET /health ---
+HTTP/1.1 200 OK
+date: Wed, 28 Oct 2026 07:54:00 GMT
+server: uvicorn
+content-length: 126
+content-type: application/json
+
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T07:54:00.490628+00:00","uptime_seconds":6.2}
+
+--- Container Logs ---
+autoops-app  | INFO:     Started server process [1]
+autoops-app  | INFO:     Waiting for application startup.
+autoops-app  | 2026-10-28T07:53:54+0000 [INFO] [autoops] AutoOps service starting up (version: 0.1.0)
+autoops-app  | INFO:     Application startup complete.
+autoops-app  | INFO:     Uvicorn running on http://0.0.0.0:5000 (Press CTRL+C to quit)
+autoops-app  | 2026-10-28T07:53:58+0000 [INFO] [autoops] HTTP GET /health [127.0.0.1] -> 200 (1.46 ms)
+autoops-app  | INFO:     127.0.0.1:56096 - "GET /health HTTP/1.1" 200 OK
+autoops-app  | 2026-10-28T07:54:00+0000 [INFO] [autoops] HTTP GET /health [172.18.0.1] -> 200 (1.04 ms)
+autoops-app  | INFO:     172.18.0.1:53476 - "GET /health HTTP/1.1" 200 OK
+ Container autoops-app  Stopping
+ Container autoops-app  Stopped
+ Container autoops-app  Removing
+ Container autoops-app  Removed
+ Network autoops-network  Removing
+ Network autoops-network  Removed

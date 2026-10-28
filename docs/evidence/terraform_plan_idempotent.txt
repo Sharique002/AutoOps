@@ -1,0 +1,9 @@
+[0m[1mdocker_volume.data_storage: Refreshing state... [id=autoops-data-storage][0m
+[0m[1mdocker_image.sandbox_image: Refreshing state... [id=sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07python:3.12-slim][0m
+[0m[1mdocker_network.infra_network: Refreshing state... [id=4dbf91d4f8fcbe4bad6b8ef3d8ef933a3bda081b1f80a8282fbaf7d17d99b13d][0m
+[0m[1mdocker_container.infra_sandbox: Refreshing state... [id=55efea7c92e52079542ef6a148712a503c0ebf95a05bf1b8b847a1b9141e6401][0m
+
+[0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
+
+[0mTerraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
