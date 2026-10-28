@@ -91,6 +91,7 @@ export interface DocResource {
   category: string;
   description: string;
   relativePath: string;
+  publicUrl: string;
   format: string;
   sizeOrSections: string;
 }

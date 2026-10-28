@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'orchid' | 'dark';
+export type Theme = 'dark' | 'orchid';
 
 interface ThemeContextType {
   theme: Theme;
@@ -9,24 +9,37 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'orchid',
+  theme: 'dark',
   toggleTheme: () => {},
   setTheme: () => {},
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem('autoops-theme') as Theme;
-    return saved === 'dark' ? 'dark' : 'orchid'; // Default to Orchid theme from photo
+    // Check saved preference in localStorage
+    try {
+      const saved = localStorage.getItem('autoops-theme');
+      if (saved === 'orchid' || saved === 'dark') {
+        return saved;
+      }
+    } catch {
+      // Fallback for restricted storage environments
+    }
+    // Dark charcoal theme is strictly the default for first-time visitors
+    return 'dark';
   });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('autoops-theme', theme);
+    try {
+      localStorage.setItem('autoops-theme', theme);
+    } catch {
+      // Ignore storage errors in sandboxed environments
+    }
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState((prev) => (prev === 'orchid' ? 'dark' : 'orchid'));
+    setThemeState((prev) => (prev === 'dark' ? 'orchid' : 'dark'));
   };
 
   const setTheme = (t: Theme) => {

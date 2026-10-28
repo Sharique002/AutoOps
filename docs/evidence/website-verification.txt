@@ -1,7 +1,7 @@
 ================================================================================
 AUTOOPS DEVOPS SHOWCASE WEBSITE — VERIFICATION EVIDENCE LOG
 ================================================================================
-Date/Timestamp: 2026-10-28 18:44:48 IST
+Date/Timestamp: 2026-10-28 20:18:00 IST
 Developer: Sharique
 Target System: Ubuntu 24.04 LTS (WSL2) on Windows 11
 Working Directory: /mnt/d/files/OneDrive/Desktop/AutoOps (D:\files\OneDrive\Desktop\AutoOps)
@@ -29,6 +29,12 @@ Docker Compose version v2.40.3
 $ terraform version
 Terraform v1.9.8
 
+$ ansible --version
+ansible [core 2.16.3]
+
+$ puppet --version
+8.4.0
+
 --------------------------------------------------------------------------------
 2. FRONTEND STRICT TYPECHECKING (TSC)
 --------------------------------------------------------------------------------
@@ -49,41 +55,116 @@ $ cd web && npm run build
 
 vite v6.4.5 building for production...
 transforming...
-✓ 1591 modules transformed.
+✓ 1593 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                   1.10 kB │ gzip:  0.57 kB
-dist/assets/index-LvvSVi0l.css    5.80 kB │ gzip:  1.82 kB
-dist/assets/index-BxGztU5m.js   281.65 kB │ gzip: 72.38 kB
-✓ built in 1.57s
+dist/index.html                   1.18 kB │ gzip:  0.60 kB
+dist/assets/index-CUizSymi.css    8.36 kB │ gzip:  2.36 kB
+dist/assets/index-CdbZCIih.js   303.67 kB │ gzip: 76.56 kB
+✓ built in 2.23s
 
 Asset Inventory in web/dist/:
-- dist/index.html                (1,103 bytes)
-- dist/favicon.svg               (708 bytes)
-- dist/assets/index-BxGztU5m.js  (281,652 bytes)
-- dist/assets/index-LvvSVi0l.css (5,795 bytes)
+- dist/index.html                   (1,180 bytes)
+- dist/favicon.svg                  (708 bytes)
+- dist/assets/index-CdbZCIih.js     (303,670 bytes)
+- dist/assets/index-CUizSymi.css    (8,360 bytes)
+- dist/docs/README.md               (23,634 bytes)
+- dist/docs/report/*                (7 markdown files mirrored)
 
 [EXIT CODE: 0 - PRODUCTION BUNDLE SUCCESSFULLY GENERATED]
 
 --------------------------------------------------------------------------------
-4. STATIC PREVIEW SERVER HEALTH VERIFICATION
+4. DOCUMENTATION INTEGRITY VERIFICATION
 --------------------------------------------------------------------------------
-$ npx vite preview --port 4173 --host
-Serving at http://localhost:4173/
+$ ./scripts/validate_docs.sh
+=== AutoOps: Documentation & Public Asset Validation ===
+Repository Root: /mnt/d/files/OneDrive/Desktop/AutoOps
 
-$ curl -I http://localhost:4173/
-HTTP/1.1 200 OK
-Content-Type: text/html
-Content-Length: 1103
-Date: Wed, 28 Oct 2026 13:14:38 GMT
-Connection: keep-alive
+Checking: docs/report/AutoOps_Final_Project_Report.md -> web/public/docs/report/AutoOps_Final_Project_Report.md
+  [OK] Repo source exists (23025 bytes)
+  [OK] Web public asset exists (23025 bytes)
+Checking: docs/report/architecture.md -> web/public/docs/report/architecture.md
+  [OK] Repo source exists (6487 bytes)
+  [OK] Web public asset exists (6487 bytes)
+Checking: docs/report/security_and_risk_assessment.md -> web/public/docs/report/security_and_risk_assessment.md
+  [OK] Repo source exists (6904 bytes)
+  [OK] Web public asset exists (6904 bytes)
+Checking: docs/report/testing_and_evaluation.md -> web/public/docs/report/testing_and_evaluation.md
+  [OK] Repo source exists (7283 bytes)
+  [OK] Web public asset exists (7283 bytes)
+Checking: docs/report/final_acceptance_matrix.md -> web/public/docs/report/final_acceptance_matrix.md
+  [OK] Repo source exists (4195 bytes)
+  [OK] Web public asset exists (4195 bytes)
+Checking: README.md -> web/public/docs/README.md
+  [OK] Repo source exists (23634 bytes)
+  [OK] Web public asset exists (23634 bytes)
+Checking: docs/report/website-fix-baseline.md -> web/public/docs/report/website-fix-baseline.md
+  [OK] Repo source exists (6434 bytes)
+  [OK] Web public asset exists (6434 bytes)
+Checking: docs/report/website-implementation.md -> web/public/docs/report/website-implementation.md
+  [OK] Repo source exists (9852 bytes)
+  [OK] Web public asset exists (9852 bytes)
 
-Status: HTTP 200 OK — SPA Shell delivered with correct script/stylesheet tags.
+Documentation integrity check: PASSED (8 / 8 document pairs verified)
+=== Documentation Validation Complete ===
+
+[EXIT CODE: 0 - ALL 8 REPORT PAIRS VALIDATED]
 
 --------------------------------------------------------------------------------
-5. BACKEND REGRESSION VERIFICATION (PYTEST)
+5. CREDENTIAL HARDENING & SECRET AUDIT
 --------------------------------------------------------------------------------
-$ pytest -v tests
+$ git grep 'ChangeMeToAStrongPassword123!'
+.env.example:NAGIOSADMIN_PASS=ChangeMeToAStrongPassword123!
+docs/report/AutoOps_Final_Project_Report.md:- **Template Sanitization**: All tracked example files (`.env.example` and `nagios/.env.example`) feature generic placeholders (`ChangeMeToAStrongPassword123!`).
+docs/report/security_and_risk_assessment.md:  - All tracked template files ([`nagios/.env.example`](file:///D:/files/OneDrive/Desktop/AutoOps/nagios/.env.example) and [`.env.example`](file:///D:/files/OneDrive/Desktop/AutoOps/.env.example)) were updated with generic placeholders: `ChangeMeToAStrongPassword123!`.
+nagios/.env.example:NAGIOSADMIN_PASS=ChangeMeToAStrongPassword123!
+
+$ ./scripts/check_secrets.sh
+=== AutoOps: Secret Scanning & Repository Hygiene Check ===
+Scanning tracked git files in: /mnt/d/files/OneDrive/Desktop/AutoOps
+Repository hygiene check: PASSED (Zero tracked secrets or credentials detected)
+=== Secret Scanning Complete ===
+
+[EXIT CODE: 0 - ZERO FALLBACK CREDENTIALS IN COMPOSE/MAKE/TESTS, ZERO SECRETS TRACKED]
+
+--------------------------------------------------------------------------------
+6. COMPLETE LOCAL CI QUALITY GATES (7/7)
+--------------------------------------------------------------------------------
+$ ./scripts/test_ci_local.sh
+==============================================================================
+               AutoOps — Local CI Quality Gates Runner                        
+==============================================================================
+Repository Root : /mnt/d/files/OneDrive/Desktop/AutoOps
+Execution Time  : 2026-10-28T14:46:31Z
+Host Kernel     : Linux 6.18.54.1-microsoft-standard-WSL2 x86_64
+Python Version  : Python 3.12.3
+Terraform Ver   : Terraform v1.9.8
+Ansible Version : ansible [core 2.16.3]
+Puppet Version  : 8.4.0
+==============================================================================
+
+--- Quality Gate 1: GitHub Actions Workflow Validation ---
+[PASS] actionlint: Zero parse or syntax errors detected in ci.yml
+Validating workflow file: /mnt/d/files/OneDrive/Desktop/AutoOps/.github/workflows/ci.yml
+  [+] Job verified: hygiene -> 'Repository Hygiene & Secret Scanning'
+  [+] Job verified: python-quality -> 'Python Quality & Unit Tests'
+  [+] Job verified: terraform-validate -> 'Terraform Format & Schema Validation'
+  [+] Job verified: ansible-validate -> 'Ansible Syntax & Playbook Validation'
+  [+] Job verified: puppet-validate -> 'Puppet Manifest & Template Validation'
+  [+] Job verified: nagios-validate -> 'Nagios Core Configuration Check'
+SUCCESS: Workflow validated. All 6 quality gates confirmed.
+[PASS] Workflow specification and trigger rules verified.
+
+--- Quality Gate 2: Secret Scanning & Repository Hygiene ---
+=== AutoOps: Secret Scanning & Repository Hygiene Check ===
+Scanning tracked git files in: /mnt/d/files/OneDrive/Desktop/AutoOps
+Repository hygiene check: PASSED (Zero tracked secrets or credentials detected)
+=== Secret Scanning Complete ===
+[PASS] Repository hygiene verified: Zero secrets or forbidden files tracked.
+
+--- Quality Gate 3: Python Bytecode, Flake8 & Unit Testing ---
+[PASS] Python bytecode compilation: Clean (0 errors)
+[PASS] Flake8 linter: Clean (0 violations)
 ============================= test session starts ==============================
 platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- /mnt/d/files/OneDrive/Desktop/AutoOps/.venv/bin/python3
 cachedir: .pytest_cache
@@ -105,37 +186,60 @@ tests/test_health.py::test_root_endpoint PASSED                          [ 83%]
 tests/test_health.py::test_invalid_route_returns_404 PASSED              [ 91%]
 tests/test_health.py::test_health_method_not_allowed PASSED              [100%]
 
-============================== 12 passed in 7.48s ==============================
-[EXIT CODE: 0 - 100% REGRESSION TESTS PASSED (12/12)]
+============================== 12 passed in 8.49s ==============================
+[PASS] Pytest test suite: All tests passed successfully.
+
+--- Quality Gate 4: Terraform Formatting & Schema Validation ---
+[PASS] terraform fmt: Codebase formatted to canonical HCL style.
+Success! The configuration is valid.
+
+[PASS] terraform validate: Configuration syntax and resource schemas valid.
+
+--- Quality Gate 5: Ansible Syntax & Inventory Verification ---
+[PASS] Ansible inventory syntax verified.
+playbook: ansible/playbooks/01_preflight.yml
+playbook: ansible/playbooks/02_deploy.yml
+playbook: ansible/playbooks/03_smoke_test.yml
+playbook: ansible/playbooks/04_verify.yml
+playbook: ansible/playbooks/99_error_handling.yml
+[PASS] Ansible playbooks: All 5 playbooks passed syntax check.
+
+--- Quality Gate 6: Puppet Policy Manifest & Template Validation ---
+[PASS] Puppet manifests and EPP template: Validated with 0 warnings/errors.
+
+--- Quality Gate 7: Nagios Core Configuration Pre-Flight Check ---
+[PASS] Nagios Core configuration: Pre-flight check passed (0 errors, 0 warnings).
+
+==============================================================================
+       AutoOps CI Verification Result: ALL QUALITY GATES PASSED (7/7)        
+==============================================================================
+
+[EXIT CODE: 0 - ALL 7 QUALITY GATES CONFIRMED PASSED]
 
 --------------------------------------------------------------------------------
-6. REPOSITORY HYGIENE & SECRET LEAK AUDIT
+7. LIVE SERVICES HEALTH & ACCESSIBILITY
 --------------------------------------------------------------------------------
-$ ./scripts/check_secrets.sh
-=== AutoOps: Secret Scanning & Repository Hygiene Check ===
-Scanning tracked git files in: /mnt/d/files/OneDrive/Desktop/AutoOps
-Repository hygiene check: PASSED (Zero tracked secrets or credentials detected)
-=== Secret Scanning Complete ===
-
-[EXIT CODE: 0 - ZERO CREDENTIAL LEAKS DETECTED]
-
---------------------------------------------------------------------------------
-7. DOCKER COMPOSE RUNTIME STATUS
---------------------------------------------------------------------------------
-$ docker compose ps
-NAME             IMAGE                       COMMAND                  SERVICE          CREATED          STATUS                    PORTS
-autoops-app      autoops-app:latest          "uvicorn app.main:ap…"   autoops-app      41 minutes ago   Up 2 minutes (healthy)    0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
-autoops-nagios   jasonrivers/nagios:latest   "/usr/local/bin/star…"   autoops-nagios   41 minutes ago   Up 2 minutes (healthy)    5667/tcp, 127.0.0.1:8080->80/tcp
-
 $ curl -s http://127.0.0.1:5000/health
-{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T13:14:18.219644+00:00","uptime_seconds":30.69}
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T14:44:46.914785+00:00","uptime_seconds":75.85}
+
+$ make nagios-dashboard
+Querying Nagios dashboard on port 8080...
+HTTP/1.1 200 OK
+Date: Wed, 28 Oct 2026 14:46:26 GMT
+Server: Apache/2.4.58 (Ubuntu)
+Content-Type: text/html; charset=UTF-8
+
+$ curl -I http://localhost:5173/
+HTTP/1.1 200 OK
+Date: Wed, 28 Oct 2026 14:46:30 GMT
+Content-Type: text/html
 
 --------------------------------------------------------------------------------
-8. TERRAFORM AUXILIARY DRIFT VERIFICATION
+8. TERRAFORM AUXILIARY INFRASTRUCTURE DRIFT
 --------------------------------------------------------------------------------
-$ cd terraform && terraform plan -detailed-exitcode
-docker_image.sandbox_image: Refreshing state... [id=sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07python:3.12-slim]
+$ cd terraform && terraform plan
 docker_volume.data_storage: Refreshing state... [id=autoops-data-storage]
+docker_image.sandbox_image: Refreshing state... [id=sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07python:3.12-slim]
 docker_network.infra_network: Refreshing state... [id=6dc38dde4a1069b590b59d9d6f643bbc3b5eded5e234ba3d4f8b34a55984efec]
 docker_container.infra_sandbox: Refreshing state... [id=873cf1e5dbb909a2c32c23e38c7231f07a396babdae5bff038f0e9d777817813]
 
@@ -144,16 +248,16 @@ No changes. Your infrastructure matches the configuration.
 [EXIT CODE: 0 - ZERO INFRASTRUCTURE DRIFT CONFIRMED]
 
 --------------------------------------------------------------------------------
-9. RESPONSIVE DESIGN & ACCESSIBILITY AUDIT
+9. DESIGN, RESPONSIVENESS & THEME AUDIT
 --------------------------------------------------------------------------------
-- Viewport: Tested across 360px (mobile), 768px (tablet), 1024px (laptop), and 1440px (desktop).
-- Horizontal Overflow: 0 horizontal scroll detected (overflow-x: hidden enforced on body).
-- Navigation: Desktop horizontal menu; mobile overlay drawer with ARIA controls (aria-expanded, aria-modal).
-- Contrast: W3C AA compliant contrast for text elements against dark charcoal backgrounds.
-- Focus Rings: Clear 2px cyan outline (:focus-visible) for all interactive buttons, links, and tabs.
-- Reduced Motion: Respects @media (prefers-reduced-motion: reduce) by disabling animations and smooth scrolling.
-- Factual Telemetry: Real last verified timestamps, zero randomized live counters, explicit NOT RUN status for remote CI.
+- Default Theme: Strictly Dark Charcoal (#0B0F14) with Terminal Green (#35E58C) and Cyan (#38CFF0).
+- Alternate Theme: Pastel Orchid Pink (#E7B0DE), Deep Eggplant Violet (#400849), Signal Orange (#FF5A0A) via toggle.
+- Theme Persistence: Stored in localStorage; data-theme="dark" set on html tag prevents FOUC.
+- Document Reader: Modal viewer dynamically fetches and renders markdown documents in-app.
+- Viewport Tests: 360px (mobile), 768px (tablet), 1024px (laptop), 1440px (desktop) with 0 horizontal scroll.
+- Developer Attribution: Verified Sharique prominently displayed in navbar, hero, metadata, and footer.
+- Truthful Claims: 6/6 Milestones VERIFIED, 7/7 CI Gates PASSING, 12/12 Tests PASS, Remote CI strictly labeled NOT RUN.
 
 ================================================================================
-FINAL VERIFICATION RESULT: ALL CHECKS PASSED (ACCEPTANCE COMPLETE)
+FINAL VERIFICATION RESULT: COMPLETE SYSTEM & WEBSITE ACCEPTANCE CONFIRMED
 ================================================================================

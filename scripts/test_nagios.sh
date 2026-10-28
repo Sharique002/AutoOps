@@ -21,7 +21,12 @@ elif [[ -f "${REPO_DIR}/nagios/.env" ]]; then
 fi
 
 NAGIOS_USER="${NAGIOSADMIN_USER:-nagiosadmin}"
-NAGIOS_PASS="${NAGIOSADMIN_PASS:-ChangeMeToAStrongPassword123!}"
+
+if [[ -z "${NAGIOSADMIN_PASS:-}" ]]; then
+  echo "ERROR: NAGIOSADMIN_PASS is not set. Ensure it is defined in .env or your environment." >&2
+  exit 1
+fi
+NAGIOS_PASS="${NAGIOSADMIN_PASS}"
 
 echo "=== AutoOps: Nagios Observability & Recovery Verification ==="
 echo "Repository: ${REPO_DIR}"

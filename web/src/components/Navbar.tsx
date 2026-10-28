@@ -173,6 +173,10 @@ export const Navbar: React.FC = () => {
         }
 
         .brand-terminal-icon {
+          color: var(--accent-green);
+        }
+
+        [data-theme="orchid"] .brand-terminal-icon {
           color: var(--accent-orange);
         }
 
@@ -240,6 +244,12 @@ export const Navbar: React.FC = () => {
         }
 
         .theme-toggle-btn:hover {
+          border-color: var(--accent-cyan);
+          background: var(--accent-cyan-bg);
+          color: var(--accent-cyan);
+        }
+
+        [data-theme="orchid"] .theme-toggle-btn:hover {
           border-color: var(--accent-orange);
           background: var(--accent-orange-bg);
           color: var(--accent-orange);
@@ -259,6 +269,11 @@ export const Navbar: React.FC = () => {
           width: 8px;
           height: 8px;
           border-radius: 50%;
+          background: var(--accent-green);
+          box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        [data-theme="orchid"] .pulsing-dot {
           background: var(--accent-orange);
           box-shadow: 0 0 10px var(--accent-orange);
         }

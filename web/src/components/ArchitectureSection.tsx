@@ -30,7 +30,7 @@ export const ArchitectureSection: React.FC = () => {
               <span>COMPOSE APPLICATION RUNTIME</span>
             </div>
             <div className="network-name">autoops-network</div>
-            <div className="network-spec">Bridge Driver • Subnet: 172.28.0.0/16</div>
+            <div className="network-spec">Bridge Driver • Compose-Managed (Default IPAM)</div>
             <div className="network-services">
               <span className="svc-chip">autoops-app (:5000)</span>
               <span className="svc-chip">autoops-nagios (:8080)</span>

@@ -1,4 +1,4 @@
-.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets ci-test qa-verify web-install web-dev web-build web-preview clean
+.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets validate-docs ci-test qa-verify web-install web-dev web-build web-preview clean
 
 -include .env
 export
@@ -15,7 +15,6 @@ CONTAINER_NAME := autoops-app-instance
 APP_PORT ?= 5000
 NAGIOS_PORT ?= 8080
 NAGIOSADMIN_USER ?= nagiosadmin
-NAGIOSADMIN_PASS ?= ChangeMeToAStrongPassword123!
 ANSIBLE_CFG := $(CURDIR)/ansible/ansible.cfg
 
 help:
@@ -154,11 +153,18 @@ nagios-logs:
 	docker compose logs -f autoops-nagios
 
 nagios-dashboard:
+	@if [ -z "$(NAGIOSADMIN_PASS)" ]; then \
+		echo "ERROR: NAGIOSADMIN_PASS is not set. Please define it in .env or your environment." >&2; \
+		exit 1; \
+	fi
 	@echo "Querying Nagios dashboard on port $(NAGIOS_PORT)..."
 	@curl -s -I -u "$(NAGIOSADMIN_USER):$(NAGIOSADMIN_PASS)" http://127.0.0.1:$(NAGIOS_PORT)/nagios/
 
 check-secrets:
 	./scripts/check_secrets.sh
+
+validate-docs:
+	./scripts/validate_docs.sh
 
 ci-test:
 	./scripts/test_ci_local.sh

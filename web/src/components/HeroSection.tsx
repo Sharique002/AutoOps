@@ -38,19 +38,19 @@ export const HeroSection: React.FC = () => {
             {/* Metadata badges row */}
             <div className="hero-metadata-grid">
               <div className="meta-badge">
-                <CheckCircle2 size={16} className="text-orange" />
+                <CheckCircle2 size={16} className="text-green" />
                 <span>Six Development Milestones</span>
               </div>
               <div className="meta-badge">
-                <Server size={16} className="text-orange" />
+                <Server size={16} className="text-cyan" />
                 <span>Local Docker Infrastructure</span>
               </div>
               <div className="meta-badge">
-                <ShieldCheck size={16} className="text-orange" />
+                <ShieldCheck size={16} className="text-green" />
                 <span>Automated Quality Gates</span>
               </div>
               <div className="meta-badge">
-                <RefreshCw size={16} className="text-orange" />
+                <RefreshCw size={16} className="text-cyan" />
                 <span>Monitoring &amp; Recovery</span>
               </div>
             </div>
@@ -107,7 +107,7 @@ export const HeroSection: React.FC = () => {
           font-size: 11.5px;
           font-weight: 700;
           letter-spacing: 0.12em;
-          color: var(--accent-orange);
+          color: var(--accent-cyan);
           margin-bottom: var(--space-4);
         }
 
@@ -115,6 +115,15 @@ export const HeroSection: React.FC = () => {
           width: 7px;
           height: 7px;
           border-radius: 50%;
+          background: var(--accent-green);
+          box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        [data-theme="orchid"] .hero-eyebrow {
+          color: var(--accent-orange);
+        }
+
+        [data-theme="orchid"] .eyebrow-dot {
           background: var(--accent-orange);
           box-shadow: 0 0 10px var(--accent-orange);
         }
@@ -199,7 +208,12 @@ export const HeroSection: React.FC = () => {
           color: var(--border-subtle);
         }
 
+        .text-green { color: var(--accent-green); }
+        .text-cyan { color: var(--accent-cyan); }
         .text-orange { color: var(--accent-orange); }
+
+        [data-theme="orchid"] .text-green { color: var(--accent-orange); }
+        [data-theme="orchid"] .text-cyan { color: var(--accent-orange); }
 
         @media (max-width: 1024px) {
           .hero-container {

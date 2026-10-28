@@ -43,7 +43,7 @@ services:
         condition: service_healthy
     environment:
       - NAGIOSADMIN_USER=${NAGIOSADMIN_USER:-nagiosadmin}
-      - NAGIOSADMIN_PASS=${NAGIOSADMIN_PASS:-ChangeMeToAStrongPassword123!}
+      - NAGIOSADMIN_PASS=${NAGIOSADMIN_PASS:?NAGIOSADMIN_PASS must be configured in .env}
       - NAGIOS_TIMEZONE=${NAGIOS_TIMEZONE:-UTC}
     volumes:
       - ./nagios/nagios.cfg:/opt/nagios/etc/nagios.cfg:ro
@@ -54,7 +54,7 @@ services:
     mem_limit: 1024m
     cpus: 1.5
     healthcheck:
-      test: ["CMD-SHELL", "curl -s -f -u \"$${NAGIOSADMIN_USER:-nagiosadmin}:$${NAGIOSADMIN_PASS:-ChangeMeToAStrongPassword123!}\" http://127.0.0.1/nagios/ || exit 1"]
+      test: ["CMD-SHELL", "curl -s -f -u \"$${NAGIOSADMIN_USER:-nagiosadmin}:$${NAGIOSADMIN_PASS:?NAGIOSADMIN_PASS unset}\" http://127.0.0.1/nagios/ || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 3
