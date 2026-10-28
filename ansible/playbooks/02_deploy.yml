@@ -1,0 +1,47 @@
+---
+- name: AutoOps Application Deployment & Orchestration
+  hosts: local
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir }}/../.."
+    container_name: "autoops-app"
+    max_wait_seconds: 30
+    poll_interval: 2
+
+  tasks:
+    - name: 1. Build application container image via Docker Compose
+      ansible.builtin.command:
+        cmd: docker compose build
+        chdir: "{{ repo_root }}"
+      register: compose_build_result
+      changed_when: "'writing image' in compose_build_result.stdout or 'naming to' in compose_build_result.stdout"
+
+    - name: 2. Deploy runtime service via Docker Compose
+      ansible.builtin.command:
+        cmd: docker compose up -d --remove-orphans
+        chdir: "{{ repo_root }}"
+      register: compose_up_result
+      changed_when: "'Started' in compose_up_result.stdout or 'Recreated' in compose_up_result.stdout"
+
+    - name: 3. Wait for autoops-app to achieve healthy state
+      ansible.builtin.command: >
+        docker inspect --format {% raw %}'{{.State.Health.Status}}'{% endraw %} {{ container_name }}
+      register: health_check
+      until: health_check.stdout == "healthy"
+      retries: "{{ (max_wait_seconds / poll_interval) | int }}"
+      delay: "{{ poll_interval }}"
+      changed_when: false
+
+    - name: 4. Capture container runtime details
+      ansible.builtin.command: >
+        docker inspect --format {% raw %}'ID: {{.Id}} | State: {{.State.Status}} | IP: {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}} | Ports: {{range $p, $conf := .NetworkSettings.Ports}}{{$p}} -> {{(index $conf 0).HostPort}}{{end}}'{% endraw %} {{ container_name }}
+      register: container_details
+      changed_when: false
+
+    - name: Display deployment confirmation
+      ansible.builtin.debug:
+        msg:
+          - "Deployment Status: SUCCESS"
+          - "Container: {{ container_name }}"
+          - "Health Status: {{ health_check.stdout }}"
+          - "Runtime Details: {{ container_details.stdout }}"

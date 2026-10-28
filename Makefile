@@ -1,4 +1,4 @@
-.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy clean
+.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test clean
 
 VENV := .venv
 PYTHON := $(VENV)/bin/python
@@ -10,28 +10,39 @@ IMAGE_NAME := autoops-app
 IMAGE_TAG := latest
 CONTAINER_NAME := autoops-app-instance
 APP_PORT := 5000
+ANSIBLE_CFG := $(CURDIR)/ansible/ansible.cfg
 
 help:
 	@echo "AutoOps Project Management Makefile"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make install         Install development and runtime dependencies into .venv"
-	@echo "  make lint            Check code quality with flake8"
-	@echo "  make test            Run unit tests with pytest"
-	@echo "  make run             Run application locally with uvicorn on port $(APP_PORT)"
-	@echo "  make docker-build    Build the Docker container image"
-	@echo "  make docker-run      Run container standalone"
-	@echo "  make docker-health   Query application health check"
-	@echo "  make docker-stop     Stop and remove standalone container"
-	@echo "  make compose-up      Start runtime services with Docker Compose"
-	@echo "  make compose-down    Stop and remove Docker Compose services"
-	@echo "  make compose-ps      List running Docker Compose services"
-	@echo "  make compose-logs    View Docker Compose service logs"
-	@echo "  make tf-init         Initialize Terraform Docker provider"
-	@echo "  make tf-plan         Generate and inspect Terraform execution plan"
-	@echo "  make tf-apply        Apply Terraform infrastructure resources"
-	@echo "  make tf-destroy      Destroy Terraform-managed infrastructure"
-	@echo "  make clean           Clean local caches and temporary files"
+	@echo "  make install           Install development and runtime dependencies into .venv"
+	@echo "  make lint              Check code quality with flake8"
+	@echo "  make test              Run unit tests with pytest"
+	@echo "  make run               Run application locally with uvicorn on port $(APP_PORT)"
+	@echo "  make docker-build      Build the Docker container image"
+	@echo "  make docker-run        Run container standalone"
+	@echo "  make docker-health     Query application health check"
+	@echo "  make docker-stop       Stop and remove standalone container"
+	@echo "  make compose-up        Start runtime services with Docker Compose"
+	@echo "  make compose-down      Stop and remove Docker Compose services"
+	@echo "  make compose-ps        List running Docker Compose services"
+	@echo "  make compose-logs      View Docker Compose service logs"
+	@echo "  make tf-init           Initialize Terraform Docker provider"
+	@echo "  make tf-plan           Generate and inspect Terraform execution plan"
+	@echo "  make tf-apply          Apply Terraform infrastructure resources"
+	@echo "  make tf-destroy        Destroy Terraform-managed infrastructure"
+	@echo "  make puppet-lint       Lint Puppet manifests with puppet-lint"
+	@echo "  make puppet-validate   Validate Puppet syntax with parser validate"
+	@echo "  make puppet-apply      Apply Puppet policy configuration"
+	@echo "  make puppet-test       Run full Puppet verification test suite"
+	@echo "  make ansible-syntax    Validate Ansible playbooks syntax"
+	@echo "  make ansible-preflight Run Ansible preflight verification playbook"
+	@echo "  make ansible-deploy    Deploy application via Ansible orchestration"
+	@echo "  make ansible-smoke     Run Ansible smoke testing playbook"
+	@echo "  make ansible-verify    Run Ansible end-to-end audit verification"
+	@echo "  make ansible-test      Run full Ansible verification test suite"
+	@echo "  make clean             Clean local caches and temporary files"
 
 venv:
 	@test -d $(VENV) || python3 -m venv $(VENV)
@@ -84,6 +95,37 @@ tf-apply:
 
 tf-destroy:
 	cd terraform && terraform destroy -auto-approve
+
+puppet-lint:
+	puppet-lint --fail-on-warnings puppet/manifests/site.pp puppet/modules/autoops_policy/manifests/init.pp
+
+puppet-validate:
+	puppet parser validate puppet/manifests/site.pp puppet/modules/autoops_policy/manifests/init.pp
+	puppet epp validate puppet/modules/autoops_policy/templates/autoops_policy.conf.epp
+
+puppet-apply:
+	sudo puppet apply --modulepath=$(CURDIR)/puppet/modules $(CURDIR)/puppet/manifests/site.pp
+
+puppet-test:
+	./scripts/test_puppet.sh
+
+ansible-syntax:
+	ANSIBLE_CONFIG=$(ANSIBLE_CFG) ansible-playbook -i ansible/inventory/hosts.ini --syntax-check ansible/playbooks/*.yml
+
+ansible-preflight:
+	ANSIBLE_CONFIG=$(ANSIBLE_CFG) ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/01_preflight.yml
+
+ansible-deploy:
+	ANSIBLE_CONFIG=$(ANSIBLE_CFG) ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/02_deploy.yml
+
+ansible-smoke:
+	ANSIBLE_CONFIG=$(ANSIBLE_CFG) ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/03_smoke_test.yml
+
+ansible-verify:
+	ANSIBLE_CONFIG=$(ANSIBLE_CFG) ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/04_verify.yml
+
+ansible-test:
+	./scripts/test_ansible.sh
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache

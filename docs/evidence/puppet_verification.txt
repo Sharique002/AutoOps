@@ -1,0 +1,65 @@
+=== AutoOps: Puppet Configuration Management Verification ===
+Repository: /mnt/d/files/OneDrive/Desktop/AutoOps
+Puppet Version: 8.4.0
+Puppet-Lint Version: puppet-lint 4.2.4
+
+--- Step 1: Validating Manifest & Template Syntax ---
+Syntax and lint checks: PASSED
+
+--- Step 2: Puppet Dry-Run (--noop) ---
+[mNotice: Compiled catalog for dell.localdomain in environment production in 0.12 seconds[0m
+[mNotice: Applied catalog in 0.02 seconds[0m
+
+--- Step 3: Puppet Live Apply ---
+[mNotice: Compiled catalog for dell.localdomain in environment production in 0.09 seconds[0m
+[mNotice: Applied catalog in 0.02 seconds[0m
+
+--- Step 4: Validating Enforced Target State ---
+drwxr-xr-x 2 root root 4096 Oct 28 09:48 /etc/autoops
+-rw-r--r-- 1 root root 918 Oct 28 09:48 /etc/autoops/autoops_policy.conf
+
+File content:
+# ==============================================================================
+# AutoOps Operational Policy & Resource Partitioning Configuration
+# ==============================================================================
+# WARNING: This configuration file is managed automatically by Puppet.
+# Manual edits will be detected and restored by Puppet configuration management.
+# ==============================================================================
+
+[environment]
+environment = production
+policy_version = 1.0.0
+managed_by = puppet-8.4.0
+
+[service_ports]
+app_port = 5000
+nagios_port = 8080
+
+[endpoints]
+health_endpoint = /health
+
+[resource_boundaries]
+compose_managed = autoops-app,autoops-network
+terraform_managed = autoops-infra-net,autoops-data-storage,autoops-infra-sandbox
+puppet_managed = /etc/autoops/autoops_policy.conf
+
+[healthcheck_policy]
+interval_seconds = 10
+timeout_seconds = 5
+retries = 3
+
+--- Step 5: Validating Idempotency (Second Apply Must Produce Zero Changes) ---
+[mNotice: Compiled catalog for dell.localdomain in environment production in 0.12 seconds[0m
+[mNotice: Applied catalog in 0.02 seconds[0m
+Idempotency check: PASSED (Zero changes detected)
+
+--- Step 6: Validating Drift Detection & Remediation ---
+Injecting unauthorized drift (modifying app_port to 9999)...
+app_port = 9999
+Re-applying Puppet to restore desired state...
+[mNotice: Compiled catalog for dell.localdomain in environment production in 0.11 seconds[0m
+[mNotice: /Stage[main]/Autoops_policy/File[/etc/autoops/autoops_policy.conf]/content: content changed '{sha256}a831f7d360db8986697750ef1dbc8cafdd04e83c775e8bfa279f0f4de2185f66' to '{sha256}ddf05c8960c29ab72d4e3e15c90b9170fbcbc388369f7955aed43c01568d738d'[0m
+[mNotice: Applied catalog in 0.04 seconds[0m
+Drift remediation: PASSED (app_port restored to 5000)
+
+=== Puppet Verification Complete: ALL TESTS PASSED ===

@@ -111,11 +111,32 @@ AutoOps/
 │   ├── main.tf                   # Docker network, volume, image, and sandbox container resources
 │   ├── variables.tf              # Input variables for subnets, volume names, and environments
 │   └── outputs.tf                # Infrastructure resource IDs, network subnets, and volume names
+├── puppet/
+│   ├── manifests/
+│   │   └── site.pp               # Puppet top-level site manifest declaring policy
+│   └── modules/
+│       └── autoops_policy/       # AutoOps host policy configuration management module
+│           ├── manifests/
+│           │   └── init.pp       # Class declaration with directory and file resource enforcement
+│           └── templates/
+│               └── autoops_policy.conf.epp  # EPP template for /etc/autoops/autoops_policy.conf
+├── ansible/
+│   ├── ansible.cfg               # Ansible configuration with local connection and yaml callback
+│   ├── inventory/
+│   │   └── hosts.ini             # Localhost inventory definition
+│   └── playbooks/
+│       ├── 01_preflight.yml      # Docker daemon, compose, and policy readiness checks
+│       ├── 02_deploy.yml         # Container build, rolling restart, and health wait loop
+│       ├── 03_smoke_test.yml     # Microservice HTTP contract validation (/health, /, 404)
+│       ├── 04_verify.yml         # Consolidated post-deployment architecture and drift audit
+│       └── 99_error_handling.yml # Graceful error interception and rescue block validation
 ├── scripts/
 │   ├── verify_app.sh             # Health check verification shell script
 │   ├── test_local_server.sh      # Background server spawn and integration test script
 │   ├── test_docker_container.sh  # Docker container execution, health and user audit script
-│   └── test_compose.sh           # Docker Compose validation, startup, and health check runner
+│   ├── test_compose.sh           # Docker Compose validation, startup, and health check runner
+│   ├── test_puppet.sh            # Puppet syntax, dry-run, idempotency, and drift test runner
+│   └── test_ansible.sh           # Ansible playbook syntax and execution test runner
 ├── docs/
 │   ├── architecture/             # Architecture specifications and design docs
 │   │   ├── resource_ownership.md # Formal resource partition and separation matrix
@@ -129,13 +150,15 @@ AutoOps/
 │   │   ├── terraform_plan.txt
 │   │   ├── terraform_apply.txt
 │   │   ├── terraform_plan_idempotent.txt
-│   │   └── terraform_safe_destroy.txt
+│   │   ├── terraform_safe_destroy.txt
+│   │   ├── puppet_verification.txt
+│   │   └── ansible_verification.txt
 │   └── report/                   # Academic report chapters and analysis
 ├── .dockerignore                 # Excludes caches, venv, git, and local tests from image
 ├── .gitignore                    # Excludes venv, pycache, tfstate, credentials, logs
 ├── compose.yaml                  # Docker Compose orchestration definition
 ├── Dockerfile                    # Pinned Python 3.12-slim non-root container image
-├── Makefile                      # Standardized project tasks (build, test, compose, terraform)
+├── Makefile                      # Standardized project tasks (build, test, compose, terraform, puppet, ansible)
 ├── pytest.ini                    # Pytest configuration and pythonpath discovery
 ├── requirements.txt              # Production runtime dependencies
 ├── requirements-dev.txt          # Development, testing, and linting dependencies
@@ -192,6 +215,42 @@ make tf-apply
 make tf-destroy
 ```
 
+### Puppet Configuration Management (Host Desired-State Policy)
+```bash
+# Validate Puppet manifest and template syntax
+make puppet-validate
+
+# Lint Puppet code
+make puppet-lint
+
+# Apply desired-state policy locally (/etc/autoops/autoops_policy.conf)
+make puppet-apply
+
+# Run full Puppet verification test suite (dry-run, apply, idempotency, drift remediation)
+make puppet-test
+```
+
+### Ansible Deployment Automation (Operational Orchestration)
+```bash
+# Validate playbook syntax
+make ansible-syntax
+
+# Execute preflight environment check
+make ansible-preflight
+
+# Deploy / rolling restart application container via Compose
+make ansible-deploy
+
+# Execute HTTP smoke test suite
+make ansible-smoke
+
+# Execute full post-deployment architecture audit
+make ansible-verify
+
+# Run complete end-to-end Ansible verification test suite
+make ansible-test
+```
+
 ---
 
 ## 8. Automated Testing & Verification
@@ -209,6 +268,12 @@ make test
 
 # Docker Compose integration test
 ./scripts/test_compose.sh
+
+# Puppet configuration management test
+./scripts/test_puppet.sh
+
+# Ansible deployment and orchestration test
+./scripts/test_ansible.sh
 ```
 
 ---
@@ -220,7 +285,7 @@ make test
 | **Milestone 00** | Environment Verification & Architecture Lock | **COMPLETED** | `milestone-00-environment-and-architecture.md` |
 | **Milestone 01** | Repository Setup & Application Microservice | **COMPLETED** | `docs/evidence/` |
 | **Milestone 02** | Docker Compose & Terraform Local Infrastructure | **COMPLETED** | `docs/evidence/` |
-| **Milestone 03** | Puppet Configuration & Ansible Deployment | *Upcoming* | `puppet/`, `ansible/` |
+| **Milestone 03** | Puppet Configuration & Ansible Deployment | **COMPLETED** | `docs/evidence/puppet_verification.txt`, `docs/evidence/ansible_verification.txt` |
 | **Milestone 04** | Nagios Observability & Failure Recovery | *Upcoming* | `nagios/` |
 | **Milestone 05** | Continuous Integration (GitHub Actions) | *Upcoming* | `.github/workflows/` |
 | **Milestone 06** | Hardening, Project Report & Final Delivery | *Upcoming* | `docs/report/` |
@@ -232,3 +297,5 @@ make test
 - **Docker Daemon API Compatibility**: Docker 29.x enforces a minimum API version of 1.44 by default. To maintain compatibility with the `kreuzwerker/docker` provider (which issues API 1.41 calls), `/etc/docker/daemon.json` is configured with `"min-api-version": "1.41"`.
 - **Air-Gapped / Restricted Provider Installation**: In restricted enterprise or university networks blocking `release-assets.githubusercontent.com`, Terraform providers are served via a verified local filesystem mirror (`~/.terraformrc` pointing to `~/.terraform.d/plugins`) verified against official HashiCorp SHA-256 checksums.
 - **Port 80 Avoidance**: The host Apache instance binds to port 80; AutoOps binds to port `5000` (application) and port `8080` (monitoring) to prevent bind conflicts.
+- **Puppet Standalone Apply**: Puppet runs via `puppet apply` directly against local manifests (`puppet/manifests/site.pp`), ensuring completely reproducible desired-state configuration without requiring a heavy Puppet Server daemon.
+- **Ansible DrvFs / World-Writable Permissions**: In WSL environments mounting Windows filesystems (`/mnt/d/...`), Ansible configuration requires `export ANSIBLE_CONFIG=ansible/ansible.cfg` to prevent DrvFs world-writable permission warnings from ignoring custom settings.

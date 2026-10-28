@@ -1,0 +1,70 @@
+---
+- name: AutoOps Microservice Smoke Testing & HTTP Contract Validation
+  hosts: local
+  gather_facts: false
+  vars:
+    base_url: "http://127.0.0.1:5000"
+
+  tasks:
+    - name: 1. Query /health endpoint
+      ansible.builtin.uri:
+        url: "{{ base_url }}/health"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: health_response
+
+    - name: 2. Validate /health contract and payload schema
+      ansible.builtin.assert:
+        that:
+          - health_response.status == 200
+          - health_response.json.status == "healthy"
+          - health_response.json.service == "autoops"
+          - health_response.json.version == "0.1.0"
+          - health_response.json.uptime_seconds is defined
+          - health_response.json.uptime_seconds >= 0
+          - health_response.json.timestamp is defined
+        fail_msg: "Health endpoint contract violation: {{ health_response.content }}"
+        success_msg: "Health endpoint contract validated successfully."
+
+    - name: 3. Query root endpoint /
+      ansible.builtin.uri:
+        url: "{{ base_url }}/"
+        method: GET
+        status_code: 200
+        return_content: true
+      register: root_response
+
+    - name: 4. Validate root endpoint response
+      ansible.builtin.assert:
+        that:
+          - root_response.status == 200
+          - root_response.json.status == "running"
+          - root_response.json.service == "AutoOps Platform"
+        fail_msg: "Root endpoint contract violation: {{ root_response.content }}"
+        success_msg: "Root endpoint response validated successfully."
+
+    - name: 5. Query non-existent route to verify 404 handling
+      ansible.builtin.uri:
+        url: "{{ base_url }}/api/v1/invalid-route"
+        method: GET
+        status_code: 404
+        return_content: true
+      register: invalid_response
+
+    - name: 6. Validate 404 error payload structure
+      ansible.builtin.assert:
+        that:
+          - invalid_response.status == 404
+          - invalid_response.json.status_code == 404
+          - invalid_response.json.error == "Not Found"
+        fail_msg: "404 handler contract violation: {{ invalid_response.content }}"
+        success_msg: "404 route handling validated successfully."
+
+    - name: Display smoke test summary
+      ansible.builtin.debug:
+        msg:
+          - "Smoke Test Status: ALL CHECKS PASSED"
+          - "Health Uptime: {{ health_response.json.uptime_seconds }} seconds"
+          - "Health Timestamp: {{ health_response.json.timestamp }}"
+          - "Service Status: {{ health_response.json.status }}"

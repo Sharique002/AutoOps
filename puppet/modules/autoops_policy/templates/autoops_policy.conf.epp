@@ -1,0 +1,36 @@
+<%- | String[1] $env_name,
+      Integer   $app_port,
+      Integer   $nagios_port,
+      String[1] $health_endpoint,
+      Integer   $health_check_interval,
+      Integer   $health_check_timeout,
+      Integer   $health_check_retries
+| -%>
+# ==============================================================================
+# AutoOps Operational Policy & Resource Partitioning Configuration
+# ==============================================================================
+# WARNING: This configuration file is managed automatically by Puppet.
+# Manual edits will be detected and restored by Puppet configuration management.
+# ==============================================================================
+
+[environment]
+environment = <%= $env_name %>
+policy_version = 1.0.0
+managed_by = puppet-8.4.0
+
+[service_ports]
+app_port = <%= $app_port %>
+nagios_port = <%= $nagios_port %>
+
+[endpoints]
+health_endpoint = <%= $health_endpoint %>
+
+[resource_boundaries]
+compose_managed = autoops-app,autoops-network
+terraform_managed = autoops-infra-net,autoops-data-storage,autoops-infra-sandbox
+puppet_managed = /etc/autoops/autoops_policy.conf
+
+[healthcheck_policy]
+interval_seconds = <%= $health_check_interval %>
+timeout_seconds = <%= $health_check_timeout %>
+retries = <%= $health_check_retries %>

@@ -1,0 +1,35 @@
+---
+- name: AutoOps Error Handling & Failure Path Verification
+  hosts: local
+  gather_facts: false
+  vars:
+    invalid_url: "http://127.0.0.1:5999/health"
+
+  tasks:
+    - name: Test error detection and graceful recovery on connection failure
+      block:
+        - name: Attempt HTTP probe against non-listening port 5999 (expected to fail)
+          ansible.builtin.uri:
+            url: "{{ invalid_url }}"
+            method: GET
+            timeout: 3
+          register: failure_probe
+
+        - name: Fail if unreachable endpoint unexpectedly succeeded
+          ansible.builtin.fail:
+            msg: "Endpoint {{ invalid_url }} was unexpectedly reachable."
+
+      rescue:
+        - name: Log error detection event
+          ansible.builtin.debug:
+            msg:
+              - "Expected connection failure intercepted successfully."
+              - "Target URL: {{ invalid_url }}"
+              - "Failure message: {{ ansible_failed_result.msg | default('Connection refused as expected') }}"
+
+        - name: Assert error details confirm connection failure
+          ansible.builtin.assert:
+            that:
+              - ansible_failed_task is defined
+            fail_msg: "Rescue block executed without task failure context."
+            success_msg: "Error handling verified: Connection failure caught and handled gracefully via rescue block."

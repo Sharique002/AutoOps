@@ -1,0 +1,57 @@
+---
+- name: AutoOps Preflight Environment & Readiness Checks
+  hosts: local
+  gather_facts: false
+  vars:
+    repo_root: "{{ playbook_dir }}/../.."
+    app_port: 5000
+    policy_file: "/etc/autoops/autoops_policy.conf"
+
+  tasks:
+    - name: 1. Verify Docker daemon is running
+      ansible.builtin.command: docker info
+      register: docker_info_result
+      changed_when: false
+      failed_when: docker_info_result.rc != 0
+
+    - name: 2. Verify Docker Compose CLI is available
+      ansible.builtin.command: docker compose version
+      register: compose_version_result
+      changed_when: false
+      failed_when: compose_version_result.rc != 0
+
+    - name: 3. Verify compose.yaml exists in repository root
+      ansible.builtin.stat:
+        path: "{{ repo_root }}/compose.yaml"
+      register: compose_file_stat
+      failed_when: not compose_file_stat.stat.exists
+
+    - name: 4. Verify Puppet configuration policy file exists
+      ansible.builtin.stat:
+        path: "{{ policy_file }}"
+      register: policy_file_stat
+      failed_when: not policy_file_stat.stat.exists
+
+    - name: 5. Verify Puppet policy file permissions
+      ansible.builtin.assert:
+        that:
+          - policy_file_stat.stat.mode == "0644"
+          - policy_file_stat.stat.pw_name == "root"
+        fail_msg: "Policy file {{ policy_file }} has incorrect mode or ownership."
+        success_msg: "Policy file {{ policy_file }} has expected mode (0644) and root ownership."
+
+    - name: 6. Check existing application container status
+      ansible.builtin.command: >
+        docker inspect --format {% raw %}'{{.State.Status}} ({{.State.Health.Status}})'{% endraw %} autoops-app
+      register: app_container_status
+      failed_when: false
+      changed_when: false
+
+    - name: Display preflight summary
+      ansible.builtin.debug:
+        msg:
+          - "Docker CLI / Daemon: REACHABLE"
+          - "Docker Compose CLI: {{ compose_version_result.stdout }}"
+          - "Compose Manifest: {{ compose_file_stat.stat.path }} (EXISTS)"
+          - "Puppet Policy Target: {{ policy_file }} (EXISTS, mode {{ policy_file_stat.stat.mode }})"
+          - "Current autoops-app status: {{ app_container_status.stdout | default('Not running') }}"

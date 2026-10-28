@@ -1,0 +1,193 @@
+=== AutoOps: Ansible Deployment & Orchestration Verification ===
+Repository: /mnt/d/files/OneDrive/Desktop/AutoOps
+Ansible Version: ansible [core 2.16.3]
+
+--- Step 1: Validating Playbook Syntax ---
+
+playbook: playbooks/01_preflight.yml
+
+playbook: playbooks/02_deploy.yml
+
+playbook: playbooks/03_smoke_test.yml
+
+playbook: playbooks/04_verify.yml
+
+playbook: playbooks/99_error_handling.yml
+Playbook syntax check: PASSED
+
+--- Step 2: Executing 01_preflight.yml ---
+
+PLAY [AutoOps Preflight Environment & Readiness Checks] ************************
+
+TASK [1. Verify Docker daemon is running] **************************************
+ok: [localhost]
+
+TASK [2. Verify Docker Compose CLI is available] *******************************
+ok: [localhost]
+
+TASK [3. Verify compose.yaml exists in repository root] ************************
+ok: [localhost]
+
+TASK [4. Verify Puppet configuration policy file exists] ***********************
+ok: [localhost]
+
+TASK [5. Verify Puppet policy file permissions] ********************************
+ok: [localhost] => changed=false 
+  msg: Policy file /etc/autoops/autoops_policy.conf has expected mode (0644) and root ownership.
+
+TASK [6. Check existing application container status] **************************
+ok: [localhost]
+
+TASK [Display preflight summary] ***********************************************
+ok: [localhost] => 
+  msg:
+  - 'Docker CLI / Daemon: REACHABLE'
+  - 'Docker Compose CLI: Docker Compose version 2.40.3+ds1-0ubuntu1~24.04.1'
+  - 'Compose Manifest: /mnt/d/files/OneDrive/Desktop/AutoOps/ansible/playbooks/../../compose.yaml (EXISTS)'
+  - 'Puppet Policy Target: /etc/autoops/autoops_policy.conf (EXISTS, mode 0644)'
+  - 'Current autoops-app status: running (healthy)'
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+--- Step 3: Executing 02_deploy.yml ---
+
+PLAY [AutoOps Application Deployment & Orchestration] **************************
+
+TASK [1. Build application container image via Docker Compose] *****************
+changed: [localhost]
+
+TASK [2. Deploy runtime service via Docker Compose] ****************************
+ok: [localhost]
+FAILED - RETRYING: [localhost]: 3. Wait for autoops-app to achieve healthy state (15 retries left).
+FAILED - RETRYING: [localhost]: 3. Wait for autoops-app to achieve healthy state (14 retries left).
+
+TASK [3. Wait for autoops-app to achieve healthy state] ************************
+ok: [localhost]
+
+TASK [4. Capture container runtime details] ************************************
+ok: [localhost]
+
+TASK [Display deployment confirmation] *****************************************
+ok: [localhost] => 
+  msg:
+  - 'Deployment Status: SUCCESS'
+  - 'Container: autoops-app'
+  - 'Health Status: healthy'
+  - 'Runtime Details: ID: 5f73119f14ff305179212b06cbd13d35a31b87e61036000473904a435adc3c84 | State: running | IP: 172.18.0.2 | Ports: 5000/tcp -> 5000'
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=5    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+--- Step 4: Executing 03_smoke_test.yml ---
+
+PLAY [AutoOps Microservice Smoke Testing & HTTP Contract Validation] ***********
+
+TASK [1. Query /health endpoint] ***********************************************
+ok: [localhost]
+
+TASK [2. Validate /health contract and payload schema] *************************
+ok: [localhost] => changed=false 
+  msg: Health endpoint contract validated successfully.
+
+TASK [3. Query root endpoint /] ************************************************
+ok: [localhost]
+
+TASK [4. Validate root endpoint response] **************************************
+ok: [localhost] => changed=false 
+  msg: Root endpoint response validated successfully.
+
+TASK [5. Query non-existent route to verify 404 handling] **********************
+ok: [localhost]
+
+TASK [6. Validate 404 error payload structure] *********************************
+ok: [localhost] => changed=false 
+  msg: 404 route handling validated successfully.
+
+TASK [Display smoke test summary] **********************************************
+ok: [localhost] => 
+  msg:
+  - 'Smoke Test Status: ALL CHECKS PASSED'
+  - 'Health Uptime: 6.46 seconds'
+  - 'Health Timestamp: 2026-10-28T09:54:32.788312+00:00'
+  - 'Service Status: healthy'
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+--- Step 5: Executing 04_verify.yml ---
+
+PLAY [AutoOps End-to-End Post-Deployment Verification & Architecture Audit] ****
+
+TASK [1. Verify Docker Compose application container is running and healthy] ***
+ok: [localhost]
+
+TASK [2. Verify Docker Compose application network exists] *********************
+ok: [localhost]
+
+TASK [3. Verify Terraform infrastructure network exists] ***********************
+ok: [localhost]
+
+TASK [4. Verify Terraform auxiliary data volume exists] ************************
+ok: [localhost]
+
+TASK [5. Verify Terraform state idempotency (zero drift check)] ****************
+ok: [localhost]
+
+TASK [6. Verify Puppet policy configuration file contents] *********************
+ok: [localhost]
+
+TASK [7. Validate Puppet policy configuration parameters] **********************
+ok: [localhost] => changed=false 
+  msg: Puppet policy file adheres to architectural contract.
+
+TASK [Display consolidated verification audit] *********************************
+ok: [localhost] => 
+  msg:
+  - ==========================================================
+  - '       AUTOOPS ARCHITECTURE AUDIT & VERIFICATION          '
+  - ==========================================================
+  - 'Application Container: autoops-app (running:healthy)'
+  - 'Compose Network:       autoops-network (172.18.0.0/16)'
+  - 'Terraform Network:     autoops-infra-net (172.28.0.0/16)'
+  - 'Terraform Volume:      autoops-data-storage (EXISTS)'
+  - 'Terraform State Drift: 0 changes detected (PLAN EXIT CODE 0)'
+  - 'Puppet Policy Config:  /etc/autoops/autoops_policy.conf (VALIDATED)'
+  - ==========================================================
+  - 'Result: PASS - All component boundaries strictly respected'
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=8    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+--- Step 6: Executing 99_error_handling.yml ---
+
+PLAY [AutoOps Error Handling & Failure Path Verification] **********************
+
+TASK [Attempt HTTP probe against non-listening port 5999 (expected to fail)] ***
+fatal: [localhost]: FAILED! => changed=false 
+  elapsed: 0
+  msg: 'Status code was -1 and not [200]: Request failed: <urlopen error [Errno 111] Connection refused>'
+  redirected: false
+  status: -1
+  url: http://127.0.0.1:5999/health
+
+TASK [Log error detection event] ***********************************************
+ok: [localhost] => 
+  msg:
+  - Expected connection failure intercepted successfully.
+  - 'Target URL: http://127.0.0.1:5999/health'
+  - 'Failure message: Status code was -1 and not [200]: Request failed: <urlopen error [Errno 111] Connection refused>'
+
+TASK [Assert error details confirm connection failure] *************************
+ok: [localhost] => changed=false 
+  msg: 'Error handling verified: Connection failure caught and handled gracefully via rescue block.'
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=1    ignored=0   
+
+
+=== Ansible Verification Complete: ALL PLAYBOOKS EXECUTED SUCCESSFULLY ===
