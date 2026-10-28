@@ -1,4 +1,4 @@
-.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test clean
+.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard clean
 
 VENV := .venv
 PYTHON := $(VENV)/bin/python
@@ -42,6 +42,10 @@ help:
 	@echo "  make ansible-smoke     Run Ansible smoke testing playbook"
 	@echo "  make ansible-verify    Run Ansible end-to-end audit verification"
 	@echo "  make ansible-test      Run full Ansible verification test suite"
+	@echo "  make nagios-verify     Validate Nagios configuration syntax"
+	@echo "  make nagios-test       Run full Nagios monitoring & recovery test suite"
+	@echo "  make nagios-logs       Follow Nagios service logs in Docker Compose"
+	@echo "  make nagios-dashboard  Check Nagios web dashboard availability"
 	@echo "  make clean             Clean local caches and temporary files"
 
 venv:
@@ -126,6 +130,18 @@ ansible-verify:
 
 ansible-test:
 	./scripts/test_ansible.sh
+
+nagios-verify:
+	docker run --rm -v $(CURDIR)/nagios/nagios.cfg:/opt/nagios/etc/nagios.cfg:ro -v $(CURDIR)/nagios/conf.d:/opt/nagios/etc/conf.d:ro jasonrivers/nagios:latest /usr/local/bin/nagios -v /opt/nagios/etc/nagios.cfg
+
+nagios-test:
+	./scripts/test_nagios.sh
+
+nagios-logs:
+	docker compose logs -f autoops-nagios
+
+nagios-dashboard:
+	curl -s -I -u nagiosadmin:AutoOpsPass2026! http://127.0.0.1:8080/nagios/
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache

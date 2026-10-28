@@ -18,7 +18,7 @@ Under no circumstances does any tool modify, overwrite, or assume lifecycle owne
 | :--- | :--- | :--- | :--- | :--- |
 | **`autoops-app`** | Container | **Docker Compose** | `compose.yaml` | Application runtime microservice exposing port 5000 |
 | **`autoops-network`** | Docker Network | **Docker Compose** | `compose.yaml` | Dedicated bridge network (172.18.0.0/16) for app & monitoring |
-| **`autoops-nagios`** | Container | **Docker Compose** | `compose.yaml` (Milestone 04) | Observability runtime polling `/health` on port 8080 |
+| **`autoops-nagios`** | Container | **Docker Compose** | `compose.yaml` | Observability runtime polling `/health` on 127.0.0.1:8080 |
 | **`autoops-infra-net`** | Docker Network | **Terraform** | `terraform/main.tf` | Isolated infrastructure audit & management network (172.28.0.0/16) |
 | **`autoops-data-storage`** | Docker Volume | **Terraform** | `terraform/main.tf` | Persistent auxiliary storage for operational artifacts |
 | **`autoops-infra-sandbox`**| Container | **Terraform** | `terraform/main.tf` | Ephemeral IaC verification container validating storage & network |
@@ -46,3 +46,9 @@ Procedural orchestration requires coordinated steps across disparate tools:
 2. **Deployment Execution**: Triggers container rebuild and rolling container recreation using Docker Compose CLI.
 3. **Automated Health Probes**: Executes HTTP smoke tests validating HTTP status 200, JSON schema contracts, and 404 error handlers.
 4. **End-to-End Auditing**: Asserts all architectural boundaries across Compose, Terraform, and Puppet remain intact.
+
+### D. Nagios Use Case (Active Observability & Failure Detection)
+Continuous external health surveillance guarantees proactive notification:
+1. **Read-Only Inspection**: Nagios operates exclusively as a consumer of health telemetry; it owns no application state or infrastructure.
+2. **Network Scoping**: Attached strictly to `autoops-network` to resolve `autoops-app:5000` internally via Docker DNS, with the web UI bound locally to `127.0.0.1:8080`.
+3. **Failure Isolation**: If the application crashes or is stopped, Nagios records the state change independently without impacting or modifying Compose or Terraform states.

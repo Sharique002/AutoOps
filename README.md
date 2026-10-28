@@ -130,13 +130,19 @@ AutoOps/
 │       ├── 03_smoke_test.yml     # Microservice HTTP contract validation (/health, /, 404)
 │       ├── 04_verify.yml         # Consolidated post-deployment architecture and drift audit
 │       └── 99_error_handling.yml # Graceful error interception and rescue block validation
+├── nagios/
+│   ├── nagios.cfg                # Main Nagios Core config (interval_length=5, conf.d include)
+│   ├── conf.d/
+│   │   └── autoops.cfg           # Host autoops-app and HTTP /health, root, TCP services
+│   └── .env.example              # Credentials template (NAGIOSADMIN_USER, NAGIOSADMIN_PASS)
 ├── scripts/
 │   ├── verify_app.sh             # Health check verification shell script
 │   ├── test_local_server.sh      # Background server spawn and integration test script
 │   ├── test_docker_container.sh  # Docker container execution, health and user audit script
 │   ├── test_compose.sh           # Docker Compose validation, startup, and health check runner
 │   ├── test_puppet.sh            # Puppet syntax, dry-run, idempotency, and drift test runner
-│   └── test_ansible.sh           # Ansible playbook syntax and execution test runner
+│   ├── test_ansible.sh           # Ansible playbook syntax and execution test runner
+│   └── test_nagios.sh            # Nagios failure injection, detection and recovery runner
 ├── docs/
 │   ├── architecture/             # Architecture specifications and design docs
 │   │   ├── resource_ownership.md # Formal resource partition and separation matrix
@@ -152,7 +158,8 @@ AutoOps/
 │   │   ├── terraform_plan_idempotent.txt
 │   │   ├── terraform_safe_destroy.txt
 │   │   ├── puppet_verification.txt
-│   │   └── ansible_verification.txt
+│   │   ├── ansible_verification.txt
+│   │   └── nagios_verification.txt
 │   └── report/                   # Academic report chapters and analysis
 ├── .dockerignore                 # Excludes caches, venv, git, and local tests from image
 ├── .gitignore                    # Excludes venv, pycache, tfstate, credentials, logs
@@ -251,6 +258,21 @@ make ansible-verify
 make ansible-test
 ```
 
+### Nagios Observability & Monitoring
+```bash
+# Validate Nagios configuration syntax (pre-flight check)
+make nagios-verify
+
+# Check Nagios web dashboard availability on 127.0.0.1:8080
+make nagios-dashboard
+
+# Follow Nagios service logs
+make nagios-logs
+
+# Run end-to-end failure injection, detection, and recovery verification
+make nagios-test
+```
+
 ---
 
 ## 8. Automated Testing & Verification
@@ -274,6 +296,9 @@ make test
 
 # Ansible deployment and orchestration test
 ./scripts/test_ansible.sh
+
+# Nagios monitoring and recovery test
+./scripts/test_nagios.sh
 ```
 
 ---
@@ -286,7 +311,7 @@ make test
 | **Milestone 01** | Repository Setup & Application Microservice | **COMPLETED** | `docs/evidence/` |
 | **Milestone 02** | Docker Compose & Terraform Local Infrastructure | **COMPLETED** | `docs/evidence/` |
 | **Milestone 03** | Puppet Configuration & Ansible Deployment | **COMPLETED** | `docs/evidence/puppet_verification.txt`, `docs/evidence/ansible_verification.txt` |
-| **Milestone 04** | Nagios Observability & Failure Recovery | *Upcoming* | `nagios/` |
+| **Milestone 04** | Nagios Observability & Failure Recovery | **COMPLETED** | `docs/evidence/nagios_verification.txt` |
 | **Milestone 05** | Continuous Integration (GitHub Actions) | *Upcoming* | `.github/workflows/` |
 | **Milestone 06** | Hardening, Project Report & Final Delivery | *Upcoming* | `docs/report/` |
 
@@ -299,3 +324,5 @@ make test
 - **Port 80 Avoidance**: The host Apache instance binds to port 80; AutoOps binds to port `5000` (application) and port `8080` (monitoring) to prevent bind conflicts.
 - **Puppet Standalone Apply**: Puppet runs via `puppet apply` directly against local manifests (`puppet/manifests/site.pp`), ensuring completely reproducible desired-state configuration without requiring a heavy Puppet Server daemon.
 - **Ansible DrvFs / World-Writable Permissions**: In WSL environments mounting Windows filesystems (`/mnt/d/...`), Ansible configuration requires `export ANSIBLE_CONFIG=ansible/ansible.cfg` to prevent DrvFs world-writable permission warnings from ignoring custom settings.
+- **Nagios Granular Timing (`interval_length=5`)**: By default, Nagios checks evaluate on a 60-second timeunit. Configuring `interval_length=5` enables rapid 10-second checks and 5-second retries, allowing swift failure detection and recovery verification during demonstrations.
+- **WSL Swap Allocation & Drive C Exhaustion**: When Windows Drive C free space falls critically low, WSL2 may fail to boot due to swap allocation failures (`CreateInstance/E_FAIL`). Disabling swap (`swap=0` in `.wslconfig`) and hosting the virtual disk on a high-capacity drive permanently prevents storage-induced crashes.

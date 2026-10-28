@@ -24,6 +24,38 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  autoops-nagios:
+    image: jasonrivers/nagios:latest
+    container_name: autoops-nagios
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - autoops-network
+    depends_on:
+      autoops-app:
+        condition: service_healthy
+    environment:
+      - NAGIOSADMIN_USER=${NAGIOSADMIN_USER:-nagiosadmin}
+      - NAGIOSADMIN_PASS=${NAGIOSADMIN_PASS:-AutoOpsPass2026!}
+      - NAGIOS_TIMEZONE=${NAGIOS_TIMEZONE:-UTC}
+    volumes:
+      - ./nagios/nagios.cfg:/opt/nagios/etc/nagios.cfg:ro
+      - ./nagios/conf.d:/opt/nagios/etc/conf.d:ro
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-f", "-u", "${NAGIOSADMIN_USER:-nagiosadmin}:${NAGIOSADMIN_PASS:-AutoOpsPass2026!}", "http://127.0.0.1/nagios/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 networks:
   autoops-network:
     name: autoops-network

@@ -1,0 +1,45 @@
+=== AutoOps: Nagios Observability & Recovery Verification ===
+Repository: /mnt/d/files/OneDrive/Desktop/AutoOps
+
+--- Step 1: Validating Compose and Nagios Configuration ---
+Compose configuration syntax: PASSED
+Nagios pre-flight configuration check: PASSED (0 errors, 0 warnings)
+
+--- Step 2: Verifying Running Services & Health ---
+autoops-app health: healthy
+autoops-nagios status: running
+
+--- Step 3: Direct Container-to-Container HTTP Probe via check_http ---
+HTTP OK: Status line output matched "HTTP/1.1 200" - 273 bytes in 0.003 second response time |time=0.002921s;;;0.000000 size=273B;;;0 
+Intra-network HTTP probe: PASSED
+
+--- Step 4: Verifying Initial Healthy State in Nagios Engine ---
+AutoOps_Microservice_Health state: 0 (0=OK)
+Initial health verification: PASSED (OK)
+
+--- Step 5: Verifying Nagios Web Dashboard on Port 8080 ---
+Dashboard HTTP response: 200
+Dashboard availability: PASSED (HTTP 200 OK on http://127.0.0.1:8080/nagios/)
+
+--- Step 6: Injecting Controlled Failure (Stopping autoops-app) ---
+autoops-app
+autoops-app container stopped.
+Waiting for Nagios detection cycle...
+Controlled failure DETECTED by Nagios! State: 2 (2=CRITICAL)
+[1793188215] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;CRITICAL;SOFT;1;Temporary failure in name resolution
+[1793188220] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;CRITICAL;HARD;2;Temporary failure in name resolution
+
+--- Step 7: Restoring Service & Verifying Recovery Detection ---
+Starting autoops-app...
+autoops-app
+Waiting for Nagios recovery detection cycle...
+Recovery DETECTED by Nagios! State: 0 (0=OK)
+[1793186826] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;OK;HARD;1;HTTP OK: Status line output matched "HTTP/1.1 200" - 272 bytes in 0.031 second response time
+[1793188230] SERVICE ALERT: autoops-app;AutoOps_Microservice_Health;OK;HARD;1;HTTP OK: Status line output matched "HTTP/1.1 200" - 272 bytes in 0.005 second response time
+
+--- Step 8: Direct Health Endpoint Validation ---
+Direct HTTP GET /health response:
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T11:50:35.448858+00:00","uptime_seconds":8.34}
+
+=== Nagios Verification Complete: ALL TESTS PASSED ===
+--- Cleanup Trap: Ensuring autoops-app is running ---
