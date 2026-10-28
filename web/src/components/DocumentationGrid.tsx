@@ -130,7 +130,7 @@ export const DocumentationGrid: React.FC = () => {
           display: flex;
           flex-direction: column;
           padding: 22px 20px;
-          border-left: 2px solid var(--accent-cyan);
+          border-left: 3px solid var(--accent-orange);
         }
 
         .doc-card-top {

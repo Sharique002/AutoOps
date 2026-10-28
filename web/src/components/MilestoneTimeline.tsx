@@ -116,7 +116,7 @@ export const MilestoneTimeline: React.FC = () => {
         }
 
         .milestone-card:hover {
-          border-top-color: var(--accent-cyan);
+          border-top-color: var(--accent-orange);
         }
 
         .ms-header {
@@ -130,9 +130,9 @@ export const MilestoneTimeline: React.FC = () => {
           font-family: var(--font-mono);
           font-size: 13px;
           font-weight: 700;
-          color: var(--accent-cyan);
-          background: var(--accent-cyan-bg);
-          border: 1px solid rgba(56, 207, 240, 0.3);
+          color: var(--accent-orange);
+          background: var(--accent-orange-bg);
+          border: 1px solid var(--border-subtle);
           padding: 2px 8px;
           border-radius: var(--radius-sm);
         }

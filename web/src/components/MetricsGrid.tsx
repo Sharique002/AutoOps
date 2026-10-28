@@ -33,20 +33,23 @@ export const MetricsGrid: React.FC = () => {
         .metrics-section {
           padding-top: var(--space-8);
           padding-bottom: var(--space-8);
-          border-bottom: 1px solid var(--border-subtle);
-          background: var(--bg-panel);
+          border-bottom: 1.5px solid var(--border-subtle);
+          background: var(--bg-surface);
         }
 
         .metrics-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: var(--space-4);
+          gap: var(--space-5);
         }
 
         .metric-card {
           display: flex;
           flex-direction: column;
-          padding: 22px 20px;
+          padding: 24px 22px;
+          border-top: 3px solid var(--accent-orange);
+          background: var(--bg-panel);
+          box-shadow: var(--shadow-panel);
         }
 
         .metric-header {
@@ -57,18 +60,18 @@ export const MetricsGrid: React.FC = () => {
         }
 
         .metric-value {
-          font-family: var(--font-mono);
-          font-size: 32px;
+          font-family: var(--font-display);
+          font-size: 38px;
           font-weight: 700;
           color: var(--text-primary);
           line-height: 1.1;
-          letter-spacing: -0.03em;
+          letter-spacing: -0.01em;
           margin-bottom: 6px;
         }
 
         .metric-label {
-          font-size: 14px;
-          font-weight: 600;
+          font-size: 14.5px;
+          font-weight: 700;
           color: var(--text-primary);
           margin-bottom: 8px;
         }

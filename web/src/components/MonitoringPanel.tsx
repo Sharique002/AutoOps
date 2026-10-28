@@ -359,9 +359,9 @@ export const MonitoringPanel: React.FC = () => {
         }
 
         .rf-tab-btn.active {
-          border-color: var(--accent-cyan);
+          border-color: var(--accent-orange);
           background: var(--bg-surface-elevated);
-          box-shadow: 0 0 12px rgba(56, 207, 240, 0.1);
+          box-shadow: 0 0 16px var(--accent-orange-glow);
         }
 
         .tab-step-num {

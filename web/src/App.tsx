@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { MetricsGrid } from './components/MetricsGrid';
@@ -13,21 +14,23 @@ import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
   return (
-    <div className="app-layout">
-      <Navbar />
-      <main id="main-content">
-        <HeroSection />
-        <MetricsGrid />
-        <ArchitectureSection />
-        <PipelineSection />
-        <MonitoringPanel />
-        <SecuritySection />
-        <MilestoneTimeline />
-        <VerificationTable />
-        <DocumentationGrid />
-      </main>
-      <Footer />
-    </div>
+    <ThemeProvider>
+      <div className="app-layout">
+        <Navbar />
+        <main id="main-content">
+          <HeroSection />
+          <MetricsGrid />
+          <ArchitectureSection />
+          <PipelineSection />
+          <MonitoringPanel />
+          <SecuritySection />
+          <MilestoneTimeline />
+          <VerificationTable />
+          <DocumentationGrid />
+        </main>
+        <Footer />
+      </div>
+    </ThemeProvider>
   );
 };
 

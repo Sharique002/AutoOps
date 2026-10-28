@@ -199,9 +199,9 @@ export const PipelineSection: React.FC = () => {
         }
 
         .pipeline-step-node.active {
-          border-color: var(--accent-cyan);
+          border-color: var(--accent-orange);
           background: var(--bg-surface-elevated);
-          box-shadow: 0 0 14px rgba(56, 207, 240, 0.12);
+          box-shadow: 0 0 16px var(--accent-orange-glow);
         }
 
         .node-top-bar {

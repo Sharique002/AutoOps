@@ -257,16 +257,16 @@ export const ArchitectureSection: React.FC = () => {
         }
 
         .arch-nav-btn.active {
-          border-color: var(--accent-cyan);
+          border-color: var(--accent-orange);
           background: var(--bg-surface-elevated);
-          box-shadow: 0 0 12px rgba(56, 207, 240, 0.1);
+          box-shadow: 0 0 16px var(--accent-orange-glow);
         }
 
         .arch-btn-tool {
           font-family: var(--font-mono);
           font-size: 10.5px;
-          font-weight: 600;
-          color: var(--accent-cyan);
+          font-weight: 700;
+          color: var(--accent-orange);
           text-transform: uppercase;
           margin-bottom: 2px;
         }

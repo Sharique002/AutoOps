@@ -73,8 +73,8 @@ export const Footer: React.FC = () => {
 
       <style>{`
         .footer-container {
-          background: #070A0E;
-          border-top: 1px solid var(--border-subtle);
+          background: var(--bg-surface);
+          border-top: 1.5px solid var(--border-subtle);
           padding-top: var(--space-16);
           padding-bottom: var(--space-10);
         }

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Menu, X, Shield, Terminal } from 'lucide-react';
+import { Menu, X, Shield, Terminal, Palette, Moon } from 'lucide-react';
 import { PROJECT_METADATA } from '../data/projectData';
+import { useTheme } from '../context/ThemeContext';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
     { label: 'Overview', href: '#overview' },
@@ -26,7 +28,7 @@ export const Navbar: React.FC = () => {
         {/* Brand */}
         <a href="#overview" className="navbar-brand">
           <div className="brand-icon">
-            <Terminal size={18} className="text-green" />
+            <Terminal size={18} className="brand-terminal-icon" />
           </div>
           <div className="brand-text">
             <span className="brand-title">{PROJECT_METADATA.name}</span>
@@ -45,6 +47,27 @@ export const Navbar: React.FC = () => {
 
         {/* Right Status Pill & Actions */}
         <div className="navbar-right">
+          {/* Theme Switcher Button */}
+          <button
+            type="button"
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === 'orchid' ? 'Switch to Dark Charcoal Theme' : 'Switch to Orchid & Violet Theme'}
+            aria-label="Toggle visual theme"
+          >
+            {theme === 'orchid' ? (
+              <>
+                <Moon size={15} />
+                <span className="theme-toggle-label">DARK MODE</span>
+              </>
+            ) : (
+              <>
+                <Palette size={15} />
+                <span className="theme-toggle-label">ORCHID THEME</span>
+              </>
+            )}
+          </button>
+
           <div className="status-pill" title="Local evaluation environment with 6 completed milestones">
             <span className="pulsing-dot" />
             <span className="status-text">LOCAL DEV • 6/6 MILESTONES</span>
@@ -77,9 +100,30 @@ export const Navbar: React.FC = () => {
                 {link.label}
               </a>
             ))}
+
+            <div className="mobile-theme-row">
+              <button
+                type="button"
+                className="btn btn-secondary mobile-theme-btn"
+                onClick={toggleTheme}
+              >
+                {theme === 'orchid' ? (
+                  <>
+                    <Moon size={16} />
+                    <span>Switch to Charcoal Dark</span>
+                  </>
+                ) : (
+                  <>
+                    <Palette size={16} />
+                    <span>Switch to Orchid &amp; Violet Theme</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             <div className="mobile-status-row">
-              <Shield size={14} className="text-cyan" />
-              <span>Hardened Container Topology</span>
+              <Shield size={14} className="text-orange" />
+              <span>Hardened Container Topology Verified</span>
             </div>
           </nav>
         </div>
@@ -90,11 +134,12 @@ export const Navbar: React.FC = () => {
           position: sticky;
           top: 0;
           z-index: 100;
-          background: rgba(11, 15, 20, 0.85);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          background: var(--header-bg);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           border-bottom: 1px solid var(--border-subtle);
           height: var(--header-height);
+          transition: background-color var(--transition-normal);
         }
 
         .navbar-container {
@@ -112,11 +157,11 @@ export const Navbar: React.FC = () => {
         }
 
         .brand-icon {
-          width: 34px;
-          height: 34px;
+          width: 36px;
+          height: 36px;
           border-radius: var(--radius-md);
           background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
+          border: 1.5px solid var(--border-subtle);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -124,7 +169,11 @@ export const Navbar: React.FC = () => {
         }
 
         .navbar-brand:hover .brand-icon {
-          border-color: var(--accent-green);
+          border-color: var(--accent-orange);
+        }
+
+        .brand-terminal-icon {
+          color: var(--accent-orange);
         }
 
         .brand-text {
@@ -133,10 +182,10 @@ export const Navbar: React.FC = () => {
         }
 
         .brand-title {
-          font-family: var(--font-mono);
-          font-size: 17px;
+          font-family: var(--font-display);
+          font-size: 20px;
           font-weight: 700;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.01em;
           color: var(--text-primary);
           line-height: 1.1;
         }
@@ -144,7 +193,7 @@ export const Navbar: React.FC = () => {
         .brand-subtitle {
           font-family: var(--font-mono);
           font-size: 9.5px;
-          font-weight: 600;
+          font-weight: 700;
           letter-spacing: 0.12em;
           color: var(--text-secondary);
         }
@@ -157,7 +206,7 @@ export const Navbar: React.FC = () => {
 
         .nav-link {
           font-size: 13.5px;
-          font-weight: 500;
+          font-weight: 600;
           color: var(--text-secondary);
           transition: color var(--transition-fast);
           padding: 6px 2px;
@@ -171,7 +220,29 @@ export const Navbar: React.FC = () => {
         .navbar-right {
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 12px;
+        }
+
+        .theme-toggle-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: var(--bg-surface);
+          border: 1.5px solid var(--border-subtle);
+          padding: 6px 12px;
+          border-radius: var(--radius-pill);
+          color: var(--text-primary);
+          font-family: var(--font-mono);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          transition: all var(--transition-fast);
+        }
+
+        .theme-toggle-btn:hover {
+          border-color: var(--accent-orange);
+          background: var(--accent-orange-bg);
+          color: var(--accent-orange);
         }
 
         .status-pill {
@@ -179,23 +250,23 @@ export const Navbar: React.FC = () => {
           align-items: center;
           gap: 8px;
           background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          padding: 5px 12px;
+          border: 1.5px solid var(--border-subtle);
+          padding: 6px 14px;
           border-radius: var(--radius-pill);
         }
 
         .pulsing-dot {
-          width: 7px;
-          height: 7px;
+          width: 8px;
+          height: 8px;
           border-radius: 50%;
-          background: var(--accent-green);
-          box-shadow: 0 0 8px var(--accent-green);
+          background: var(--accent-orange);
+          box-shadow: 0 0 10px var(--accent-orange);
         }
 
         .status-text {
           font-family: var(--font-mono);
           font-size: 11px;
-          font-weight: 600;
+          font-weight: 700;
           letter-spacing: 0.05em;
           color: var(--text-primary);
         }
@@ -212,7 +283,7 @@ export const Navbar: React.FC = () => {
           left: 0;
           right: 0;
           background: var(--bg-panel);
-          border-bottom: 1px solid var(--border-subtle);
+          border-bottom: 1.5px solid var(--border-subtle);
           padding: 20px 24px;
           box-shadow: var(--shadow-panel);
         }
@@ -225,14 +296,26 @@ export const Navbar: React.FC = () => {
 
         .mobile-nav-link {
           font-size: 15px;
-          font-weight: 500;
+          font-weight: 600;
           color: var(--text-secondary);
           padding: 8px 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+          border-bottom: 1px solid var(--border-subtle);
         }
 
         .mobile-nav-link:hover {
           color: var(--text-primary);
+        }
+
+        .mobile-theme-row {
+          padding-top: 8px;
+        }
+
+        .mobile-theme-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
         }
 
         .mobile-status-row {
@@ -244,8 +327,7 @@ export const Navbar: React.FC = () => {
           padding-top: 8px;
         }
 
-        .text-green { color: var(--accent-green); }
-        .text-cyan { color: var(--accent-cyan); }
+        .text-orange { color: var(--accent-orange); }
 
         @media (max-width: 992px) {
           .desktop-nav {
@@ -255,6 +337,9 @@ export const Navbar: React.FC = () => {
             display: flex;
           }
           .status-pill {
+            display: none;
+          }
+          .theme-toggle-btn {
             display: none;
           }
         }
