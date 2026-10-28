@@ -1,0 +1,86 @@
+/* AutoOps Design System — Design Tokens */
+:root {
+  /* Surface Colors */
+  --bg-base: #0B0F14;
+  --bg-panel: #111820;
+  --bg-surface: #171F29;
+  --bg-surface-elevated: #1D2733;
+  --bg-terminal: #070A0E;
+
+  /* Border Colors */
+  --border-subtle: #263442;
+  --border-hover: #3A4D62;
+  --border-active: #4F6782;
+
+  /* Accent Colors */
+  --accent-green: #35E58C;
+  --accent-green-dim: #26A865;
+  --accent-green-bg: rgba(53, 229, 140, 0.08);
+  --accent-green-glow: rgba(53, 229, 140, 0.2);
+
+  --accent-cyan: #38CFF0;
+  --accent-cyan-dim: #259AB3;
+  --accent-cyan-bg: rgba(56, 207, 240, 0.08);
+  --accent-cyan-glow: rgba(56, 207, 240, 0.2);
+
+  /* Status Colors */
+  --status-pass: #35E58C;
+  --status-pass-bg: rgba(53, 229, 140, 0.1);
+  --status-pass-border: rgba(53, 229, 140, 0.3);
+
+  --status-warn: #FFB84D;
+  --status-warn-bg: rgba(255, 184, 77, 0.1);
+  --status-warn-border: rgba(255, 184, 77, 0.3);
+
+  --status-fail: #FF5A65;
+  --status-fail-bg: rgba(255, 90, 101, 0.1);
+  --status-fail-border: rgba(255, 90, 101, 0.3);
+
+  --status-notrun: #91A0B2;
+  --status-notrun-bg: rgba(145, 160, 178, 0.1);
+  --status-notrun-border: rgba(145, 160, 178, 0.3);
+
+  /* Typography Colors */
+  --text-primary: #E8EEF5;
+  --text-secondary: #91A0B2;
+  --text-muted: #5E6E82;
+  --text-invert: #0B0F14;
+
+  /* Typography Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Monaco, Consolas, monospace;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-pill: 9999px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Layout */
+  --container-max-width: 1240px;
+  --header-height: 64px;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-panel: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-glow-green: 0 0 20px rgba(53, 229, 140, 0.15);
+  --shadow-glow-cyan: 0 0 20px rgba(56, 207, 240, 0.15);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}

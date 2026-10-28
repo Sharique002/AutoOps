@@ -53,7 +53,7 @@ Security in the **AutoOps** platform is designed around the principles of **Leas
 ## 4. Credential Remediation & Historical Exposure Audit
 
 ### Assessment of Previously Disclosed Test Credential
-During Milestone 04 development, an ephemeral local testing credential (`AutoOpsPass2026!`) was utilized for intra-container dashboard verification. A comprehensive risk evaluation established:
+During Milestone 04 development, an ephemeral local testing credential (`[REDACTED_LOCAL_TEST_PASS]`) was utilized for intra-container dashboard verification. A comprehensive risk evaluation established:
 - **Scope**: The credential was purely local to a standalone container running inside WSL2 on localhost; it was not associated with any cloud, external, corporate, or production infrastructure.
 - **Exposure in History**: Commit `0d89282` contains the string in Git history.
 - **Remediation Action**:

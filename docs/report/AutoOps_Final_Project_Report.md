@@ -172,7 +172,7 @@ Configured with minimal least-privilege permissions (`contents: read`) and trigg
 - **Resource Constraints**: Capped container resources to `mem_limit: 512m` / `cpus: 1.0` (application) and `mem_limit: 1024m` / `cpus: 1.5` (Nagios).
 
 ### 5.2 Secret Remediation & Continuous Hygiene
-- **Historical Assessment**: A local test password (`AutoOpsPass2026!`) utilized during Milestone 04 container evaluation was documented as appearing in commit `0d89282`. In adherence to operational rules against rewriting Git history, the history was preserved intact.
+- **Historical Assessment**: A local test password (`[REDACTED_LOCAL_TEST_PASS]`) utilized during Milestone 04 container evaluation was documented as appearing in commit `0d89282`. In adherence to operational rules against rewriting Git history, the history was preserved intact.
 - **Active Credential Rotation**: The active dashboard password was rotated to an uncommitted secret in `.env`.
 - **Template Sanitization**: All tracked example files (`.env.example` and `nagios/.env.example`) feature generic placeholders (`ChangeMeToAStrongPassword123!`).
 - **Automated Secret Scanner**: [`scripts/check_secrets.sh`](file:///D:/files/OneDrive/Desktop/AutoOps/scripts/check_secrets.sh) actively scans tracked files for private keys, AWS tokens, GitHub PATs, and rotated credentials, failing CI if violations occur.

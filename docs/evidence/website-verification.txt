@@ -1,0 +1,159 @@
+================================================================================
+AUTOOPS DEVOPS SHOWCASE WEBSITE — VERIFICATION EVIDENCE LOG
+================================================================================
+Date/Timestamp: 2026-10-28 18:44:48 IST
+Developer: Sharique
+Target System: Ubuntu 24.04 LTS (WSL2) on Windows 11
+Working Directory: /mnt/d/files/OneDrive/Desktop/AutoOps (D:\files\OneDrive\Desktop\AutoOps)
+Git Baseline Commit: da23d13 (Milestone 06 Delivery)
+Frontend Directory: web/
+
+--------------------------------------------------------------------------------
+1. RUNTIME & TOOLING ENVIRONMENT
+--------------------------------------------------------------------------------
+$ node -v
+v24.14.0
+
+$ npm -v
+11.9.0
+
+$ python3 --version
+Python 3.12.3
+
+$ docker --version
+Docker version 29.1.3, build f98592e
+
+$ docker compose version
+Docker Compose version v2.40.3
+
+$ terraform version
+Terraform v1.9.8
+
+--------------------------------------------------------------------------------
+2. FRONTEND STRICT TYPECHECKING (TSC)
+--------------------------------------------------------------------------------
+$ cd web && npm run typecheck
+
+> autoops-showcase@1.0.0 typecheck
+> tsc --noEmit
+
+[EXIT CODE: 0 - ZERO TYPE ERRORS DETECTED]
+
+--------------------------------------------------------------------------------
+3. FRONTEND PRODUCTION STATIC ASSET BUILD
+--------------------------------------------------------------------------------
+$ cd web && npm run build
+
+> autoops-showcase@1.0.0 build
+> tsc && vite build
+
+vite v6.4.5 building for production...
+transforming...
+✓ 1591 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.10 kB │ gzip:  0.57 kB
+dist/assets/index-LvvSVi0l.css    5.80 kB │ gzip:  1.82 kB
+dist/assets/index-BxGztU5m.js   281.65 kB │ gzip: 72.38 kB
+✓ built in 1.57s
+
+Asset Inventory in web/dist/:
+- dist/index.html                (1,103 bytes)
+- dist/favicon.svg               (708 bytes)
+- dist/assets/index-BxGztU5m.js  (281,652 bytes)
+- dist/assets/index-LvvSVi0l.css (5,795 bytes)
+
+[EXIT CODE: 0 - PRODUCTION BUNDLE SUCCESSFULLY GENERATED]
+
+--------------------------------------------------------------------------------
+4. STATIC PREVIEW SERVER HEALTH VERIFICATION
+--------------------------------------------------------------------------------
+$ npx vite preview --port 4173 --host
+Serving at http://localhost:4173/
+
+$ curl -I http://localhost:4173/
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1103
+Date: Wed, 28 Oct 2026 13:14:38 GMT
+Connection: keep-alive
+
+Status: HTTP 200 OK — SPA Shell delivered with correct script/stylesheet tags.
+
+--------------------------------------------------------------------------------
+5. BACKEND REGRESSION VERIFICATION (PYTEST)
+--------------------------------------------------------------------------------
+$ pytest -v tests
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.2, pluggy-1.7.0 -- /mnt/d/files/OneDrive/Desktop/AutoOps/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/d/files/OneDrive/Desktop/AutoOps
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 12 items
+
+tests/test_ci_workflow.py::test_ci_workflow_file_exists PASSED           [  8%]
+tests/test_ci_workflow.py::test_ci_workflow_valid_yaml PASSED            [ 16%]
+tests/test_ci_workflow.py::test_ci_workflow_triggers PASSED              [ 25%]
+tests/test_ci_workflow.py::test_ci_workflow_permissions PASSED           [ 33%]
+tests/test_ci_workflow.py::test_ci_workflow_required_jobs PASSED         [ 41%]
+tests/test_ci_workflow.py::test_ci_workflow_no_hardcoded_secrets PASSED  [ 50%]
+tests/test_health.py::test_health_status_code_200 PASSED                 [ 58%]
+tests/test_health.py::test_health_payload_contract PASSED                [ 66%]
+tests/test_health.py::test_health_timestamp_validity PASSED              [ 75%]
+tests/test_health.py::test_root_endpoint PASSED                          [ 83%]
+tests/test_health.py::test_invalid_route_returns_404 PASSED              [ 91%]
+tests/test_health.py::test_health_method_not_allowed PASSED              [100%]
+
+============================== 12 passed in 7.48s ==============================
+[EXIT CODE: 0 - 100% REGRESSION TESTS PASSED (12/12)]
+
+--------------------------------------------------------------------------------
+6. REPOSITORY HYGIENE & SECRET LEAK AUDIT
+--------------------------------------------------------------------------------
+$ ./scripts/check_secrets.sh
+=== AutoOps: Secret Scanning & Repository Hygiene Check ===
+Scanning tracked git files in: /mnt/d/files/OneDrive/Desktop/AutoOps
+Repository hygiene check: PASSED (Zero tracked secrets or credentials detected)
+=== Secret Scanning Complete ===
+
+[EXIT CODE: 0 - ZERO CREDENTIAL LEAKS DETECTED]
+
+--------------------------------------------------------------------------------
+7. DOCKER COMPOSE RUNTIME STATUS
+--------------------------------------------------------------------------------
+$ docker compose ps
+NAME             IMAGE                       COMMAND                  SERVICE          CREATED          STATUS                    PORTS
+autoops-app      autoops-app:latest          "uvicorn app.main:ap…"   autoops-app      41 minutes ago   Up 2 minutes (healthy)    0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
+autoops-nagios   jasonrivers/nagios:latest   "/usr/local/bin/star…"   autoops-nagios   41 minutes ago   Up 2 minutes (healthy)    5667/tcp, 127.0.0.1:8080->80/tcp
+
+$ curl -s http://127.0.0.1:5000/health
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T13:14:18.219644+00:00","uptime_seconds":30.69}
+
+--------------------------------------------------------------------------------
+8. TERRAFORM AUXILIARY DRIFT VERIFICATION
+--------------------------------------------------------------------------------
+$ cd terraform && terraform plan -detailed-exitcode
+docker_image.sandbox_image: Refreshing state... [id=sha256:6b25cbe6577518889d553cdd5a5da97d259348d8f6e45b527dd731caaba27a07python:3.12-slim]
+docker_volume.data_storage: Refreshing state... [id=autoops-data-storage]
+docker_network.infra_network: Refreshing state... [id=6dc38dde4a1069b590b59d9d6f643bbc3b5eded5e234ba3d4f8b34a55984efec]
+docker_container.infra_sandbox: Refreshing state... [id=873cf1e5dbb909a2c32c23e38c7231f07a396babdae5bff038f0e9d777817813]
+
+No changes. Your infrastructure matches the configuration.
+
+[EXIT CODE: 0 - ZERO INFRASTRUCTURE DRIFT CONFIRMED]
+
+--------------------------------------------------------------------------------
+9. RESPONSIVE DESIGN & ACCESSIBILITY AUDIT
+--------------------------------------------------------------------------------
+- Viewport: Tested across 360px (mobile), 768px (tablet), 1024px (laptop), and 1440px (desktop).
+- Horizontal Overflow: 0 horizontal scroll detected (overflow-x: hidden enforced on body).
+- Navigation: Desktop horizontal menu; mobile overlay drawer with ARIA controls (aria-expanded, aria-modal).
+- Contrast: W3C AA compliant contrast for text elements against dark charcoal backgrounds.
+- Focus Rings: Clear 2px cyan outline (:focus-visible) for all interactive buttons, links, and tabs.
+- Reduced Motion: Respects @media (prefers-reduced-motion: reduce) by disabling animations and smooth scrolling.
+- Factual Telemetry: Real last verified timestamps, zero randomized live counters, explicit NOT RUN status for remote CI.
+
+================================================================================
+FINAL VERIFICATION RESULT: ALL CHECKS PASSED (ACCEPTANCE COMPLETE)
+================================================================================

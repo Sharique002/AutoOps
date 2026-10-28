@@ -1,4 +1,4 @@
-.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets ci-test qa-verify clean
+.PHONY: help venv install lint test run docker-build docker-run docker-stop docker-health compose-up compose-down compose-ps compose-logs tf-init tf-plan tf-apply tf-destroy puppet-lint puppet-validate puppet-apply puppet-test ansible-syntax ansible-preflight ansible-deploy ansible-smoke ansible-verify ansible-test nagios-verify nagios-test nagios-logs nagios-dashboard check-secrets ci-test qa-verify web-install web-dev web-build web-preview clean
 
 -include .env
 export
@@ -55,6 +55,10 @@ help:
 	@echo "  make check-secrets     Scan repository for exposed secrets & credentials"
 	@echo "  make ci-test           Run complete local suite of CI quality gates"
 	@echo "  make qa-verify         Run comprehensive Milestone 06 final QA verification"
+	@echo "  make web-install       Install frontend showcase dependencies"
+	@echo "  make web-dev           Launch frontend development server on port 5173"
+	@echo "  make web-build         Build static production assets in web/dist"
+	@echo "  make web-preview       Preview built static assets locally"
 	@echo "  make clean             Clean local caches and temporary files"
 
 venv:
@@ -161,6 +165,18 @@ ci-test:
 
 qa-verify:
 	./scripts/run_milestone_06_qa.sh
+
+web-install:
+	cd web && npm install
+
+web-dev:
+	cd web && npm run dev
+
+web-build:
+	cd web && npm run build
+
+web-preview:
+	cd web && npm run preview
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache
