@@ -1,0 +1,50 @@
+=== AutoOps Container Verification Log ===
+Started at: Wed Oct 28 07:44:41 UTC 2026
+
+--- Container Non-Root User Verification ---
+User: appuser
+UID/GID: uid=10001(appuser) gid=10001(appuser) groups=10001(appuser)
+
+--- HTTP GET /health ---
+HTTP/1.1 200 OK
+date: Wed, 28 Oct 2026 07:44:46 GMT
+server: uvicorn
+content-length: 127
+content-type: application/json
+
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T07:44:46.903495+00:00","uptime_seconds":2.13}
+
+--- HTTP GET / ---
+HTTP/1.1 200 OK
+date: Wed, 28 Oct 2026 07:44:46 GMT
+server: uvicorn
+content-length: 100
+content-type: application/json
+
+{"service":"AutoOps Platform","version":"0.1.0","status":"running","endpoints":{"health":"/health"}}
+
+--- HTTP GET /invalid-route-docker-test ---
+HTTP/1.1 404 Not Found
+date: Wed, 28 Oct 2026 07:44:47 GMT
+server: uvicorn
+content-length: 60
+content-type: application/json
+
+{"error":"Not Found","detail":"Not Found","status_code":404}
+--- Docker Inspect Health Status ---
+Final Health Status: healthy
+{"Status":"healthy","FailingStreak":0,"Log":[{"Start":"2026-10-28T07:44:48.093925711Z","End":"2026-10-28T07:44:48.65628621Z","ExitCode":0,"Output":""}]}
+
+
+--- Container Logs ---
+2026-10-28T07:44:44+0000 [INFO] [autoops] AutoOps service starting up (version: 0.1.0)
+2026-10-28T07:44:45+0000 [INFO] [autoops] HTTP GET /health [172.17.0.1] -> 200 (2.32 ms)
+INFO:     172.17.0.1:58596 - "GET /health HTTP/1.1" 200 OK
+2026-10-28T07:44:46+0000 [INFO] [autoops] HTTP GET /health [172.17.0.1] -> 200 (0.80 ms)
+INFO:     172.17.0.1:58604 - "GET /health HTTP/1.1" 200 OK
+2026-10-28T07:44:46+0000 [INFO] [autoops] HTTP GET / [172.17.0.1] -> 200 (1.28 ms)
+INFO:     172.17.0.1:58614 - "GET / HTTP/1.1" 200 OK
+2026-10-28T07:44:47+0000 [INFO] [autoops] HTTP GET /invalid-route-docker-test [172.17.0.1] -> 404 (1.19 ms)
+INFO:     172.17.0.1:58628 - "GET /invalid-route-docker-test HTTP/1.1" 404 Not Found
+2026-10-28T07:44:48+0000 [INFO] [autoops] HTTP GET /health [127.0.0.1] -> 200 (0.31 ms)
+INFO:     127.0.0.1:44540 - "GET /health HTTP/1.1" 200 OK

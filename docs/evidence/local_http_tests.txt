@@ -1,0 +1,16 @@
+=== GET /health ===
+HTTP/1.1 200 OK
+date: Wed, 28 Oct 2026 07:41:45 GMT
+server: uvicorn
+content-length: 127
+content-type: application/json
+
+{"status":"healthy","service":"autoops","version":"0.1.0","timestamp":"2026-10-28T07:41:46.375237+00:00","uptime_seconds":3.41}
+=== GET /api/v1/invalid-route ===
+HTTP/1.1 404 Not Found
+date: Wed, 28 Oct 2026 07:41:45 GMT
+server: uvicorn
+content-length: 60
+content-type: application/json
+
+{"error":"Not Found","detail":"Not Found","status_code":404}
