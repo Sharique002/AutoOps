@@ -4,30 +4,32 @@ import { PROJECT_METADATA } from '../data/projectData';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="footer-container">
+    <footer className="tomorrow-footer">
       <div className="container">
         <div className="footer-top-grid">
           {/* Brand Col */}
           <div className="footer-brand-col">
             <div className="footer-brand">
               <div className="footer-icon">
-                <Terminal size={18} className="text-green" />
+                <Terminal size={18} color="var(--accent-orange)" />
               </div>
               <span className="footer-title">{PROJECT_METADATA.name}</span>
+              <span className="footer-edition-tag">TOMORROW</span>
             </div>
             <p className="footer-tagline">{PROJECT_METADATA.tagline}</p>
             <div className="footer-dev-badge">
               <span>DEVELOPER:</span>
-              <strong className="text-primary">{PROJECT_METADATA.developer}</strong>
+              <strong>{PROJECT_METADATA.developer}</strong>
             </div>
             <p className="footer-academic-note">
-              Academic DevOps engineering project engineered for local reproducible execution in Ubuntu 24.04 LTS (WSL2). Zero external paid cloud services required.
+              Academic DevOps engineering platform engineered for reproducible execution in Ubuntu 24.04 LTS (WSL2). Zero external paid cloud services required.
             </p>
           </div>
 
           {/* Quick Nav Col */}
           <div className="footer-links-col">
-            <h4 className="footer-col-title">Navigation</h4>
+            <h4 className="footer-col-title">NAVIGATION</h4>
+            <div className="editorial-rule-38" style={{ margin: '8px 0 16px 0' }} />
             <ul className="footer-links-list">
               <li><a href="#overview">Overview &amp; Baseline</a></li>
               <li><a href="#architecture">Architecture &amp; Topology</a></li>
@@ -42,7 +44,8 @@ export const Footer: React.FC = () => {
 
           {/* Technology Summary Col */}
           <div className="footer-tech-col">
-            <h4 className="footer-col-title">Technology Stack</h4>
+            <h4 className="footer-col-title">TECHNOLOGY SUITE</h4>
+            <div className="editorial-rule-38" style={{ margin: '8px 0 16px 0' }} />
             <div className="footer-tech-chips">
               <span className="tech-chip">FastAPI 0.115</span>
               <span className="tech-chip">Python 3.12</span>
@@ -72,18 +75,18 @@ export const Footer: React.FC = () => {
       </div>
 
       <style>{`
-        .footer-container {
-          background: var(--bg-surface);
-          border-top: 1.5px solid var(--border-subtle);
-          padding-top: var(--space-16);
-          padding-bottom: var(--space-10);
+        .tomorrow-footer {
+          border-top: 1.5px solid var(--ink-primary);
+          padding-top: 64px;
+          padding-bottom: 40px;
+          background: rgba(255, 255, 255, 0.15);
         }
 
         .footer-top-grid {
           display: grid;
           grid-template-columns: 1.5fr 1fr 1fr;
-          gap: var(--space-10);
-          margin-bottom: var(--space-12);
+          gap: 40px;
+          margin-bottom: 48px;
         }
 
         .footer-brand {
@@ -96,126 +99,136 @@ export const Footer: React.FC = () => {
         .footer-icon {
           width: 32px;
           height: 32px;
-          border-radius: var(--radius-sm);
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
+          border-radius: 8px;
+          background: var(--ink-primary);
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
         .footer-title {
-          font-family: var(--font-mono);
-          font-size: 20px;
+          font-family: var(--font-display);
+          font-size: 1.8rem;
+          letter-spacing: 0.04em;
+          color: var(--ink-primary);
+        }
+
+        .footer-edition-tag {
+          font-family: var(--font-sans);
+          font-size: 0.65rem;
           font-weight: 700;
-          color: var(--text-primary);
+          letter-spacing: 0.2em;
+          color: var(--accent-orange-deep);
+          padding: 2px 8px;
+          border-radius: 9999px;
+          background: rgba(242, 93, 23, 0.12);
+          border: 1px solid var(--accent-orange);
         }
 
         .footer-tagline {
-          font-size: 13.5px;
-          color: var(--text-secondary);
-          margin-bottom: 14px;
-          max-width: 380px;
+          font-family: var(--font-sans);
+          font-size: 0.85rem;
+          color: var(--ink-secondary);
+          margin-bottom: 16px;
         }
 
         .footer-dev-badge {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font-family: var(--font-mono);
-          font-size: 11.5px;
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          padding: 4px 10px;
-          border-radius: var(--radius-sm);
-          margin-bottom: 14px;
+          gap: 8px;
+          padding: 4px 12px;
+          border-radius: 9999px;
+          background: rgba(48, 1, 58, 0.08);
+          border: 1px solid var(--border-hairline);
+          font-family: var(--font-sans);
+          font-size: 0.72rem;
+          letter-spacing: 0.1em;
+          margin-bottom: 16px;
+        }
+
+        .footer-dev-badge strong {
+          color: var(--ink-primary);
         }
 
         .footer-academic-note {
-          font-size: 12px;
-          color: var(--text-muted);
-          line-height: 1.5;
-          max-width: 420px;
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
+          color: var(--ink-muted);
+          line-height: 1.6;
+          max-width: 380px;
         }
 
         .footer-col-title {
-          font-family: var(--font-mono);
-          font-size: 11.5px;
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
           font-weight: 700;
+          letter-spacing: 0.22em;
           text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: var(--accent-cyan);
-          margin-bottom: 16px;
+          color: var(--ink-primary);
+          margin-bottom: 4px;
         }
 
         .footer-links-list {
           list-style: none;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 10px;
         }
 
         .footer-links-list a {
-          font-size: 13px;
-          color: var(--text-secondary);
-          transition: color var(--transition-fast);
+          font-family: var(--font-sans);
+          font-size: 0.78rem;
+          color: var(--ink-secondary);
+          text-decoration: none;
+          transition: color 0.2s ease;
         }
 
         .footer-links-list a:hover {
-          color: var(--text-primary);
+          color: var(--accent-orange);
         }
 
         .footer-tech-chips {
           display: flex;
           flex-wrap: wrap;
-          gap: 6px;
+          gap: 8px;
         }
 
         .tech-chip {
+          padding: 4px 10px;
+          border-radius: 9999px;
           font-family: var(--font-mono);
-          font-size: 11px;
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          padding: 3px 8px;
-          border-radius: var(--radius-sm);
-          color: var(--text-secondary);
+          font-size: 0.7rem;
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--border-hairline);
+          color: var(--ink-primary);
         }
 
         .footer-bottom-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-top: 1px solid var(--border-subtle);
-          padding-top: 20px;
-          font-size: 12.5px;
-          color: var(--text-muted);
+          padding-top: 24px;
+          border-top: 1px solid var(--border-hairline);
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
+          color: var(--ink-muted);
           flex-wrap: wrap;
           gap: 12px;
         }
 
-        .f-bottom-right {
-          display: flex;
-          align-items: center;
-          gap: 8px;
+        .f-meta-item code {
           font-family: var(--font-mono);
-          font-size: 11px;
-        }
-
-        .f-bottom-right code {
-          color: var(--accent-cyan);
+          color: var(--accent-orange-deep);
         }
 
         .f-sep {
-          color: var(--border-subtle);
+          margin: 0 6px;
         }
-
-        .text-green { color: var(--accent-green); }
-        .text-primary { color: var(--text-primary); }
 
         @media (max-width: 900px) {
           .footer-top-grid {
             grid-template-columns: 1fr;
-            gap: var(--space-8);
+            gap: 32px;
           }
         }
       `}</style>

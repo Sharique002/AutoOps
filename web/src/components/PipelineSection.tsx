@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitBranch, CheckCircle2, ChevronRight, FileCode, Check } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Check } from 'lucide-react';
 import { PIPELINE_STAGES } from '../data/projectData';
 
 export const PipelineSection: React.FC = () => {
@@ -8,29 +8,27 @@ export const PipelineSection: React.FC = () => {
   const activeStage = PIPELINE_STAGES.find((s) => s.id === activeStageId) || PIPELINE_STAGES[0];
 
   return (
-    <section id="pipeline" className="section">
+    <section id="pipeline" className="section tomorrow-pipeline-section">
       <div className="container">
-        {/* Section Header */}
+        {/* 4-Part Typographic Signature */}
         <div className="section-header">
-          <div className="section-eyebrow">
-            <GitBranch size={14} />
-            <span>CONTINUOUS AUTOMATION &amp; WORKFLOW</span>
-          </div>
-          <h2 className="section-title">End-to-End Automation Pipeline</h2>
+          <span className="section-eyebrow">CONTINUOUS AUTOMATION &amp; WORKFLOW // 7 VERIFIED STAGES</span>
+          <div className="editorial-rule-38" />
+          <h2 className="section-title">AUTOMATION PIPELINE</h2>
           <p className="section-subtitle">
-            From local commit verification to automated quality gates and zero-drift deployment. Automated CI validation runs in GitHub Actions while live container orchestration runs in local WSL2.
+            AUTOMATED CI QUALITY GATES IN GITHUB ACTIONS PARTITIONED FROM LOCAL DOCKER AND ANSIBLE OPERATIONAL RUNTIME.
           </p>
         </div>
 
         {/* Boundary Legend */}
-        <div className="pipeline-legend">
-          <div className="legend-item">
-            <span className="legend-badge legend-ci">AUTOMATED CI QUALITY GATE</span>
-            <span className="legend-text">Executes in GitHub Actions on push &amp; PR (no cloud infra deployed)</span>
+        <div className="tomorrow-pipeline-legend">
+          <div className="legend-box">
+            <span className="legend-tag tag-ci">AUTOMATED CI QUALITY GATE</span>
+            <span className="legend-desc">Runs in GitHub Actions on push &amp; PR (no cloud infra deployed)</span>
           </div>
-          <div className="legend-item">
-            <span className="legend-badge legend-local">LOCAL RUNTIME STEP</span>
-            <span className="legend-text">Executes inside local Ubuntu 24.04 (WSL2) with Docker daemon</span>
+          <div className="legend-box">
+            <span className="legend-tag tag-local">LOCAL RUNTIME ORCHESTRATION</span>
+            <span className="legend-desc">Runs inside local Ubuntu 24.04 (WSL2) with Docker daemon</span>
           </div>
         </div>
 
@@ -57,13 +55,13 @@ export const PipelineSection: React.FC = () => {
                     <div className="node-name">{stage.name}</div>
                     <div className="node-tool">{stage.tool.split(' ')[0]}</div>
                     <div className="node-status">
-                      <Check size={12} className="text-green" />
+                      <Check size={12} color={isActive ? '#FFF' : 'var(--accent-orange)'} />
                       <span>{stage.status}</span>
                     </div>
                   </button>
                   {idx < PIPELINE_STAGES.length - 1 && (
                     <div className="pipeline-step-connector">
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} color="var(--ink-primary)" />
                     </div>
                   )}
                 </React.Fragment>
@@ -73,245 +71,273 @@ export const PipelineSection: React.FC = () => {
         </div>
 
         {/* Active Stage Inspector Panel */}
-        <div className="pipeline-inspector panel">
+        <div className="pipeline-inspector">
           <div className="inspector-header">
             <div className="inspector-title-group">
-              <span
-                className={`badge ${
-                  activeStage.category === 'ci' ? 'badge-cyan' : 'badge-pass'
-                }`}
-              >
-                {activeStage.category === 'ci'
-                  ? 'AUTOMATED CI VALIDATION'
-                  : 'LOCAL ORCHESTRATION LAYER'}
+              <span className="badge badge-pass">
+                {activeStage.category === 'ci' ? 'AUTOMATED CI VALIDATION' : 'LOCAL ORCHESTRATION LAYER'}
               </span>
               <h3 className="inspector-title">
                 Stage {activeStage.number}: {activeStage.name}
               </h3>
             </div>
             <div className="inspector-status-badge">
-              <CheckCircle2 size={16} className="text-green" />
+              <CheckCircle2 size={16} color="var(--accent-orange)" />
               <span>VERIFIED IN EVIDENCE</span>
             </div>
           </div>
 
           <div className="inspector-body-grid">
             <div className="inspector-field">
-              <span className="field-label">Authoritative Tooling</span>
+              <span className="field-label">AUTHORITATIVE TOOLING</span>
               <span className="field-val-tool">{activeStage.tool}</span>
             </div>
 
             <div className="inspector-field">
-              <span className="field-label">Functional Purpose</span>
-              <p className="field-val-text">{activeStage.purpose}</p>
+              <span className="field-label">STAGE EXECUTION SCOPE</span>
+              <span className="field-val">{activeStage.category.toUpperCase()}</span>
             </div>
 
             <div className="inspector-field">
-              <span className="field-label">Automated Validation Performed</span>
-              <div className="field-val-code-box">
-                <code>{activeStage.validation}</code>
-              </div>
+              <span className="field-label">IMPLEMENTATION TARGET</span>
+              <code className="field-code-path">{activeStage.evidencePath}</code>
             </div>
 
-            <div className="inspector-field">
-              <span className="field-label">Repository Implementation Reference</span>
-              <div className="field-val-ref">
-                <FileCode size={14} className="text-cyan" />
-                <code>{activeStage.evidencePath}</code>
-              </div>
+            <div className="inspector-field span-2">
+              <span className="field-label">FUNCTIONAL PURPOSE</span>
+              <p className="field-desc-text">{activeStage.purpose}</p>
+            </div>
+
+            <div className="inspector-field span-2">
+              <span className="field-label">VERIFIED QUALITY CHECK</span>
+              <p className="field-desc-text">{activeStage.validation}</p>
             </div>
           </div>
         </div>
       </div>
 
       <style>{`
-        .pipeline-legend {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 20px;
-          margin-bottom: var(--space-6);
-          padding: 12px 18px;
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          border-radius: var(--radius-md);
+        .tomorrow-pipeline-section {
+          background: transparent;
         }
 
-        .legend-item {
+        .tomorrow-pipeline-legend {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin-bottom: 28px;
+        }
+
+        .legend-box {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
+          padding: 14px 18px;
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--border-hairline);
         }
 
-        .legend-badge {
-          font-family: var(--font-mono);
-          font-size: 10px;
+        .legend-tag {
+          font-family: var(--font-sans);
+          font-size: 0.65rem;
           font-weight: 700;
-          letter-spacing: 0.05em;
-          padding: 3px 8px;
-          border-radius: var(--radius-sm);
+          letter-spacing: 0.15em;
+          padding: 3px 10px;
+          border-radius: 9999px;
+          text-transform: uppercase;
         }
 
-        .legend-ci {
-          background: var(--accent-cyan-bg);
-          color: var(--accent-cyan);
-          border: 1px solid rgba(56, 207, 240, 0.3);
+        .tag-ci {
+          background: rgba(242, 93, 23, 0.15);
+          color: var(--accent-orange-deep);
+          border: 1px solid var(--accent-orange);
         }
 
-        .legend-local {
-          background: var(--accent-green-bg);
-          color: var(--accent-green);
-          border: 1px solid rgba(53, 229, 140, 0.3);
+        .tag-local {
+          background: rgba(48, 1, 58, 0.12);
+          color: var(--ink-primary);
+          border: 1px solid var(--ink-primary);
         }
 
-        .legend-text {
-          font-size: 12.5px;
-          color: var(--text-secondary);
+        .legend-desc {
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
+          color: var(--ink-secondary);
         }
 
+        /* Progress Stepper */
         .pipeline-stepper-scroll {
           overflow-x: auto;
-          padding-bottom: 12px;
-          margin-bottom: var(--space-8);
+          padding-bottom: 16px;
+          margin-bottom: 28px;
         }
 
         .pipeline-stepper {
           display: flex;
           align-items: center;
-          min-width: 980px;
-          gap: 8px;
+          gap: 12px;
+          min-width: 900px;
         }
 
         .pipeline-step-node {
           flex: 1;
           display: flex;
           flex-direction: column;
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          border-radius: var(--radius-md);
-          padding: 14px 12px;
+          gap: 6px;
+          padding: 16px 14px;
+          border-radius: 20px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.18);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           text-align: left;
-          transition: all var(--transition-fast);
+          cursor: pointer;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .pipeline-step-node:hover {
-          border-color: var(--border-hover);
-          background: var(--bg-surface);
+          border-color: var(--ink-primary);
+          background: rgba(255, 255, 255, 0.3);
         }
 
         .pipeline-step-node.active {
+          background: var(--accent-orange);
           border-color: var(--accent-orange);
-          background: var(--bg-surface-elevated);
-          box-shadow: 0 0 16px var(--accent-orange-glow);
+          box-shadow: 0 8px 24px var(--accent-orange-glow);
+        }
+
+        .pipeline-step-node.active .node-name,
+        .pipeline-step-node.active .node-num,
+        .pipeline-step-node.active .node-status span {
+          color: #FFFFFF;
+        }
+
+        .pipeline-step-node.active .node-tool {
+          color: rgba(255, 255, 255, 0.85);
         }
 
         .node-top-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 8px;
         }
 
         .node-cat-pill {
-          font-family: var(--font-mono);
-          font-size: 9px;
+          font-family: var(--font-sans);
+          font-size: 0.6rem;
           font-weight: 700;
-          padding: 2px 5px;
-          border-radius: 3px;
+          letter-spacing: 0.1em;
+          padding: 2px 6px;
+          border-radius: 9999px;
+          text-transform: uppercase;
         }
 
         .pill-ci {
-          background: rgba(56, 207, 240, 0.12);
-          color: var(--accent-cyan);
+          background: rgba(242, 93, 23, 0.15);
+          color: var(--accent-orange-deep);
         }
 
         .pill-local {
-          background: rgba(53, 229, 140, 0.12);
-          color: var(--accent-green);
+          background: rgba(48, 1, 58, 0.1);
+          color: var(--ink-primary);
         }
 
         .node-num {
           font-family: var(--font-mono);
-          font-size: 11px;
-          color: var(--text-muted);
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: var(--ink-muted);
         }
 
         .node-name {
-          font-size: 12.5px;
-          font-weight: 600;
-          color: var(--text-primary);
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          color: var(--ink-primary);
           line-height: 1.3;
-          margin-bottom: 4px;
-          min-height: 32px;
         }
 
         .node-tool {
           font-family: var(--font-mono);
-          font-size: 11px;
-          color: var(--text-secondary);
-          margin-bottom: 8px;
+          font-size: 0.68rem;
+          color: var(--ink-muted);
         }
 
         .node-status {
           display: flex;
           align-items: center;
           gap: 4px;
-          font-family: var(--font-mono);
-          font-size: 10px;
-          color: var(--accent-green);
-          font-weight: 600;
+          font-family: var(--font-sans);
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: var(--ink-primary);
+          margin-top: 4px;
         }
 
         .pipeline-step-connector {
-          color: var(--border-hover);
           display: flex;
           align-items: center;
           justify-content: center;
+          opacity: 0.6;
         }
 
+        /* Inspector */
         .pipeline-inspector {
-          padding: 24px;
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 24px;
+          padding: 28px;
+          box-shadow: 0 8px 30px rgba(48, 1, 58, 0.06);
         }
 
         .inspector-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border-bottom: 1px solid var(--border-subtle);
+          margin-bottom: 24px;
           padding-bottom: 16px;
-          margin-bottom: 20px;
-          flex-wrap: wrap;
-          gap: 12px;
+          border-bottom: 1px solid var(--border-hairline);
         }
 
         .inspector-title-group {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 8px;
         }
 
         .inspector-title {
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--text-primary);
+          font-family: var(--font-display);
+          font-size: 1.8rem;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
+          margin: 0;
         }
 
         .inspector-status-badge {
-          display: inline-flex;
+          display: flex;
           align-items: center;
           gap: 6px;
-          font-family: var(--font-mono);
-          font-size: 11.5px;
-          font-weight: 600;
-          color: var(--accent-green);
-          background: var(--accent-green-bg);
-          padding: 6px 12px;
-          border-radius: var(--radius-sm);
-          border: 1px solid rgba(53, 229, 140, 0.25);
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
+          padding: 6px 14px;
+          border-radius: 9999px;
+          background: rgba(242, 93, 23, 0.12);
+          border: 1px solid var(--accent-orange);
         }
 
         .inspector-body-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           gap: 20px;
         }
 
@@ -321,53 +347,58 @@ export const PipelineSection: React.FC = () => {
           gap: 6px;
         }
 
+        .inspector-field.span-2 {
+          grid-column: span 3;
+        }
+
         .field-label {
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--text-muted);
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
+          color: var(--ink-muted);
         }
 
         .field-val-tool {
+          font-family: var(--font-sans);
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--ink-primary);
+        }
+
+        .field-val {
+          font-family: var(--font-sans);
+          font-size: 0.85rem;
+          color: var(--ink-secondary);
+        }
+
+        .field-code-path {
           font-family: var(--font-mono);
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--accent-cyan);
+          font-size: 0.78rem;
+          color: var(--accent-orange-bright);
+          background: var(--bg-code);
+          padding: 6px 12px;
+          border-radius: 8px;
+          max-width: fit-content;
         }
 
-        .field-val-text {
-          font-size: 14px;
-          color: var(--text-secondary);
-          line-height: 1.5;
+        .field-desc-text {
+          font-family: var(--font-sans);
+          font-size: 0.82rem;
+          color: var(--ink-secondary);
+          line-height: 1.6;
         }
-
-        .field-val-code-box {
-          background: var(--bg-terminal);
-          border: 1px solid var(--border-subtle);
-          padding: 8px 12px;
-          border-radius: var(--radius-sm);
-          font-size: 12.5px;
-          color: var(--text-primary);
-        }
-
-        .field-val-ref {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          padding: 8px 12px;
-          border-radius: var(--radius-sm);
-          font-size: 12.5px;
-        }
-
-        .text-green { color: var(--accent-green); }
-        .text-cyan { color: var(--accent-cyan); }
 
         @media (max-width: 768px) {
+          .tomorrow-pipeline-legend {
+            grid-template-columns: 1fr;
+          }
           .inspector-body-grid {
             grid-template-columns: 1fr;
+          }
+          .inspector-field.span-2 {
+            grid-column: span 1;
           }
         }
       `}</style>

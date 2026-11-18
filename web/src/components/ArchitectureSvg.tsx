@@ -3,23 +3,23 @@ import { useTheme } from '../context/ThemeContext';
 
 export const ArchitectureSvg: React.FC = () => {
   const { theme } = useTheme();
-  const isOrchid = theme === 'orchid';
+  const isTomorrow = theme === 'tomorrow' || theme === 'orchid';
 
-  const c = isOrchid
+  const c = isTomorrow
     ? {
-        bg: '#400849',
-        border: 'rgba(64, 8, 73, 0.4)',
-        cardBg: '#520E5D',
-        cardBorder: '#E7B0DE',
-        innerBg: '#300537',
-        accent1: '#FF5A0A', // Signal Orange
-        accent2: '#E7B0DE', // Orchid Pink
-        textPrimary: '#FAF0F8',
-        textSecondary: '#E7B0DE',
-        badgeBg: '#FF5A0A',
-        badgeText: '#FFFFFF',
-        gridStroke: 'rgba(231, 176, 222, 0.08)',
-        shadow: 'rgba(64, 8, 73, 0.25)',
+        bg: '#23022B',
+        border: '#30013A',
+        cardBg: '#30013A',
+        cardBorder: 'rgba(224, 168, 215, 0.45)',
+        innerBg: '#1B0121',
+        accent1: '#F25D17', // Electric Tangerine
+        accent2: '#E0A8D7', // Orchid Lilac
+        textPrimary: '#FFF8FC',
+        textSecondary: '#E0A8D7',
+        badgeBg: '#F25D17',
+        badgeText: '#FFF8FC',
+        gridStroke: 'rgba(224, 168, 215, 0.1)',
+        shadow: 'rgba(48, 1, 58, 0.35)',
       }
     : {
         bg: '#0E141B',

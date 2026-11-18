@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, ChevronDown, ChevronUp, CheckCircle, FileText, Wrench } from 'lucide-react';
+import { ChevronDown, ChevronUp, CheckCircle, FileText, Wrench } from 'lucide-react';
 import { MILESTONES } from '../data/projectData';
 
 export const MilestoneTimeline: React.FC = () => {
@@ -17,71 +17,73 @@ export const MilestoneTimeline: React.FC = () => {
   };
 
   return (
-    <section id="milestones" className="section">
+    <section id="milestones" className="section tomorrow-ms-section">
       <div className="container">
-        {/* Section Header */}
+        {/* 4-Part Typographic Signature */}
         <div className="section-header">
-          <div className="section-eyebrow">
-            <Calendar size={14} />
-            <span>PROGRESSION &amp; DELIVERY ARTIFACTS</span>
-          </div>
-          <h2 className="section-title">Six-Milestone Implementation Lifecycle</h2>
+          <span className="section-eyebrow">PROGRESSION &amp; DELIVERY ARTIFACTS // INCREMENTAL ARCHITECTURE</span>
+          <div className="editorial-rule-38" />
+          <h2 className="section-title">MILESTONE LIFECYCLE</h2>
           <p className="section-subtitle">
-            Every phase was developed incrementally with formal preflight inspections, automated test executions, explicit acceptance criteria, and persistent evidence logs.
+            EVERY PHASE WAS DEVELOPED INCREMENTALLY WITH PREFLIGHT AUDITS, FORMAL TEST EXECUTION, AND AUDITED EVIDENCE LOGS.
           </p>
         </div>
 
         {/* Milestone Cards Grid */}
-        <div className="milestones-grid">
+        <div className="tomorrow-ms-grid">
           {MILESTONES.map((ms) => {
             const isExpanded = !!expandedMilestones[ms.id];
 
             return (
-              <div key={ms.id} className="milestone-card panel">
-                <div className="ms-header">
-                  <div className="ms-num-badge">
-                    <span>M{ms.number}</span>
+              <div key={ms.id} className="tomorrow-ms-card">
+                <div className="ms-card-top-bar">
+                  <div className="ms-num-pill">
+                    <span>M0{ms.number}</span>
                   </div>
-                  <div className="ms-status-badge">
-                    <CheckCircle size={13} className="text-green" />
+                  <div className="ms-badge-state">
+                    <CheckCircle size={13} color="var(--accent-orange)" />
                     <span>{ms.status}</span>
                   </div>
                 </div>
 
-                <div className="ms-cat-tag">{ms.category}</div>
-                <h3 className="ms-title">{ms.title}</h3>
+                <div className="ms-category-kicker">{ms.category}</div>
+                <h3 className="ms-title-text">{ms.title}</h3>
 
-                <p className="ms-outcome">{ms.outcome}</p>
+                <p className="ms-outcome-copy">{ms.outcome}</p>
 
                 {/* Tool Badges */}
-                <div className="ms-tools-row">
+                <div className="ms-tools-wrap">
                   {ms.tools.map((tool, idx) => (
-                    <span key={idx} className="ms-tool-chip">
+                    <span key={idx} className="ms-tool-pill">
                       {tool}
                     </span>
                   ))}
                 </div>
 
                 {/* Expandable Deliverables Section */}
-                <div className="ms-deliverables-wrapper">
+                <div className="ms-accordion-box">
                   <button
                     type="button"
-                    className="ms-expand-toggle"
+                    className="ms-toggle-accordion-btn"
                     onClick={() => toggleExpand(ms.id)}
                     aria-expanded={isExpanded}
                   >
-                    <span className="ms-toggle-label">
-                      <Wrench size={12} className="text-cyan" />
+                    <span className="ms-acc-label">
+                      <Wrench size={13} color="var(--accent-orange)" />
                       <span>Technical Deliverables ({ms.deliverables.length})</span>
                     </span>
-                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    {isExpanded ? (
+                      <ChevronUp size={16} color="var(--ink-primary)" />
+                    ) : (
+                      <ChevronDown size={16} color="var(--ink-primary)" />
+                    )}
                   </button>
 
                   {isExpanded && (
-                    <ul className="ms-deliverables-list">
+                    <ul className="ms-deliverables-ul">
                       {ms.deliverables.map((item, dIdx) => (
-                        <li key={dIdx} className="ms-deliverable-item">
-                          <span className="d-bullet">•</span>
+                        <li key={dIdx} className="ms-item-li">
+                          <span className="ms-bullet">→</span>
                           <span>{item}</span>
                         </li>
                       ))}
@@ -90,9 +92,9 @@ export const MilestoneTimeline: React.FC = () => {
                 </div>
 
                 {/* Evidence Link Footer */}
-                <div className="ms-footer">
-                  <FileText size={13} className="text-secondary" />
-                  <code className="ms-evidence-path">{ms.evidencePath}</code>
+                <div className="ms-card-footer">
+                  <FileText size={13} color="var(--ink-secondary)" />
+                  <code className="ms-evidence-code">{ms.evidencePath}</code>
                 </div>
               </div>
             );
@@ -101,176 +103,189 @@ export const MilestoneTimeline: React.FC = () => {
       </div>
 
       <style>{`
-        .milestones-grid {
+        .tomorrow-ms-section {
+          background: transparent;
+        }
+
+        .tomorrow-ms-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: var(--space-6);
+          gap: 24px;
         }
 
-        .milestone-card {
+        .tomorrow-ms-card {
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 24px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
-          padding: 22px 20px;
-          border-top: 2px solid var(--border-hover);
-          transition: border-color var(--transition-fast), transform var(--transition-fast);
+          box-shadow: 0 8px 24px rgba(48, 1, 58, 0.05);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .milestone-card:hover {
-          border-top-color: var(--accent-orange);
+        .tomorrow-ms-card:hover {
+          border-color: var(--ink-primary);
+          transform: translateY(-2px);
         }
 
-        .ms-header {
+        .ms-card-top-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 12px;
-        }
-
-        .ms-num-badge {
-          font-family: var(--font-mono);
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--accent-orange);
-          background: var(--accent-orange-bg);
-          border: 1px solid var(--border-subtle);
-          padding: 2px 8px;
-          border-radius: var(--radius-sm);
-        }
-
-        .ms-status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--accent-green);
-          background: var(--accent-green-bg);
-          padding: 3px 8px;
-          border-radius: var(--radius-pill);
-          border: 1px solid rgba(53, 229, 140, 0.25);
-        }
-
-        .ms-cat-tag {
-          font-family: var(--font-mono);
-          font-size: 10.5px;
-          font-weight: 600;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          margin-bottom: 4px;
-        }
-
-        .ms-title {
-          font-size: 17px;
-          font-weight: 700;
-          color: var(--text-primary);
-          line-height: 1.3;
-          margin-bottom: 10px;
-        }
-
-        .ms-outcome {
-          font-size: 13px;
-          color: var(--text-secondary);
-          line-height: 1.5;
           margin-bottom: 16px;
-          flex-grow: 1;
         }
 
-        .ms-tools-row {
+        .ms-num-pill {
+          font-family: var(--font-display);
+          font-size: 1.3rem;
+          letter-spacing: 0.04em;
+          color: var(--ink-primary);
+          padding: 2px 10px;
+          border-radius: 9999px;
+          background: rgba(242, 93, 23, 0.15);
+          border: 1px solid var(--accent-orange);
+        }
+
+        .ms-badge-state {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          color: var(--ink-primary);
+        }
+
+        .ms-category-kicker {
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--ink-muted);
+          margin-bottom: 6px;
+        }
+
+        .ms-title-text {
+          font-family: var(--font-sans);
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--ink-primary);
+          margin-bottom: 10px;
+          line-height: 1.35;
+        }
+
+        .ms-outcome-copy {
+          font-family: var(--font-sans);
+          font-size: 0.78rem;
+          color: var(--ink-secondary);
+          line-height: 1.6;
+          margin-bottom: 16px;
+          flex: 1;
+        }
+
+        .ms-tools-wrap {
           display: flex;
           flex-wrap: wrap;
           gap: 6px;
-          margin-bottom: 16px;
+          margin-bottom: 18px;
         }
 
-        .ms-tool-chip {
+        .ms-tool-pill {
+          padding: 3px 10px;
+          border-radius: 9999px;
           font-family: var(--font-mono);
-          font-size: 11px;
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          color: var(--text-secondary);
-          padding: 2px 7px;
-          border-radius: var(--radius-sm);
+          font-size: 0.68rem;
+          background: rgba(48, 1, 58, 0.08);
+          border: 1px solid var(--border-hairline);
+          color: var(--ink-primary);
         }
 
-        .ms-deliverables-wrapper {
-          border-top: 1px solid var(--border-subtle);
-          padding-top: 12px;
+        .ms-accordion-box {
+          border-top: 1px solid var(--border-hairline);
+          padding-top: 14px;
           margin-bottom: 14px;
         }
 
-        .ms-expand-toggle {
+        .ms-toggle-accordion-btn {
           width: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          color: var(--text-secondary);
-          font-size: 12px;
-          font-weight: 600;
-          padding: 4px 0;
-          transition: color var(--transition-fast);
+          padding: 8px 12px;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid var(--border-hairline);
+          cursor: pointer;
+          transition: background 0.2s ease;
         }
 
-        .ms-expand-toggle:hover {
-          color: var(--text-primary);
+        .ms-toggle-accordion-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          border-color: var(--ink-primary);
         }
 
-        .ms-toggle-label {
+        .ms-acc-label {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
+          font-family: var(--font-sans);
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
         }
 
-        .ms-deliverables-list {
+        .ms-deliverables-ul {
           list-style: none;
-          margin-top: 10px;
+          padding: 12px 6px 4px 6px;
           display: flex;
           flex-direction: column;
-          gap: 6px;
-          padding-left: 2px;
+          gap: 8px;
         }
 
-        .ms-deliverable-item {
-          font-size: 12px;
-          color: var(--text-secondary);
-          line-height: 1.4;
+        .ms-item-li {
           display: flex;
           align-items: flex-start;
-          gap: 6px;
+          gap: 8px;
+          font-family: var(--font-sans);
+          font-size: 0.74rem;
+          color: var(--ink-secondary);
+          line-height: 1.5;
         }
 
-        .d-bullet {
-          color: var(--accent-cyan);
-          font-weight: bold;
+        .ms-bullet {
+          color: var(--accent-orange);
+          font-weight: 700;
         }
 
-        .ms-footer {
-          border-top: 1px solid var(--border-subtle);
-          padding-top: 10px;
+        .ms-card-footer {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
+          padding-top: 12px;
+          border-top: 1px solid var(--border-hairline);
         }
 
-        .ms-evidence-path {
-          font-size: 11px;
-          color: var(--text-muted);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+        .ms-evidence-code {
+          font-family: var(--font-mono);
+          font-size: 0.68rem;
+          color: var(--ink-muted);
         }
 
-        .text-green { color: var(--accent-green); }
-        .text-cyan { color: var(--accent-cyan); }
-
-        @media (max-width: 1100px) {
-          .milestones-grid {
+        @media (max-width: 1024px) {
+          .tomorrow-ms-grid {
             grid-template-columns: repeat(2, 1fr);
           }
         }
 
-        @media (max-width: 680px) {
-          .milestones-grid {
+        @media (max-width: 600px) {
+          .tomorrow-ms-grid {
             grid-template-columns: 1fr;
           }
         }

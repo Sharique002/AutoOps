@@ -1,100 +1,104 @@
-/* AutoOps Design System — Design Tokens */
+/* AutoOps Design System — "TOMORROW" Editorial Orchid & Electric Orange Tokens */
 
-/* ==============================================================================
-   DEFAULT THEME: Dark Charcoal DevOps Platform
-   Base colors:
-   - Deep Charcoal Canvas:   #0B0F14
-   - Elevated Panels:        #111820
-   - Surface Panels:         #171F29
-   - Elevated Surface:       #1D2733
-   - Terminal Background:    #070A0E
-   - Primary Accent:         #35E58C (Terminal Green)
-   - Secondary Accent:       #38CFF0 (Cyan)
-   - Primary Text:           #E8EEF5
-   - Secondary Text:         #91A0B2
-   ============================================================================== */
-:root, [data-theme="dark"] {
-  /* Three Reference Swatches */
-  --swatch-orchid: #E7B0DE;
-  --swatch-eggplant: #400849;
-  --swatch-signal-orange: #FF5A0A;
+:root, [data-theme="tomorrow"], [data-theme="orchid"], [data-theme="dark"] {
+  /* ==============================================================================
+     1. Core Canvas & Surfaces (Exact Prompt Specification)
+     ============================================================================== */
+  --bg-canvas: #E0A8D7;
+  --bg-canvas-gradient: linear-gradient(135deg, #E3ABDA 0%, #E0A8D7 50%, #DBAAD7 100%);
+  --bg-surface: rgba(255, 255, 255, 0.18);
+  --bg-surface-elevated: rgba(255, 255, 255, 0.28);
+  --bg-surface-glass: rgba(227, 171, 218, 0.78);
+  --bg-code: #23022B; /* Deepest aubergine for code blocks/terminals */
 
-  /* Surface Colors */
-  --bg-base: #0B0F14;                   /* Deep Charcoal Canvas */
-  --bg-panel: #111820;                  /* Panel Background */
-  --bg-surface: #171F29;                /* Secondary Surface */
-  --bg-surface-elevated: #1D2733;       /* Elevated Surface */
-  --bg-terminal: #070A0E;               /* Deep Terminal Black */
-  --bg-contrast: #171F29;               /* Contrast Card */
+  /* ==============================================================================
+     2. Typography & Ink (Never pure #000000)
+     ============================================================================== */
+  --ink-primary: #30013A;     /* Massive display titles, primary headings, icons */
+  --ink-secondary: #4A1A54;   /* Subcopy, kickers, navigation links, body text */
+  --ink-muted: rgba(48, 1, 58, 0.65); /* Captions, metadata, timestamps */
+  --ink-on-accent: #FFF8FC;   /* Text on electric orange or deep aubergine fills */
 
-  /* Header and Backdrop */
-  --header-bg: rgba(11, 15, 20, 0.88);
-  --header-border: #263442;
+  /* ==============================================================================
+     3. Focal Pop Accent (Electric Tangerine / Glossy Orange)
+     ============================================================================== */
+  --accent-orange: #F25D17;
+  --accent-orange-bright: #FF6B1A;
+  --accent-orange-deep: #C83E00;
+  --accent-orange-glow: rgba(242, 93, 23, 0.22);
+  --accent-orange-bg: rgba(242, 93, 23, 0.12);
 
-  /* Border Colors */
-  --border-subtle: #263442;
-  --border-hover: #3A4D62;
-  --border-active: #4F6782;
+  /* ==============================================================================
+     4. Borders & Dividers
+     ============================================================================== */
+  --border-hairline: rgba(48, 1, 58, 0.25);
+  --border-strong: #30013A;
+  --divider-rule: 1.5px solid #30013A;
 
-  /* Accent: Terminal Green (#35E58C) */
-  --accent-green: #35E58C;
-  --accent-green-dim: #26A865;
-  --accent-green-bg: rgba(53, 229, 140, 0.08);
-  --accent-green-glow: rgba(53, 229, 140, 0.20);
-
-  /* Accent: Cyan (#38CFF0) */
-  --accent-cyan: #38CFF0;
-  --accent-cyan-dim: #259AB3;
-  --accent-cyan-bg: rgba(56, 207, 240, 0.08);
-  --accent-cyan-glow: rgba(56, 207, 240, 0.20);
-
-  /* Accent: Signal Orange (#FF5A0A) */
-  --accent-orange: #FF5A0A;
-  --accent-orange-hover: #E04D06;
-  --accent-orange-bg: rgba(255, 90, 10, 0.12);
-  --accent-orange-glow: rgba(255, 90, 10, 0.25);
-
-  --accent-violet: #E7B0DE;
-  --accent-violet-light: #F2CEEE;
-  --accent-violet-bg: rgba(231, 176, 222, 0.12);
-
-  /* Status Colors */
-  --status-pass: #35E58C;
-  --status-pass-bg: rgba(53, 229, 140, 0.10);
-  --status-pass-border: rgba(53, 229, 140, 0.30);
-
-  --status-warn: #FFB84D;
-  --status-warn-bg: rgba(255, 184, 77, 0.10);
-  --status-warn-border: rgba(255, 184, 77, 0.30);
-
-  --status-fail: #FF5A65;
-  --status-fail-bg: rgba(255, 90, 101, 0.10);
-  --status-fail-border: rgba(255, 90, 101, 0.30);
-
-  --status-notrun: #91A0B2;
-  --status-notrun-bg: rgba(145, 160, 178, 0.10);
-  --status-notrun-border: rgba(145, 160, 178, 0.30);
-
-  /* Typography Colors */
-  --text-primary: #E8EEF5;              /* Off-White */
-  --text-secondary: #91A0B2;            /* Muted Slate */
-  --text-muted: #5E6E82;                /* Dark Slate */
-  --text-invert: #0B0F14;
-  --text-on-accent: #0B0F14;
-
-  /* Typography Fonts */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Oswald', 'Syne', 'Inter', sans-serif;
+  /* ==============================================================================
+     5. Typography Fonts (Tomorrow Editorial Signature)
+     ============================================================================== */
+  --font-display: 'Anton', 'Bebas Neue', Impact, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Monaco, Consolas, monospace;
 
-  /* Radii */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
+  /* ==============================================================================
+     6. Component Backward-Compatibility Token Mappings
+     (Ensures ALL existing components immediately render in Tomorrow aesthetic)
+     ============================================================================== */
+  --bg-base: var(--bg-canvas);
+  --bg-panel: var(--bg-surface);
+  --bg-terminal: var(--bg-code);
+  --bg-contrast: var(--ink-primary);
+
+  --header-bg: rgba(227, 171, 218, 0.85);
+  --header-border: var(--border-hairline);
+
+  --border-subtle: var(--border-hairline);
+  --border-hover: var(--ink-primary);
+  --border-active: var(--accent-orange);
+
+  --text-primary: var(--ink-primary);
+  --text-secondary: var(--ink-secondary);
+  --text-muted: var(--ink-muted);
+  --text-invert: var(--ink-on-accent);
+  --text-on-accent: var(--ink-on-accent);
+
+  /* Dynamic Accents */
+  --accent-cyan: var(--accent-orange);
+  --accent-cyan-dim: var(--accent-orange-deep);
+  --accent-cyan-bg: rgba(242, 93, 23, 0.12);
+  --accent-cyan-glow: var(--accent-orange-glow);
+
+  --accent-green: var(--accent-orange);
+  --accent-green-dim: var(--accent-orange-deep);
+  --accent-green-bg: rgba(242, 93, 23, 0.12);
+  --accent-green-glow: var(--accent-orange-glow);
+
+  /* Status Colors */
+  --status-pass: var(--ink-primary);
+  --status-pass-bg: rgba(242, 93, 23, 0.18);
+  --status-pass-border: rgba(242, 93, 23, 0.45);
+
+  --status-warn: var(--accent-orange);
+  --status-warn-bg: rgba(242, 93, 23, 0.18);
+  --status-warn-border: rgba(242, 93, 23, 0.45);
+
+  --status-fail: #900C3F;
+  --status-fail-bg: rgba(144, 12, 63, 0.16);
+  --status-fail-border: rgba(144, 12, 63, 0.45);
+
+  --status-notrun: var(--ink-secondary);
+  --status-notrun-bg: rgba(48, 1, 58, 0.12);
+  --status-notrun-border: rgba(48, 1, 58, 0.35);
+
+  /* Dimensions & Spacing */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-pill: 9999px;
 
-  /* Spacing */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -107,76 +111,17 @@
   --space-16: 64px;
   --space-20: 80px;
 
-  /* Layout */
-  --container-max-width: 1240px;
-  --header-height: 64px;
+  --container-max-width: 1280px;
+  --header-height: 84px;
 
   /* Shadows */
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-panel: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-glow-green: 0 0 20px rgba(53, 229, 140, 0.18);
-  --shadow-glow-cyan: 0 0 20px rgba(56, 207, 240, 0.18);
-  --shadow-glow-orange: 0 0 20px rgba(255, 90, 10, 0.25);
+  --shadow-subtle: 0 1px 3px rgba(48, 1, 58, 0.08);
+  --shadow-panel: 0 8px 32px rgba(48, 1, 58, 0.06);
+  --shadow-glow-orange: 0 0 24px var(--accent-orange-glow);
+  --shadow-glow-cyan: 0 0 24px var(--accent-orange-glow);
+  --shadow-glow-green: 0 0 24px var(--accent-orange-glow);
 
   /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-}
-
-/* ==============================================================================
-   ALTERNATE THEME: Orchid & Violet & Signal Orange
-   ============================================================================== */
-[data-theme="orchid"] {
-  --swatch-orchid: #E7B0DE;
-  --swatch-eggplant: #400849;
-  --swatch-signal-orange: #FF5A0A;
-
-  --bg-base: #E7B0DE;                   /* Pastel Orchid Pink Canvas */
-  --bg-panel: #F1CEEE;                  /* Soft Tinted Orchid Panel */
-  --bg-surface: #E8BFDF;                /* Mid Surface Tone */
-  --bg-surface-elevated: #FAF0F8;       /* Highlight Surface */
-  --bg-terminal: #400849;               /* Deep Eggplant Violet Terminal */
-  --bg-contrast: #400849;               /* Deep Inverted Card */
-
-  --header-bg: rgba(231, 176, 222, 0.92);
-  --header-border: rgba(64, 8, 73, 0.25);
-
-  --border-subtle: rgba(64, 8, 73, 0.22);
-  --border-hover: rgba(64, 8, 73, 0.45);
-  --border-active: #400849;
-
-  --accent-green: #1F7A42;
-  --accent-green-dim: #165C31;
-  --accent-green-bg: rgba(31, 122, 66, 0.14);
-  --accent-green-glow: rgba(31, 122, 66, 0.25);
-
-  --accent-cyan: #FF5A0A;
-  --accent-cyan-dim: #400849;
-  --accent-cyan-bg: rgba(255, 90, 10, 0.14);
-  --accent-cyan-glow: rgba(255, 90, 10, 0.25);
-
-  --status-pass: #1F7A42;
-  --status-pass-bg: rgba(31, 122, 66, 0.14);
-  --status-pass-border: rgba(31, 122, 66, 0.40);
-
-  --status-warn: #FF5A0A;
-  --status-warn-bg: rgba(255, 90, 10, 0.14);
-  --status-warn-border: rgba(255, 90, 10, 0.40);
-
-  --status-fail: #B71C1C;
-  --status-fail-bg: rgba(183, 28, 28, 0.14);
-  --status-fail-border: rgba(183, 28, 28, 0.40);
-
-  --status-notrun: #5C1D66;
-  --status-notrun-bg: rgba(92, 29, 102, 0.12);
-  --status-notrun-border: rgba(92, 29, 102, 0.35);
-
-  --text-primary: #400849;              /* Deep Eggplant Violet */
-  --text-secondary: #5C1D66;            /* Rich Plum Violet */
-  --text-muted: #7E3E88;                /* Muted Orchid Violet */
-  --text-invert: #FAF0F8;
-  --text-on-accent: #FFFFFF;
-
-  --shadow-subtle: 0 1px 3px rgba(64, 8, 73, 0.12);
-  --shadow-panel: 0 6px 24px rgba(64, 8, 73, 0.12);
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }

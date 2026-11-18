@@ -18,52 +18,50 @@ export const SecuritySection: React.FC = () => {
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'UserCheck':
-        return <UserCheck size={20} className="text-green" />;
+        return <UserCheck size={20} color="var(--accent-orange)" />;
       case 'Lock':
-        return <Lock size={20} className="text-green" />;
+        return <Lock size={20} color="var(--accent-orange)" />;
       case 'HardDrive':
-        return <HardDrive size={20} className="text-cyan" />;
+        return <HardDrive size={20} color="var(--accent-orange)" />;
       case 'ShieldAlert':
-        return <ShieldAlert size={20} className="text-green" />;
+        return <ShieldAlert size={20} color="var(--accent-orange)" />;
       case 'Shield':
-        return <Shield size={20} className="text-green" />;
+        return <Shield size={20} color="var(--accent-orange)" />;
       case 'Cpu':
-        return <Cpu size={20} className="text-cyan" />;
+        return <Cpu size={20} color="var(--accent-orange)" />;
       case 'Radio':
-        return <Radio size={20} className="text-cyan" />;
+        return <Radio size={20} color="var(--accent-orange)" />;
       case 'Key':
-        return <Key size={20} className="text-green" />;
+        return <Key size={20} color="var(--accent-orange)" />;
       case 'AlertTriangle':
-        return <AlertTriangle size={20} className="text-warn" />;
+        return <AlertTriangle size={20} color="var(--accent-orange-deep)" />;
       default:
-        return <ShieldCheck size={20} className="text-green" />;
+        return <ShieldCheck size={20} color="var(--accent-orange)" />;
     }
   };
 
   return (
-    <section id="security" className="section">
+    <section id="security" className="section tomorrow-sec-section">
       <div className="container">
-        {/* Section Header */}
+        {/* 4-Part Typographic Signature */}
         <div className="section-header">
-          <div className="section-eyebrow">
-            <ShieldCheck size={14} />
-            <span>CONTAINER HARDENING &amp; RISK AUDIT</span>
-          </div>
-          <h2 className="section-title">Defense-in-Depth Container Security</h2>
+          <span className="section-eyebrow">CONTAINER HARDENING &amp; RISK AUDIT // DEFENSE IN DEPTH</span>
+          <div className="editorial-rule-38" />
+          <h2 className="section-title">CONTAINER SECURITY</h2>
           <p className="section-subtitle">
-            Container isolation adheres to CIS Docker benchmark principles. Privilege boundaries, kernel capability restrictions, and secret scanning are actively enforced with transparent residual risk disclosure.
+            IMMUTABLE ROOT FILESYSTEMS, DROPPED KERNEL CAPABILITIES, NON-ROOT EXECUTION, AND RIGOROUS SECRET SCANNING AUDIT.
           </p>
         </div>
 
         {/* Security Controls Grid */}
-        <div className="security-grid">
+        <div className="tomorrow-sec-grid">
           {SECURITY_CONTROLS.map((control) => {
             const isLimitation = control.status === 'DISCLOSED_LIMITATION';
 
             return (
               <div
                 key={control.id}
-                className={`sec-card panel ${isLimitation ? 'card-limitation' : ''}`}
+                className={`tomorrow-sec-card ${isLimitation ? 'card-limitation' : ''}`}
               >
                 <div className="sec-card-top">
                   <div className="sec-icon-box">{getIcon(control.iconName)}</div>
@@ -85,12 +83,12 @@ export const SecuritySection: React.FC = () => {
                 <p className="sec-summary">{control.summary}</p>
 
                 <div className="sec-evidence-row">
-                  <span className="sec-ev-label">Verification Evidence:</span>
+                  <span className="sec-ev-label">VERIFICATION:</span>
                   <div className="sec-ev-text">
                     {isLimitation ? (
-                      <AlertTriangle size={13} className="text-warn inline-icon" />
+                      <AlertTriangle size={13} color="var(--accent-orange-deep)" />
                     ) : (
-                      <CheckCircle size={13} className="text-green inline-icon" />
+                      <CheckCircle size={13} color="var(--accent-orange)" />
                     )}
                     <span>{control.verificationEvidence}</span>
                   </div>
@@ -99,191 +97,126 @@ export const SecuritySection: React.FC = () => {
             );
           })}
         </div>
-
-        {/* Security Assessment Footer Callout */}
-        <div className="sec-audit-banner panel">
-          <div className="audit-col">
-            <h4 className="audit-heading">Zero-Secret Git Repository Policy</h4>
-            <p className="audit-text">
-              Active container secrets and sensitive dashboard passwords reside strictly in uncommitted <code>.env</code> files. Automated continuous integration executes <code>scripts/check_secrets.sh</code> to reject any commits containing AWS tokens, private keys, or credentials.
-            </p>
-          </div>
-          <div className="audit-badge-box">
-            <ShieldCheck size={28} className="text-green" />
-            <div className="audit-status-text">
-              <span className="ast-title">CI SECRET SCAN</span>
-              <span className="ast-val">PASSED (0 LEAKS)</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <style>{`
-        .security-grid {
+        .tomorrow-sec-section {
+          background: transparent;
+        }
+
+        .tomorrow-sec-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: var(--space-6);
-          margin-bottom: var(--space-8);
+          gap: 24px;
         }
 
-        .sec-card {
+        .tomorrow-sec-card {
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 24px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
-          padding: 22px 20px;
-          border-top: 2px solid var(--accent-green);
+          box-shadow: 0 8px 24px rgba(48, 1, 58, 0.05);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .sec-card.card-limitation {
-          border-top: 2px solid var(--status-warn);
-          background: rgba(255, 184, 77, 0.03);
+        .tomorrow-sec-card:hover {
+          border-color: var(--ink-primary);
+          transform: translateY(-2px);
+        }
+
+        .tomorrow-sec-card.card-limitation {
+          border-left: 3px solid var(--accent-orange-deep);
         }
 
         .sec-card-top {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 14px;
+          margin-bottom: 16px;
         }
 
         .sec-icon-box {
-          width: 36px;
-          height: 36px;
-          border-radius: var(--radius-sm);
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background: rgba(242, 93, 23, 0.12);
+          border: 1px solid rgba(242, 93, 23, 0.3);
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
         .sec-title {
-          font-size: 16px;
+          font-family: var(--font-sans);
+          font-size: 1.05rem;
           font-weight: 700;
-          color: var(--text-primary);
-          margin-bottom: 10px;
+          color: var(--ink-primary);
+          margin-bottom: 12px;
+          line-height: 1.35;
         }
 
         .sec-directive-box {
-          background: var(--bg-terminal);
-          border: 1px solid var(--border-subtle);
-          padding: 6px 10px;
-          border-radius: var(--radius-sm);
-          font-size: 11.5px;
-          color: var(--accent-cyan);
           margin-bottom: 12px;
+        }
+
+        .sec-directive-box code {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--accent-orange-bright);
+          background: var(--bg-code);
+          padding: 4px 10px;
+          border-radius: 6px;
+          display: inline-block;
+          max-width: 100%;
           overflow-x: auto;
         }
 
         .sec-summary {
-          font-size: 13px;
-          color: var(--text-secondary);
-          line-height: 1.5;
-          margin-bottom: 16px;
-          flex-grow: 1;
+          font-family: var(--font-sans);
+          font-size: 0.78rem;
+          color: var(--ink-secondary);
+          line-height: 1.6;
+          margin-bottom: 18px;
+          flex: 1;
         }
 
         .sec-evidence-row {
-          border-top: 1px solid var(--border-subtle);
-          padding-top: 12px;
           display: flex;
-          flex-direction: column;
-          gap: 4px;
+          align-items: flex-start;
+          gap: 8px;
+          padding-top: 14px;
+          border-top: 1px solid var(--border-hairline);
         }
 
         .sec-ev-label {
-          font-family: var(--font-mono);
-          font-size: 10px;
-          font-weight: 600;
-          text-transform: uppercase;
-          color: var(--text-muted);
+          font-family: var(--font-sans);
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          color: var(--ink-muted);
         }
 
         .sec-ev-text {
-          font-size: 12px;
-          color: var(--text-secondary);
-          line-height: 1.4;
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: 6px;
-        }
-
-        .inline-icon {
-          flex-shrink: 0;
-          margin-top: 2px;
-        }
-
-        .sec-audit-banner {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: var(--bg-surface);
-          padding: 20px 24px;
-          flex-wrap: wrap;
-          gap: 20px;
-        }
-
-        .audit-col {
-          max-width: 760px;
-        }
-
-        .audit-heading {
-          font-size: 16px;
-          font-weight: 700;
-          color: var(--text-primary);
-          margin-bottom: 6px;
-        }
-
-        .audit-text {
-          font-size: 13.5px;
-          color: var(--text-secondary);
-          line-height: 1.5;
-        }
-
-        .audit-text code {
-          color: var(--accent-cyan);
-        }
-
-        .audit-badge-box {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          padding: 10px 18px;
-          border-radius: var(--radius-md);
-        }
-
-        .audit-status-text {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .ast-title {
           font-family: var(--font-mono);
-          font-size: 10px;
-          font-weight: 700;
-          color: var(--text-muted);
+          font-size: 0.7rem;
+          color: var(--ink-primary);
         }
-
-        .ast-val {
-          font-family: var(--font-mono);
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--accent-green);
-        }
-
-        .text-green { color: var(--accent-green); }
-        .text-cyan { color: var(--accent-cyan); }
-        .text-warn { color: var(--status-warn); }
 
         @media (max-width: 1024px) {
-          .security-grid {
+          .tomorrow-sec-grid {
             grid-template-columns: repeat(2, 1fr);
           }
         }
 
-        @media (max-width: 640px) {
-          .security-grid {
+        @media (max-width: 600px) {
+          .tomorrow-sec-grid {
             grid-template-columns: 1fr;
           }
         }

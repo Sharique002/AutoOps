@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Copy, Check, Terminal, FileText, ExternalLink, Eye, X } from 'lucide-react';
+import { Copy, Check, Terminal, FileText, ExternalLink, Eye, X } from 'lucide-react';
 import { DOCUMENTATION_RESOURCES, DEMO_COMMANDS } from '../data/projectData';
 import { DocResource } from '../types';
 
@@ -59,63 +59,78 @@ export const DocumentationGrid: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeDoc]);
 
+  // Handle URL hash or search param for auto-opening doc
+  useEffect(() => {
+    const checkUrlForDoc = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#doc-')) {
+        const docId = hash.substring(1);
+        const match = DOCUMENTATION_RESOURCES.find(d => d.id === docId);
+        if (match) {
+          handleOpenDoc(match);
+        }
+      }
+    };
+    checkUrlForDoc();
+    window.addEventListener('hashchange', checkUrlForDoc);
+    return () => window.removeEventListener('hashchange', checkUrlForDoc);
+  }, []);
+
   return (
-    <section id="documentation" className="section">
+    <section id="documentation" className="section tomorrow-doc-section">
+      <div id="docs" style={{ position: 'relative', top: '-100px' }} />
       <div className="container">
-        {/* Section Header */}
+        {/* 4-Part Typographic Signature */}
         <div className="section-header">
-          <div className="section-eyebrow">
-            <BookOpen size={14} />
-            <span>ACADEMIC REPORTS &amp; LIVE DEMONSTRATION</span>
-          </div>
-          <h2 className="section-title">Project Documentation &amp; Evaluation Guide</h2>
+          <span className="section-eyebrow">ACADEMIC REPORTS &amp; LIVE DEMONSTRATION // VIVA GUIDE</span>
+          <div className="editorial-rule-38" />
+          <h2 className="section-title">PROJECT REPORTS</h2>
           <p className="section-subtitle">
-            All engineering decisions, architectural models, security controls, and verification outputs are documented in comprehensive academic markdown reports in the repository.
+            ALL ENGINEERING DECISIONS, ARCHITECTURAL MODELS, SECURITY CONTROLS, AND VERIFICATION EVIDENCE ARE DOCUMENTED IN COMPREHENSIVE ACADEMIC MARKDOWN REPORTS.
           </p>
         </div>
 
         {/* Documentation Resource Cards */}
-        <div className="doc-cards-grid">
+        <div className="tomorrow-doc-grid">
           {DOCUMENTATION_RESOURCES.map((doc) => (
-            <div key={doc.id} className="doc-card panel">
-              <div className="doc-card-top">
-                <span className="badge badge-cyan">{doc.category}</span>
+            <div key={doc.id} className="tomorrow-doc-card">
+              <div className="doc-card-top-row">
+                <span className="badge badge-pass">{doc.category}</span>
                 <span className="doc-meta-badge">{doc.sizeOrSections}</span>
               </div>
 
-              <h3 className="doc-title">{doc.title}</h3>
-              <p className="doc-desc">{doc.description}</p>
+              <h3 className="doc-title-heading">{doc.title}</h3>
+              <p className="doc-desc-body">{doc.description}</p>
 
               {/* Action buttons */}
-              <div className="doc-actions-row">
+              <div className="doc-actions-wrap">
                 <button
                   type="button"
-                  className="btn-doc-read"
+                  className="btn-pill-editorial btn-accent doc-btn-sm"
                   onClick={() => handleOpenDoc(doc)}
                   aria-label={`Read ${doc.title} in modal`}
                 >
                   <Eye size={13} />
-                  <span>Read Report</span>
+                  <span>READ REPORT</span>
+                  <span className="arrow-icon">→</span>
                 </button>
 
                 <a
                   href={doc.publicUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-doc-link"
+                  className="btn-pill-editorial doc-btn-sm"
                   aria-label={`Open raw ${doc.title} in new tab`}
                   title="Open raw markdown file in browser tab"
                 >
                   <ExternalLink size={13} />
-                  <span>Raw File</span>
+                  <span>RAW FILE</span>
                 </a>
               </div>
 
-              <div className="doc-card-footer">
-                <div className="doc-path-box">
-                  <FileText size={13} className="text-secondary inline-icon" />
-                  <code>{doc.relativePath}</code>
-                </div>
+              <div className="doc-card-footer-strip">
+                <FileText size={13} color="var(--ink-secondary)" />
+                <code>{doc.relativePath}</code>
               </div>
             </div>
           ))}
@@ -133,7 +148,7 @@ export const DocumentationGrid: React.FC = () => {
             <div className="doc-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <div className="modal-title-group">
-                  <span className="badge badge-cyan">{activeDoc.category}</span>
+                  <span className="badge badge-pass">{activeDoc.category}</span>
                   <h3 id="modal-doc-title" className="modal-title">{activeDoc.title}</h3>
                   <div className="modal-meta">
                     <code>{activeDoc.relativePath}</code> • <span>{activeDoc.sizeOrSections}</span>
@@ -145,10 +160,10 @@ export const DocumentationGrid: React.FC = () => {
                     href={activeDoc.publicUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="modal-raw-btn"
+                    className="btn-pill-editorial doc-btn-sm"
                   >
                     <ExternalLink size={14} />
-                    <span>Open in Tab</span>
+                    <span>OPEN TAB</span>
                   </a>
                   <button
                     type="button"
@@ -156,7 +171,7 @@ export const DocumentationGrid: React.FC = () => {
                     onClick={handleCloseModal}
                     aria-label="Close document modal"
                   >
-                    <X size={18} />
+                    <X size={20} color="var(--ink-primary)" strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
@@ -190,10 +205,11 @@ export const DocumentationGrid: React.FC = () => {
                 </span>
                 <button
                   type="button"
-                  className="btn btn-secondary modal-btn-close-action"
+                  className="btn-pill-editorial btn-accent modal-btn-close-action"
                   onClick={handleCloseModal}
                 >
-                  Close Viewer
+                  <span>CLOSE VIEWER</span>
+                  <span className="arrow-icon">→</span>
                 </button>
               </div>
             </div>
@@ -201,11 +217,11 @@ export const DocumentationGrid: React.FC = () => {
         )}
 
         {/* Live Viva Demonstration Guide */}
-        <div className="demo-guide-wrapper panel">
-          <div className="demo-header">
+        <div className="tomorrow-demo-panel">
+          <div className="demo-header-strip">
             <div className="demo-title-group">
               <div className="demo-eyebrow">
-                <Terminal size={14} className="text-green" />
+                <Terminal size={14} color="var(--accent-orange)" />
                 <span>SAFE OPERATIONAL DEMO</span>
               </div>
               <h3 className="demo-title">Local Demonstration &amp; Viva Inspection Commands</h3>
@@ -215,48 +231,34 @@ export const DocumentationGrid: React.FC = () => {
             </p>
           </div>
 
-          <div className="commands-list">
+          <div className="commands-list-wrap">
             {DEMO_COMMANDS.map((cmd) => {
               const isCopied = copiedId === cmd.id;
 
               return (
-                <div key={cmd.id} className="command-item panel">
-                  <div className="cmd-item-header">
-                    <div className="cmd-meta">
-                      <span className="cmd-category">{cmd.category}</span>
-                      <h4 className="cmd-label">{cmd.label}</h4>
+                <div key={cmd.id} className="command-card-item">
+                  <div className="command-top-row">
+                    <div className="cmd-meta-group">
+                      <span className="badge badge-pass">{cmd.category}</span>
+                      <span className="cmd-label-name">{cmd.label}</span>
                     </div>
 
                     <button
                       type="button"
-                      className={`copy-btn ${isCopied ? 'copied' : ''}`}
+                      className="cmd-copy-btn"
                       onClick={() => handleCopy(cmd.id, cmd.command)}
-                      aria-label={`Copy command: ${cmd.label}`}
+                      title="Copy command to clipboard"
                     >
-                      {isCopied ? (
-                        <>
-                          <Check size={14} className="text-green" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={14} />
-                          <span>Copy</span>
-                        </>
-                      )}
+                      {isCopied ? <Check size={12} /> : <Copy size={12} />}
+                      <span>{isCopied ? 'COPIED' : 'COPY'}</span>
                     </button>
                   </div>
 
                   <p className="cmd-desc">{cmd.description}</p>
 
-                  <div className="cmd-terminal-box">
-                    <span className="terminal-prompt">$</span>
-                    <code className="cmd-code">{cmd.command}</code>
-                  </div>
-
-                  <div className="cmd-expected-box">
-                    <span className="expected-label">Expected Output:</span>
-                    <pre className="expected-pre">{cmd.expectedOutputPreview}</pre>
+                  <div className="cmd-code-box">
+                    <Terminal size={14} className="cmd-term-icon" />
+                    <code>{cmd.command}</code>
                   </div>
                 </div>
               );
@@ -266,487 +268,389 @@ export const DocumentationGrid: React.FC = () => {
       </div>
 
       <style>{`
-        .doc-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: var(--space-6);
-          margin-bottom: var(--space-10);
+        .tomorrow-doc-section {
+          background: transparent;
         }
 
-        .doc-card {
+        .tomorrow-doc-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 24px;
+          margin-bottom: 48px;
+        }
+
+        .tomorrow-doc-card {
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 24px;
+          padding: 24px;
           display: flex;
           flex-direction: column;
-          padding: 22px 20px;
-          border-left: 3px solid var(--accent-cyan);
-          transition: border-color var(--transition-fast), transform var(--transition-fast);
+          box-shadow: 0 8px 24px rgba(48, 1, 58, 0.05);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .doc-card:hover {
-          border-left-color: var(--accent-green);
+        .tomorrow-doc-card:hover {
+          border-color: var(--ink-primary);
           transform: translateY(-2px);
         }
 
-        [data-theme="orchid"] .doc-card {
-          border-left-color: var(--accent-orange);
-        }
-
-        .doc-card-top {
+        .doc-card-top-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
         }
 
         .doc-meta-badge {
           font-family: var(--font-mono);
-          font-size: 11px;
-          color: var(--text-muted);
+          font-size: 0.68rem;
+          color: var(--ink-muted);
         }
 
-        .doc-title {
-          font-size: 16px;
+        .doc-title-heading {
+          font-family: var(--font-sans);
+          font-size: 1.15rem;
           font-weight: 700;
-          color: var(--text-primary);
+          color: var(--ink-primary);
+          margin-bottom: 10px;
           line-height: 1.35;
-          margin-bottom: 8px;
         }
 
-        .doc-desc {
-          font-size: 13px;
-          color: var(--text-secondary);
-          line-height: 1.5;
+        .doc-desc-body {
+          font-family: var(--font-sans);
+          font-size: 0.78rem;
+          color: var(--ink-secondary);
+          line-height: 1.6;
+          margin-bottom: 20px;
+          flex: 1;
+        }
+
+        .doc-actions-wrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
           margin-bottom: 16px;
-          flex-grow: 1;
         }
 
-        .doc-actions-row {
+        .doc-btn-sm {
+          padding: 10px 18px;
+          font-size: 0.68rem;
+          gap: 12px;
+        }
+
+        .doc-card-footer-strip {
           display: flex;
           align-items: center;
           gap: 8px;
-          margin-bottom: 14px;
+          padding-top: 14px;
+          border-top: 1px solid var(--border-hairline);
         }
 
-        .btn-doc-read {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          color: var(--text-primary);
-          padding: 6px 12px;
-          border-radius: var(--radius-sm);
-          font-size: 12px;
-          font-weight: 600;
-          transition: all var(--transition-fast);
-        }
-
-        .btn-doc-read:hover {
-          background: var(--bg-surface-elevated);
-          border-color: var(--accent-cyan);
-          color: var(--accent-cyan);
-        }
-
-        [data-theme="orchid"] .btn-doc-read:hover {
-          border-color: var(--accent-orange);
-          color: var(--accent-orange);
-        }
-
-        .btn-doc-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: transparent;
-          border: 1px solid var(--border-subtle);
-          color: var(--text-secondary);
-          padding: 6px 10px;
-          border-radius: var(--radius-sm);
-          font-size: 12px;
-          font-weight: 500;
-          transition: all var(--transition-fast);
-        }
-
-        .btn-doc-link:hover {
-          color: var(--text-primary);
-          border-color: var(--border-hover);
-        }
-
-        .doc-card-footer {
-          border-top: 1px solid var(--border-subtle);
-          padding-top: 12px;
-        }
-
-        .doc-path-box {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 11.5px;
-        }
-
-        .inline-icon {
-          flex-shrink: 0;
-        }
-
-        .doc-path-box code {
-          color: var(--text-muted);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+        .doc-card-footer-strip code {
+          font-family: var(--font-mono);
+          font-size: 0.68rem;
+          color: var(--ink-muted);
         }
 
         /* Document Modal Styles */
         .doc-modal-backdrop {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(7, 10, 14, 0.85);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          z-index: 1000;
+          inset: 0;
+          background: rgba(48, 1, 58, 0.55);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 20px;
+          z-index: 2000;
+          padding: 24px;
+          animation: fadeIn 0.2s ease;
         }
 
         .doc-modal-content {
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          border-radius: var(--radius-lg);
+          background: linear-gradient(135deg, #E3ABDA 0%, #E0A8D7 100%);
+          border: 1.5px solid var(--ink-primary);
+          border-radius: 28px;
           width: 100%;
-          max-width: 920px;
+          max-width: 900px;
           max-height: 85vh;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+          box-shadow: 0 24px 64px rgba(48, 1, 58, 0.35);
           overflow: hidden;
+          animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .modal-header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          padding: 20px 24px;
-          border-bottom: 1px solid var(--border-subtle);
-          background: var(--bg-surface);
-          gap: 16px;
+          padding: 24px 28px;
+          border-bottom: 1.5px solid var(--ink-primary);
+          background: rgba(255, 255, 255, 0.2);
         }
 
         .modal-title-group {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 8px;
         }
 
         .modal-title {
-          font-size: 18px;
-          font-weight: 700;
-          color: var(--text-primary);
+          font-family: var(--font-display);
+          font-size: 1.8rem;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
+          margin: 0;
         }
 
         .modal-meta {
-          font-size: 11.5px;
-          color: var(--text-muted);
-        }
-
-        .modal-meta code {
-          color: var(--accent-cyan);
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--ink-secondary);
         }
 
         .modal-actions {
           display: flex;
           align-items: center;
-          gap: 10px;
-        }
-
-        .modal-raw-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          padding: 6px 12px;
-          border-radius: var(--radius-sm);
-          transition: all var(--transition-fast);
-        }
-
-        .modal-raw-btn:hover {
-          color: var(--text-primary);
-          border-color: var(--accent-cyan);
+          gap: 12px;
         }
 
         .modal-close-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.3);
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 32px;
-          height: 32px;
-          border-radius: var(--radius-sm);
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          color: var(--text-secondary);
-          transition: all var(--transition-fast);
+          cursor: pointer;
+          transition: all 0.2s ease;
         }
 
         .modal-close-btn:hover {
-          color: var(--text-primary);
-          border-color: var(--status-fail);
-          background: var(--status-fail-bg);
+          background: var(--ink-primary);
+          border-color: var(--ink-primary);
+        }
+
+        .modal-close-btn:hover svg {
+          stroke: #FFF;
         }
 
         .modal-body {
-          padding: 24px;
+          flex: 1;
           overflow-y: auto;
-          flex-grow: 1;
-        }
-
-        .modal-markdown-text {
-          font-family: var(--font-mono);
-          font-size: 12.5px;
-          line-height: 1.6;
-          color: var(--text-primary);
-          white-space: pre-wrap;
-          word-break: break-word;
-          background: var(--bg-terminal);
-          padding: 18px 20px;
-          border-radius: var(--radius-md);
-          border: 1px solid var(--border-subtle);
+          padding: 28px;
         }
 
         .modal-loading-box {
           display: flex;
           align-items: center;
           gap: 12px;
-          color: var(--text-secondary);
-          font-size: 13.5px;
-          padding: 40px 0;
+          font-family: var(--font-sans);
+          font-size: 0.85rem;
+          color: var(--ink-secondary);
+          padding: 40px;
           justify-content: center;
         }
 
         .modal-spinner {
           width: 20px;
           height: 20px;
-          border: 2px solid var(--border-subtle);
-          border-top-color: var(--accent-cyan);
+          border: 2px solid var(--ink-primary);
+          border-top-color: transparent;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-
         .modal-error-box {
-          background: var(--status-fail-bg);
-          border: 1px solid var(--status-fail-border);
-          padding: 18px;
-          border-radius: var(--radius-md);
+          background: rgba(144, 12, 63, 0.15);
+          border: 1px solid rgba(144, 12, 63, 0.4);
+          border-radius: 16px;
+          padding: 20px;
+          color: #900C3F;
         }
 
-        .modal-error-text {
-          font-size: 13.5px;
-          color: var(--status-fail);
-          margin-bottom: 10px;
-        }
-
-        .modal-error-cmd {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 12px;
-          color: var(--text-primary);
+        .modal-markdown-text {
+          font-family: var(--font-mono);
+          font-size: 0.8rem;
+          line-height: 1.65;
+          color: var(--ink-on-accent);
+          background: var(--bg-code);
+          border: 1px solid var(--border-strong);
+          border-radius: 18px;
+          padding: 24px;
+          overflow-x: auto;
+          white-space: pre-wrap;
+          word-break: break-word;
         }
 
         .modal-footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 14px 24px;
-          border-top: 1px solid var(--border-subtle);
-          background: var(--bg-surface);
-          font-size: 12px;
-          color: var(--text-muted);
+          padding: 18px 28px;
+          border-top: 1.5px solid var(--ink-primary);
+          background: rgba(255, 255, 255, 0.2);
         }
 
-        .modal-btn-close-action {
-          padding: 6px 14px;
-          font-size: 12px;
+        .modal-footer-note {
+          font-family: var(--font-sans);
+          font-size: 0.72rem;
+          color: var(--ink-secondary);
         }
 
-        .demo-guide-wrapper {
-          padding: 24px;
-          background: var(--bg-surface);
+        /* Demo Panel */
+        .tomorrow-demo-panel {
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 28px;
+          padding: 32px;
+          box-shadow: 0 8px 30px rgba(48, 1, 58, 0.06);
         }
 
-        .demo-header {
+        .demo-header-strip {
           margin-bottom: 24px;
-          border-bottom: 1px solid var(--border-subtle);
-          padding-bottom: 16px;
+          padding-bottom: 18px;
+          border-bottom: 1px solid var(--border-hairline);
         }
 
         .demo-eyebrow {
-          display: inline-flex;
+          display: flex;
           align-items: center;
-          gap: 6px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--accent-green);
-          margin-bottom: 4px;
+          gap: 8px;
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--ink-secondary);
+          margin-bottom: 6px;
         }
 
         .demo-title {
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--text-primary);
+          font-family: var(--font-display);
+          font-size: 1.8rem;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
           margin-bottom: 6px;
         }
 
         .demo-sub {
-          font-size: 13.5px;
-          color: var(--text-secondary);
+          font-family: var(--font-sans);
+          font-size: 0.78rem;
+          letter-spacing: 0.08em;
+          color: var(--ink-secondary);
         }
 
-        .commands-list {
+        .commands-list-wrap {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: var(--space-4);
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 16px;
         }
 
-        .command-item {
+        .command-card-item {
+          background: rgba(255, 255, 255, 0.18);
+          border: 1px solid var(--border-hairline);
+          border-radius: 18px;
+          padding: 20px;
           display: flex;
           flex-direction: column;
-          padding: 18px;
-          background: var(--bg-panel);
+          gap: 10px;
+          transition: all 0.2s ease;
         }
 
-        .cmd-item-header {
+        .command-card-item:hover {
+          border-color: var(--ink-primary);
+          background: rgba(255, 255, 255, 0.28);
+        }
+
+        .command-top-row {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: space-between;
-          margin-bottom: 6px;
-          gap: 12px;
         }
 
-        .cmd-category {
-          font-family: var(--font-mono);
-          font-size: 10px;
-          font-weight: 600;
-          text-transform: uppercase;
-          color: var(--accent-cyan);
-        }
-
-        .cmd-label {
-          font-size: 14.5px;
-          font-weight: 700;
-          color: var(--text-primary);
-          line-height: 1.25;
-        }
-
-        .cmd-desc {
-          font-size: 12.5px;
-          color: var(--text-secondary);
-          line-height: 1.4;
-          margin-bottom: 12px;
-        }
-
-        .cmd-terminal-box {
+        .cmd-meta-group {
           display: flex;
           align-items: center;
           gap: 8px;
-          background: var(--bg-terminal);
-          border: 1px solid var(--border-subtle);
-          padding: 8px 12px;
-          border-radius: var(--radius-sm);
-          margin-bottom: 10px;
-          overflow-x: auto;
         }
 
-        .terminal-prompt {
-          color: var(--accent-green);
-          font-family: var(--font-mono);
+        .cmd-label-name {
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
           font-weight: 700;
-          user-select: none;
+          color: var(--ink-primary);
         }
 
-        .cmd-code {
-          color: var(--text-primary);
-          font-size: 12px;
-          white-space: nowrap;
-        }
-
-        .cmd-expected-box {
-          background: rgba(0, 0, 0, 0.25);
-          border: 1px dashed var(--border-subtle);
-          border-radius: var(--radius-sm);
-          padding: 8px 10px;
-        }
-
-        .expected-label {
-          display: block;
-          font-family: var(--font-mono);
-          font-size: 10px;
-          font-weight: 600;
-          text-transform: uppercase;
-          color: var(--text-muted);
-          margin-bottom: 4px;
-        }
-
-        .expected-pre {
-          font-family: var(--font-mono);
-          font-size: 11px;
-          color: var(--text-secondary);
-          line-height: 1.4;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
-
-        .copy-btn {
-          display: inline-flex;
+        .cmd-copy-btn {
+          display: flex;
           align-items: center;
-          gap: 5px;
+          gap: 4px;
           padding: 4px 10px;
-          border-radius: var(--radius-sm);
-          background: var(--bg-surface);
-          border: 1px solid var(--border-subtle);
-          color: var(--text-secondary);
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.2);
           font-family: var(--font-mono);
-          font-size: 11.5px;
-          transition: all var(--transition-fast);
+          font-size: 0.65rem;
+          font-weight: 700;
+          color: var(--ink-primary);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .cmd-copy-btn:hover {
+          background: var(--ink-primary);
+          color: var(--ink-on-accent);
+          border-color: var(--ink-primary);
+        }
+
+        .cmd-desc {
+          font-family: var(--font-sans);
+          font-size: 0.74rem;
+          color: var(--ink-secondary);
+          line-height: 1.5;
+        }
+
+        .cmd-code-box {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: var(--bg-code);
+          border: 1px solid var(--border-strong);
+          border-radius: 12px;
+          padding: 10px 14px;
+        }
+
+        .cmd-term-icon {
+          color: var(--accent-orange-bright);
           flex-shrink: 0;
         }
 
-        .copy-btn:hover {
-          border-color: var(--border-hover);
-          color: var(--text-primary);
+        .cmd-code-box code {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--accent-orange-bright);
+          overflow-x: auto;
+          white-space: nowrap;
         }
 
-        .copy-btn.copied {
-          border-color: var(--accent-green);
-          color: var(--accent-green);
-          background: var(--accent-green-bg);
+        @keyframes popIn {
+          from { transform: scale(0.96); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
         }
 
-        .text-green { color: var(--accent-green); }
-        .text-cyan { color: var(--accent-cyan); }
-
-        @media (max-width: 1024px) {
-          .doc-cards-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .commands-list {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .doc-cards-grid {
-            grid-template-columns: 1fr;
-          }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </section>

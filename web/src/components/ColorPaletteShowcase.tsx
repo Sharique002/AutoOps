@@ -6,28 +6,36 @@ export const ColorPaletteShowcase: React.FC = () => {
 
   const swatches = [
     {
-      name: 'Pastel Orchid Pink',
-      hex: '#E7B0DE',
-      textColor: '#400849',
-      bgColor: '#E7B0DE',
-      description: 'Primary Canvas & Surface Tint',
-      borderColor: '#C790BD',
+      name: 'Orchid Lilac Canvas',
+      hex: '#E0A8D7',
+      textColor: '#30013A',
+      bgColor: '#E0A8D7',
+      description: 'Core Canvas & Subtle Tint Gradient',
+      borderColor: '#B87BAE',
     },
     {
-      name: 'Deep Eggplant Violet',
-      hex: '#400849',
-      textColor: '#FAF0F8',
-      bgColor: '#400849',
-      description: 'Bold Typography & Contrast Panels',
-      borderColor: '#300537',
+      name: 'Deep Aubergine Ink',
+      hex: '#30013A',
+      textColor: '#FFF8FC',
+      bgColor: '#30013A',
+      description: 'Display Headlines, Rules & Primary Ink',
+      borderColor: '#1D0023',
     },
     {
-      name: 'Signal Orange',
-      hex: '#FF5A0A',
+      name: 'Electric Tangerine',
+      hex: '#F25D17',
       textColor: '#FFFFFF',
-      bgColor: '#FF5A0A',
-      description: 'Vibrant Accent, CTAs & Focus Rings',
-      borderColor: '#D44600',
+      bgColor: '#F25D17',
+      description: 'Focal Pop Accent, Active States & CTAs',
+      borderColor: '#C83E00',
+    },
+    {
+      name: 'Deep Plum Terminal',
+      hex: '#23022B',
+      textColor: '#FF6B1A',
+      bgColor: '#23022B',
+      description: 'Deepest Aubergine for Code & Telemetry',
+      borderColor: '#4A1A54',
     },
   ];
 
@@ -42,19 +50,20 @@ export const ColorPaletteShowcase: React.FC = () => {
   };
 
   return (
-    <div className="palette-showcase-container">
-      <div className="palette-header">
-        <div className="palette-eyebrow">
-          <Sparkles size={14} className="text-orange" />
-          <span>MATCHED DESIGN SYSTEM PALETTE</span>
+    <div className="tomorrow-palette-container">
+      <div className="palette-header-row">
+        <div className="palette-tag">
+          <Sparkles size={14} color="var(--accent-orange)" />
+          <span>"TOMORROW" EDITORIAL DESIGN SYSTEM SPECIFICATION</span>
         </div>
-        <h3 className="palette-title">Curated Color Harmony from Reference</h3>
+        <div className="editorial-rule-38" style={{ margin: '12px 0 16px 0' }} />
+        <h3 className="palette-title">Orchid Lilac, Deep Aubergine &amp; Electric Tangerine</h3>
         <p className="palette-desc">
-          Exact tri-color scheme extracted from your reference: <strong>Pastel Orchid Pink</strong> canvas, high-contrast <strong>Deep Eggplant Violet</strong> typography, and electric <strong>Signal Orange</strong> accents.
+          Strictly standardized across all pages, sections, modals, and responsive viewports. No dark charcoal or unstyled default themes.
         </p>
       </div>
 
-      <div className="swatches-grid">
+      <div className="palette-grid-swatches">
         {swatches.map((swatch) => {
           const isCopied = copiedHex === swatch.hex;
 
@@ -62,7 +71,7 @@ export const ColorPaletteShowcase: React.FC = () => {
             <button
               key={swatch.hex}
               type="button"
-              className="swatch-card"
+              className="swatch-card-item"
               style={{
                 backgroundColor: swatch.bgColor,
                 color: swatch.textColor,
@@ -71,17 +80,17 @@ export const ColorPaletteShowcase: React.FC = () => {
               onClick={() => handleCopy(swatch.hex)}
               title={`Click to copy ${swatch.hex}`}
             >
-              <div className="swatch-top">
-                <span className="swatch-label-text">{swatch.name}</span>
+              <div className="swatch-header-inner">
+                <span className="swatch-name-text">{swatch.name}</span>
                 <div className="swatch-copy-pill" style={{ borderColor: swatch.textColor }}>
-                  {isCopied ? <Check size={12} /> : <Copy size={12} />}
-                  <span>{isCopied ? 'COPIED' : 'COPY'}</span>
+                  {isCopied ? <Check size={11} /> : <Copy size={11} />}
+                  <span>{isCopied ? 'COPIED' : 'HEX'}</span>
                 </div>
               </div>
 
-              <div className="swatch-bottom">
-                <span className="swatch-hex-code">{swatch.hex}</span>
-                <span className="swatch-role">{swatch.description}</span>
+              <div className="swatch-body-inner">
+                <span className="swatch-hex-val">{swatch.hex}</span>
+                <span className="swatch-role-text">{swatch.description}</span>
               </div>
             </button>
           );
@@ -89,127 +98,123 @@ export const ColorPaletteShowcase: React.FC = () => {
       </div>
 
       <style>{`
-        .palette-showcase-container {
-          background: var(--bg-surface);
-          border: 1.5px solid var(--border-subtle);
-          border-radius: var(--radius-xl);
-          padding: 24px;
-          margin-top: var(--space-8);
-          margin-bottom: var(--space-6);
+        .tomorrow-palette-container {
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 24px;
+          padding: 28px;
+          margin-top: 32px;
+          margin-bottom: 24px;
         }
 
-        .palette-header {
-          margin-bottom: 20px;
-        }
-
-        .palette-eyebrow {
-          display: inline-flex;
+        .palette-tag {
+          display: flex;
           align-items: center;
-          gap: 6px;
-          font-family: var(--font-mono);
-          font-size: 11px;
+          gap: 8px;
+          font-family: var(--font-sans);
+          font-size: 0.72rem;
           font-weight: 700;
-          letter-spacing: 0.1em;
-          color: var(--accent-orange);
+          letter-spacing: 0.22em;
           text-transform: uppercase;
-          margin-bottom: 4px;
+          color: var(--ink-secondary);
         }
 
         .palette-title {
           font-family: var(--font-display);
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--text-primary);
-          line-height: 1.25;
-          margin-bottom: 6px;
-          letter-spacing: -0.01em;
+          font-size: 1.8rem;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
+          margin-bottom: 8px;
         }
 
         .palette-desc {
-          font-size: 13.5px;
-          color: var(--text-secondary);
-          line-height: 1.5;
+          font-family: var(--font-sans);
+          font-size: 0.78rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--ink-secondary);
+          margin-bottom: 24px;
+          max-width: 650px;
         }
 
-        .swatches-grid {
+        .palette-grid-swatches {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
           gap: 16px;
         }
 
-        .swatch-card {
+        .swatch-card-item {
+          border-radius: 18px;
+          padding: 20px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 20px 18px;
-          border-radius: var(--radius-lg);
+          min-height: 120px;
+          text-align: left;
+          cursor: pointer;
           border-width: 1.5px;
           border-style: solid;
-          min-height: 140px;
-          text-align: left;
-          box-shadow: 0 4px 16px rgba(64, 8, 73, 0.10);
-          transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+          box-shadow: 0 4px 16px rgba(48, 1, 58, 0.06);
         }
 
-        .swatch-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 24px rgba(64, 8, 73, 0.20);
+        .swatch-card-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(48, 1, 58, 0.12);
         }
 
-        .swatch-top {
+        .swatch-header-inner {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: space-between;
           margin-bottom: 16px;
         }
 
-        .swatch-label-text {
+        .swatch-name-text {
           font-family: var(--font-sans);
-          font-size: 15px;
-          font-weight: 800;
-          line-height: 1.2;
-          max-width: 120px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
         }
 
         .swatch-copy-pill {
-          display: inline-flex;
+          display: flex;
           align-items: center;
           gap: 4px;
           font-family: var(--font-mono);
-          font-size: 10px;
+          font-size: 0.65rem;
           font-weight: 700;
-          padding: 2px 7px;
-          border-radius: var(--radius-pill);
-          border-width: 1px;
-          border-style: solid;
-          opacity: 0.85;
+          letter-spacing: 0.1em;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          border: 1px solid;
+          background: rgba(255, 255, 255, 0.15);
         }
 
-        .swatch-bottom {
+        .swatch-body-inner {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 4px;
         }
 
-        .swatch-hex-code {
+        .swatch-hex-val {
           font-family: var(--font-mono);
-          font-size: 16px;
-          font-weight: 800;
-          letter-spacing: 0.08em;
+          font-size: 1.15rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
         }
 
-        .swatch-role {
-          font-size: 11px;
-          opacity: 0.85;
+        .swatch-role-text {
+          font-family: var(--font-sans);
+          font-size: 0.65rem;
           font-weight: 500;
-        }
-
-        .text-orange { color: var(--accent-orange); }
-
-        @media (max-width: 768px) {
-          .swatches-grid {
-            grid-template-columns: 1fr;
-          }
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          opacity: 0.85;
         }
       `}</style>
     </div>

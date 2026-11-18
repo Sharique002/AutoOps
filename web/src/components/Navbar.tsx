@@ -1,362 +1,496 @@
-import React, { useState } from 'react';
-import { Menu, X, Shield, Terminal, Palette, Moon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, X, Command } from 'lucide-react';
 import { PROJECT_METADATA } from '../data/projectData';
-import { useTheme } from '../context/ThemeContext';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('overview');
 
   const navLinks = [
-    { label: 'Overview', href: '#overview' },
-    { label: 'Architecture', href: '#architecture' },
-    { label: 'Pipeline', href: '#pipeline' },
-    { label: 'Monitoring', href: '#monitoring' },
-    { label: 'Security', href: '#security' },
-    { label: 'Milestones', href: '#milestones' },
-    { label: 'Verification', href: '#verification' },
-    { label: 'Docs', href: '#documentation' },
+    { label: 'OVERVIEW', href: '#overview' },
+    { label: 'ARCHITECTURE', href: '#architecture' },
+    { label: 'PIPELINE', href: '#pipeline' },
+    { label: 'MONITORING', href: '#monitoring' },
+    { label: 'SECURITY', href: '#security' },
+    { label: 'MILESTONES', href: '#milestones' },
+    { label: 'VERIFICATION', href: '#verification' },
+    { label: 'DOCS', href: '#documentation' },
   ];
 
-  const handleLinkClick = () => {
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+
+      // Simple active section spy
+      const sections = navLinks.map(l => l.href.substring(1));
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 140 && rect.bottom >= 140) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLinkClick = (href: string) => {
+    setActiveSection(href.substring(1));
     setMobileMenuOpen(false);
   };
 
   return (
-    <header className="navbar-header">
-      <div className="container navbar-container">
-        {/* Brand */}
-        <a href="#overview" className="navbar-brand">
-          <div className="brand-icon">
-            <Terminal size={18} className="brand-terminal-icon" />
-          </div>
-          <div className="brand-text">
-            <span className="brand-title">{PROJECT_METADATA.name}</span>
-            <span className="brand-subtitle">DEVOPS PLATFORM</span>
-          </div>
-        </a>
-
-        {/* Desktop Nav Links */}
-        <nav className="desktop-nav" aria-label="Main Navigation">
-          {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="nav-link">
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Right Status Pill & Actions */}
-        <div className="navbar-right">
-          {/* Theme Switcher Button */}
+    <header className={`tomorrow-navbar ${scrolled ? 'is-scrolled' : ''}`}>
+      <div className="navbar-inner">
+        {/* Left Zone: Hamburger trigger + Minimal Brand */}
+        <div className="navbar-zone-left">
           <button
             type="button"
-            className="theme-toggle-btn"
-            onClick={toggleTheme}
-            title={theme === 'orchid' ? 'Switch to Dark Charcoal Theme' : 'Switch to Orchid & Violet Theme'}
-            aria-label="Toggle visual theme"
+            className="hamburger-trigger"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
           >
-            {theme === 'orchid' ? (
-              <>
-                <Moon size={15} />
-                <span className="theme-toggle-label">DARK MODE</span>
-              </>
+            {mobileMenuOpen ? (
+              <X size={22} color="var(--ink-primary)" strokeWidth={1.5} />
             ) : (
-              <>
-                <Palette size={15} />
-                <span className="theme-toggle-label">ORCHID THEME</span>
-              </>
+              <div className="thin-hamburger-icon">
+                <span className="line" />
+                <span className="line" />
+                <span className="line" />
+              </div>
             )}
           </button>
 
-          <div className="status-pill" title="Local evaluation environment with 6 completed milestones">
-            <span className="pulsing-dot" />
-            <span className="status-text">LOCAL DEV • 6/6 MILESTONES</span>
-          </div>
+          <a href="#overview" className="brand-mark" onClick={() => handleLinkClick('#overview')}>
+            <span className="brand-dot" />
+            <span className="brand-text">{PROJECT_METADATA.name}</span>
+            <span className="brand-badge">EDITION</span>
+          </a>
+        </div>
 
-          {/* Mobile Menu Button */}
+        {/* Center Zone: Horizontally Centered Links */}
+        <nav className="navbar-zone-center" aria-label="Main Navigation">
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.href.substring(1);
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                className={`nav-link-item ${isActive ? 'active' : ''}`}
+                onClick={() => handleLinkClick(link.href)}
+              >
+                <span>{link.label}</span>
+                {isActive && <span className="active-dot" />}
+              </a>
+            );
+          })}
+        </nav>
+
+        {/* Right Zone: Search trigger + Status Pill */}
+        <div className="navbar-zone-right">
           <button
             type="button"
-            className="mobile-menu-toggle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-expanded={mobileMenuOpen}
-            aria-label="Toggle navigation menu"
+            className="btn-search-trigger"
+            title="Search Platform Documentation"
+            aria-label="Search"
+            onClick={() => {
+              const docEl = document.getElementById('documentation');
+              if (docEl) docEl.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            <Search size={16} strokeWidth={1.5} color="var(--ink-primary)" />
+            <span className="search-cmd-pill">
+              <Command size={10} strokeWidth={1.5} /> K
+            </span>
           </button>
+
+          <div className="tomorrow-status-pill">
+            <span className="status-dot-pulse" />
+            <span className="status-label">6/6 MILESTONES VERIFIED</span>
+          </div>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="mobile-drawer" role="dialog" aria-modal="true">
-          <nav className="mobile-nav" aria-label="Mobile Navigation">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="mobile-nav-link"
-                onClick={handleLinkClick}
-              >
-                {link.label}
-              </a>
-            ))}
-
-            <div className="mobile-theme-row">
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-drawer-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="drawer-header">
+              <span className="drawer-title">NAVIGATION</span>
               <button
                 type="button"
-                className="btn btn-secondary mobile-theme-btn"
-                onClick={toggleTheme}
+                className="drawer-close-btn"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close navigation drawer"
               >
-                {theme === 'orchid' ? (
-                  <>
-                    <Moon size={16} />
-                    <span>Switch to Charcoal Dark</span>
-                  </>
-                ) : (
-                  <>
-                    <Palette size={16} />
-                    <span>Switch to Orchid &amp; Violet Theme</span>
-                  </>
-                )}
+                <X size={24} color="var(--ink-primary)" strokeWidth={1.5} />
               </button>
             </div>
 
-            <div className="mobile-status-row">
-              <Shield size={14} className="text-orange" />
-              <span>Hardened Container Topology Verified</span>
+            <nav className="mobile-drawer-nav">
+              {navLinks.map((link, idx) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="mobile-drawer-link"
+                  onClick={() => handleLinkClick(link.href)}
+                >
+                  <span className="drawer-link-num">0{idx + 1}</span>
+                  <span className="drawer-link-text">{link.label}</span>
+                  <span className="drawer-arrow">→</span>
+                </a>
+              ))}
+            </nav>
+
+            <div className="drawer-footer">
+              <div className="drawer-meta-kicker">AUTOOPS DEVOPS PLATFORM</div>
+              <div className="drawer-meta-author">DEVELOPER: {PROJECT_METADATA.developer}</div>
             </div>
-          </nav>
+          </div>
         </div>
       )}
 
       <style>{`
-        .navbar-header {
-          position: sticky;
+        .tomorrow-navbar {
+          position: fixed;
           top: 0;
-          z-index: 100;
-          background: var(--header-bg);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          border-bottom: 1px solid var(--border-subtle);
-          height: var(--header-height);
-          transition: background-color var(--transition-normal);
+          left: 0;
+          right: 0;
+          height: 84px;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          background: transparent;
         }
 
-        .navbar-container {
+        .tomorrow-navbar.is-scrolled {
+          background: rgba(227, 171, 218, 0.88);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border-bottom: 1px solid var(--border-hairline);
+          box-shadow: 0 4px 20px rgba(48, 1, 58, 0.04);
+        }
+
+        .navbar-inner {
+          width: 100%;
+          padding: 0 4vw;
           display: flex;
           align-items: center;
           justify-content: space-between;
           height: 100%;
         }
 
-        .navbar-brand {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          text-decoration: none;
-        }
-
-        .brand-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: var(--radius-md);
-          background: var(--bg-surface);
-          border: 1.5px solid var(--border-subtle);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: border-color var(--transition-fast);
-        }
-
-        .navbar-brand:hover .brand-icon {
-          border-color: var(--accent-orange);
-        }
-
-        .brand-terminal-icon {
-          color: var(--accent-green);
-        }
-
-        [data-theme="orchid"] .brand-terminal-icon {
-          color: var(--accent-orange);
-        }
-
-        .brand-text {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .brand-title {
-          font-family: var(--font-display);
-          font-size: 20px;
-          font-weight: 700;
-          letter-spacing: -0.01em;
-          color: var(--text-primary);
-          line-height: 1.1;
-        }
-
-        .brand-subtitle {
-          font-family: var(--font-mono);
-          font-size: 9.5px;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          color: var(--text-secondary);
-        }
-
-        .desktop-nav {
+        /* Left Zone */
+        .navbar-zone-left {
           display: flex;
           align-items: center;
           gap: 20px;
         }
 
-        .nav-link {
-          font-size: 13.5px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          transition: color var(--transition-fast);
-          padding: 6px 2px;
-          position: relative;
-        }
-
-        .nav-link:hover {
-          color: var(--text-primary);
-        }
-
-        .navbar-right {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .theme-toggle-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: var(--bg-surface);
-          border: 1.5px solid var(--border-subtle);
-          padding: 6px 12px;
-          border-radius: var(--radius-pill);
-          color: var(--text-primary);
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          transition: all var(--transition-fast);
-        }
-
-        .theme-toggle-btn:hover {
-          border-color: var(--accent-cyan);
-          background: var(--accent-cyan-bg);
-          color: var(--accent-cyan);
-        }
-
-        [data-theme="orchid"] .theme-toggle-btn:hover {
-          border-color: var(--accent-orange);
-          background: var(--accent-orange-bg);
-          color: var(--accent-orange);
-        }
-
-        .status-pill {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: var(--bg-surface);
-          border: 1.5px solid var(--border-subtle);
-          padding: 6px 14px;
-          border-radius: var(--radius-pill);
-        }
-
-        .pulsing-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: var(--accent-green);
-          box-shadow: 0 0 10px var(--accent-green);
-        }
-
-        [data-theme="orchid"] .pulsing-dot {
-          background: var(--accent-orange);
-          box-shadow: 0 0 10px var(--accent-orange);
-        }
-
-        .status-text {
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          color: var(--text-primary);
-        }
-
-        .mobile-menu-toggle {
-          display: none;
-          color: var(--text-primary);
-          padding: 6px;
-        }
-
-        .mobile-drawer {
-          position: absolute;
-          top: var(--header-height);
-          left: 0;
-          right: 0;
-          background: var(--bg-panel);
-          border-bottom: 1.5px solid var(--border-subtle);
-          padding: 20px 24px;
-          box-shadow: var(--shadow-panel);
-        }
-
-        .mobile-nav {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-
-        .mobile-nav-link {
-          font-size: 15px;
-          font-weight: 600;
-          color: var(--text-secondary);
-          padding: 8px 0;
-          border-bottom: 1px solid var(--border-subtle);
-        }
-
-        .mobile-nav-link:hover {
-          color: var(--text-primary);
-        }
-
-        .mobile-theme-row {
-          padding-top: 8px;
-        }
-
-        .mobile-theme-btn {
-          width: 100%;
+        .hamburger-trigger {
+          width: 32px;
+          height: 32px;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          padding: 0;
         }
 
-        .mobile-status-row {
+        .thin-hamburger-icon {
+          width: 24px;
+          height: 14px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .thin-hamburger-icon .line {
+          width: 100%;
+          height: 1.5px;
+          background-color: var(--ink-primary);
+          transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .brand-mark {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 12px;
-          color: var(--text-muted);
-          padding-top: 8px;
+          text-decoration: none;
         }
 
-        .text-orange { color: var(--accent-orange); }
+        .brand-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--accent-orange);
+          box-shadow: 0 0 8px var(--accent-orange-bright);
+        }
 
-        @media (max-width: 992px) {
-          .desktop-nav {
+        .brand-text {
+          font-family: var(--font-display);
+          font-size: 1.5rem;
+          letter-spacing: 0.04em;
+          color: var(--ink-primary);
+          line-height: 1;
+        }
+
+        .brand-badge {
+          font-family: var(--font-sans);
+          font-size: 0.62rem;
+          font-weight: 700;
+          letter-spacing: 0.22em;
+          color: var(--ink-secondary);
+          padding: 2px 6px;
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+        }
+
+        /* Center Zone */
+        .navbar-zone-center {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+        }
+
+        .nav-link-item {
+          position: relative;
+          font-family: var(--font-sans);
+          font-size: 0.72rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.26em;
+          color: var(--ink-primary);
+          padding: 6px 0;
+          transition: color 0.2s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .nav-link-item:hover {
+          color: var(--accent-orange);
+        }
+
+        .nav-link-item .active-dot {
+          position: absolute;
+          bottom: -4px;
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background-color: var(--accent-orange);
+        }
+
+        /* Right Zone */
+        .navbar-zone-right {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .btn-search-trigger {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 12px;
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.15);
+          transition: all 0.2s ease;
+        }
+
+        .btn-search-trigger:hover {
+          border-color: var(--ink-primary);
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        .search-cmd-pill {
+          display: flex;
+          align-items: center;
+          gap: 2px;
+          font-family: var(--font-mono);
+          font-size: 0.65rem;
+          color: var(--ink-secondary);
+          padding: 1px 4px;
+          background: rgba(48, 1, 58, 0.08);
+          border-radius: 4px;
+        }
+
+        .tomorrow-status-pill {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.15);
+        }
+
+        .status-dot-pulse {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--accent-orange);
+          box-shadow: 0 0 8px var(--accent-orange-bright);
+        }
+
+        .status-label {
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1080px) {
+          .navbar-zone-center {
             display: none;
           }
-          .mobile-menu-toggle {
-            display: flex;
-          }
-          .status-pill {
+        }
+
+        @media (max-width: 768px) {
+          .tomorrow-status-pill {
             display: none;
           }
-          .theme-toggle-btn {
+          .search-cmd-pill {
             display: none;
           }
+        }
+
+        /* Mobile Drawer */
+        .mobile-drawer-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(48, 1, 58, 0.45);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          z-index: 1100;
+          display: flex;
+          justify-content: flex-start;
+          animation: fadeIn 0.25s ease;
+        }
+
+        .mobile-drawer-panel {
+          width: 85vw;
+          max-width: 380px;
+          height: 100%;
+          background: #E3ABDA;
+          border-right: 1.5px solid var(--ink-primary);
+          padding: 32px 24px;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 12px 0 40px rgba(48, 1, 58, 0.18);
+          animation: slideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .drawer-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 24px;
+          border-bottom: 1.5px solid var(--ink-primary);
+          margin-bottom: 28px;
+        }
+
+        .drawer-title {
+          font-family: var(--font-sans);
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.25em;
+          color: var(--ink-primary);
+        }
+
+        .mobile-drawer-nav {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          flex: 1;
+        }
+
+        .mobile-drawer-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.2);
+          text-decoration: none;
+          transition: all 0.2s ease;
+        }
+
+        .mobile-drawer-link:hover {
+          background: var(--ink-primary);
+          border-color: var(--ink-primary);
+        }
+
+        .mobile-drawer-link:hover .drawer-link-text,
+        .mobile-drawer-link:hover .drawer-link-num,
+        .mobile-drawer-link:hover .drawer-arrow {
+          color: var(--ink-on-accent);
+        }
+
+        .drawer-link-num {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--accent-orange);
+          font-weight: 700;
+        }
+
+        .drawer-link-text {
+          font-family: var(--font-display);
+          font-size: 1.25rem;
+          letter-spacing: 0.05em;
+          color: var(--ink-primary);
+        }
+
+        .drawer-arrow {
+          font-size: 1.1rem;
+          color: var(--ink-primary);
+          transition: transform 0.2s ease;
+        }
+
+        .mobile-drawer-link:hover .drawer-arrow {
+          transform: translateX(4px);
+        }
+
+        .drawer-footer {
+          padding-top: 24px;
+          border-top: 1px solid var(--border-hairline);
+        }
+
+        .drawer-meta-kicker {
+          font-family: var(--font-sans);
+          font-size: 0.7rem;
+          letter-spacing: 0.2em;
+          font-weight: 600;
+          color: var(--ink-secondary);
+        }
+
+        .drawer-meta-author {
+          font-family: var(--font-mono);
+          font-size: 0.68rem;
+          color: var(--ink-muted);
+          margin-top: 4px;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideRight {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
         }
       `}</style>
     </header>

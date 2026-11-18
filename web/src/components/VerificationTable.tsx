@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckSquare, Filter, Terminal, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Filter, CheckCircle2, AlertCircle } from 'lucide-react';
 import { VERIFICATION_TESTS } from '../data/projectData';
 import { TestStatus } from '../types';
 
@@ -19,22 +19,20 @@ export const VerificationTable: React.FC = () => {
   const notRunCount = VERIFICATION_TESTS.filter((t) => t.status === 'NOT RUN').length;
 
   return (
-    <section id="verification" className="section">
+    <section id="verification" className="section tomorrow-qa-section">
       <div className="container">
-        {/* Section Header */}
+        {/* 4-Part Typographic Signature */}
         <div className="section-header">
-          <div className="section-eyebrow">
-            <CheckSquare size={14} />
-            <span>QUALITY ASSURANCE &amp; EVIDENCE MATRIX</span>
-          </div>
-          <h2 className="section-title">Verified Acceptance Test Suite</h2>
+          <span className="section-eyebrow">QUALITY ASSURANCE &amp; EVIDENCE MATRIX // 16 DETERMINISTIC CHECKS</span>
+          <div className="editorial-rule-38" />
+          <h2 className="section-title">ACCEPTANCE MATRIX</h2>
           <p className="section-subtitle">
-            Every layer of the AutoOps platform is evaluated against deterministic acceptance criteria. Remote GitHub Actions is explicitly classified as NOT RUN due to no upstream origin configured.
+            DETERMINISTIC EVALUATION ACROSS ALL DEVOPS LAYERS. REMOTE GITHUB ACTIONS IS TRANSPARENTLY DOCUMENTED AS NOT RUN.
           </p>
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="table-controls-bar panel">
+        <div className="tomorrow-controls-bar">
           <div className="status-filter-pills">
             <button
               type="button"
@@ -48,7 +46,7 @@ export const VerificationTable: React.FC = () => {
               className={`filter-btn ${statusFilter === 'PASS' ? 'active' : ''}`}
               onClick={() => setStatusFilter('PASS')}
             >
-              <CheckCircle2 size={13} className="text-green" />
+              <CheckCircle2 size={13} color={statusFilter === 'PASS' ? '#FFF' : 'var(--accent-orange)'} />
               <span>PASS ({passCount})</span>
             </button>
             <button
@@ -56,15 +54,15 @@ export const VerificationTable: React.FC = () => {
               className={`filter-btn ${statusFilter === 'NOT RUN' ? 'active' : ''}`}
               onClick={() => setStatusFilter('NOT RUN')}
             >
-              <AlertCircle size={13} className="text-muted" />
+              <AlertCircle size={13} color={statusFilter === 'NOT RUN' ? '#FFF' : 'var(--ink-secondary)'} />
               <span>NOT RUN ({notRunCount})</span>
             </button>
           </div>
 
           <div className="category-select-wrapper">
-            <Filter size={14} className="text-secondary" />
+            <Filter size={14} color="var(--ink-secondary)" />
             <select
-              className="cat-select"
+              className="tomorrow-cat-select cat-select"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               aria-label="Filter by category"
@@ -79,53 +77,46 @@ export const VerificationTable: React.FC = () => {
         </div>
 
         {/* Table */}
-        <div className="table-wrapper panel">
+        <div className="tomorrow-table-card">
           <div className="table-responsive">
-            <table className="qa-table">
+            <table className="tomorrow-qa-table">
               <thead>
                 <tr>
-                  <th>Category</th>
-                  <th>Acceptance Criterion</th>
-                  <th>Verification Command</th>
-                  <th>Target Resource</th>
-                  <th>Status</th>
-                  <th>Evidence Reference</th>
+                  <th>CATEGORY</th>
+                  <th>ACCEPTANCE CRITERION</th>
+                  <th>VERIFICATION COMMAND</th>
+                  <th>TARGET RESOURCE</th>
+                  <th>STATUS</th>
+                  <th>EVIDENCE REFERENCE</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTests.map((test) => (
                   <tr key={test.id}>
                     <td>
-                      <span className="cat-chip">{test.category}</span>
+                      <span className="qa-cat-chip">{test.category}</span>
                     </td>
                     <td>
-                      <div className="test-name-cell">
-                        <span className="test-name">{test.name}</span>
-                        <span className="test-notes">{test.notes}</span>
-                      </div>
+                      <div className="qa-name">{test.name}</div>
+                      <div className="qa-notes">{test.notes}</div>
                     </td>
                     <td>
-                      <div className="test-cmd-box">
-                        <Terminal size={12} className="cmd-icon" />
-                        <code>{test.command}</code>
-                      </div>
+                      <code className="qa-command-code">{test.command}</code>
                     </td>
-                    <td className="test-target font-mono">{test.target}</td>
+                    <td>
+                      <span className="qa-target">{test.target}</span>
+                    </td>
                     <td>
                       <span
                         className={`badge ${
-                          test.status === 'PASS'
-                            ? 'badge-pass'
-                            : test.status === 'NOT RUN'
-                            ? 'badge-notrun'
-                            : 'badge-fail'
+                          test.status === 'PASS' ? 'badge-pass' : 'badge-notrun'
                         }`}
                       >
                         {test.status}
                       </span>
                     </td>
-                    <td className="evidence-ref-cell">
-                      <code>{test.evidenceRef}</code>
+                    <td>
+                      <code className="qa-ev-ref">{test.evidenceRef}</code>
                     </td>
                   </tr>
                 ))}
@@ -136,179 +127,177 @@ export const VerificationTable: React.FC = () => {
       </div>
 
       <style>{`
-        .table-controls-bar {
+        .tomorrow-qa-section {
+          background: transparent;
+        }
+
+        .tomorrow-controls-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 12px 18px;
-          margin-bottom: var(--space-6);
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 20px;
+          padding: 16px 24px;
+          margin-bottom: 28px;
           flex-wrap: wrap;
-          gap: 12px;
-          background: var(--bg-surface);
+          gap: 16px;
         }
 
         .status-filter-pills {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           flex-wrap: wrap;
         }
 
         .filter-btn {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px 12px;
-          border-radius: var(--radius-sm);
-          font-family: var(--font-mono);
-          font-size: 11.5px;
-          font-weight: 600;
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          color: var(--text-secondary);
-          transition: all var(--transition-fast);
+          gap: 8px;
+          padding: 8px 18px;
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.15);
+          font-family: var(--font-sans);
+          font-size: 0.7rem;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .filter-btn:hover {
-          border-color: var(--border-hover);
-          color: var(--text-primary);
+          border-color: var(--ink-primary);
+          background: rgba(255, 255, 255, 0.3);
         }
 
         .filter-btn.active {
-          background: var(--bg-surface-elevated);
-          border-color: var(--accent-cyan);
-          color: var(--text-primary);
+          background: var(--accent-orange);
+          color: #FFFFFF;
+          border-color: var(--accent-orange);
+          box-shadow: 0 4px 16px var(--accent-orange-glow);
         }
 
         .category-select-wrapper {
           display: flex;
           align-items: center;
           gap: 8px;
+          padding: 6px 14px;
+          border-radius: 9999px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.18);
         }
 
-        .cat-select {
-          background: var(--bg-panel);
-          border: 1px solid var(--border-subtle);
-          color: var(--text-primary);
-          padding: 6px 12px;
-          border-radius: var(--radius-sm);
-          font-family: var(--font-mono);
-          font-size: 12px;
-          outline: none;
+        .tomorrow-cat-select cat-select {
+          background: transparent;
+          border: none;
+          font-family: var(--font-sans);
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--ink-primary);
           cursor: pointer;
+          outline: none;
         }
 
-        .cat-select:focus {
-          border-color: var(--accent-cyan);
+        .tomorrow-cat-select cat-select option {
+          background: #E3ABDA;
+          color: #30013A;
         }
 
-        .table-wrapper {
-          padding: 0;
-          overflow: hidden;
+        /* Table Card */
+        .tomorrow-table-card {
+          background: rgba(255, 255, 255, 0.22);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid var(--border-hairline);
+          border-radius: 24px;
+          padding: 24px;
+          box-shadow: 0 8px 30px rgba(48, 1, 58, 0.06);
         }
 
         .table-responsive {
           overflow-x: auto;
         }
 
-        .qa-table {
+        .tomorrow-qa-table {
           width: 100%;
           border-collapse: collapse;
+          font-family: var(--font-sans);
+          font-size: 0.8rem;
+        }
+
+        .tomorrow-qa-table th {
           text-align: left;
-          font-size: 13px;
-        }
-
-        .qa-table th {
-          background: var(--bg-surface);
-          color: var(--text-secondary);
-          font-family: var(--font-mono);
-          font-size: 11px;
-          font-weight: 600;
+          padding: 12px 14px;
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
-          padding: 12px 16px;
-          border-bottom: 1px solid var(--border-subtle);
-          white-space: nowrap;
+          color: var(--ink-muted);
+          border-bottom: 1.5px solid var(--ink-primary);
         }
 
-        .qa-table td {
-          padding: 14px 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        .tomorrow-qa-table td {
+          padding: 16px 14px;
+          border-bottom: 1px solid var(--border-hairline);
           vertical-align: top;
         }
 
-        .qa-table tr:last-child td {
-          border-bottom: none;
-        }
-
-        .cat-chip {
+        .qa-cat-chip {
           display: inline-block;
-          font-family: var(--font-mono);
-          font-size: 10.5px;
-          font-weight: 600;
-          color: var(--accent-cyan);
-          background: rgba(56, 207, 240, 0.08);
-          border: 1px solid rgba(56, 207, 240, 0.2);
-          padding: 2px 7px;
-          border-radius: var(--radius-sm);
-          white-space: nowrap;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          background: rgba(48, 1, 58, 0.08);
+          color: var(--ink-secondary);
         }
 
-        .test-name-cell {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          min-width: 220px;
+        .qa-name {
+          font-weight: 700;
+          color: var(--ink-primary);
+          margin-bottom: 4px;
+          line-height: 1.35;
         }
 
-        .test-name {
-          font-weight: 600;
-          color: var(--text-primary);
-          line-height: 1.3;
-        }
-
-        .test-notes {
-          font-size: 11.5px;
-          color: var(--text-secondary);
+        .qa-notes {
+          font-size: 0.72rem;
+          color: var(--ink-muted);
           line-height: 1.4;
         }
 
-        .test-cmd-box {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: var(--bg-terminal);
-          border: 1px solid var(--border-subtle);
+        .qa-command-code {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--accent-orange-bright);
+          background: var(--bg-code);
           padding: 4px 8px;
-          border-radius: var(--radius-sm);
-          font-size: 11.5px;
-          color: var(--text-primary);
-          max-width: 280px;
+          border-radius: 6px;
+          display: inline-block;
+          max-width: 260px;
           overflow-x: auto;
-          white-space: nowrap;
         }
 
-        .cmd-icon {
-          color: var(--text-muted);
-          flex-shrink: 0;
+        .qa-target {
+          font-family: var(--font-mono);
+          font-size: 0.72rem;
+          color: var(--ink-primary);
         }
 
-        .test-target {
-          font-size: 12px;
-          color: var(--text-secondary);
-          max-width: 160px;
-          word-break: break-all;
+        .qa-ev-ref {
+          font-family: var(--font-mono);
+          font-size: 0.7rem;
+          color: var(--ink-muted);
         }
-
-        .evidence-ref-cell code {
-          font-size: 11px;
-          color: var(--text-muted);
-          white-space: nowrap;
-        }
-
-        .text-green { color: var(--accent-green); }
-        .text-muted { color: var(--text-muted); }
-        .font-mono { font-family: var(--font-mono); }
       `}</style>
     </section>
   );
