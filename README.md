@@ -336,53 +336,6 @@ make test
 ./scripts/run_milestone_06_qa.sh
 ```
 
-### Viva & Project Evaluation Demonstration Checklist
-For project demonstration or viva evaluation, follow this structured execution procedure:
-
-1. **Verify Static Code Quality & CI Quality Gates**:
-   ```bash
-   make ci-test
-   ```
-   *Validates secret scanning, Flake8 PEP8 linting, 12 Pytest tests, Terraform schema, Ansible syntax across 5 playbooks, Puppet lint, and Nagios pre-flight check.*
-
-2. **Inspect Runtime Application & Health Endpoint**:
-   ```bash
-   make compose-ps
-   curl -s http://127.0.0.1:5000/health | python3 -m json.tool
-   ```
-   *Demonstrates non-root containerized FastAPI app returning dynamic uptime and UTC ISO 8601 timestamps.*
-
-3. **Verify Container Security Hardening**:
-   ```bash
-   docker inspect autoops-app --format 'Readonly: {{.HostConfig.ReadonlyRootfs}}, CapDrop: {{.HostConfig.CapDrop}}, SecurityOpt: {{.HostConfig.SecurityOpt}}, Memory: {{.HostConfig.Memory}}'
-   ```
-   *Confirms immutable root filesystem (`Readonly: true`), all kernel capabilities dropped (`CapDrop: [ALL]`), and 512 MB memory limit.*
-
-4. **Demonstrate Terraform Local Infrastructure (Zero Drift)**:
-   ```bash
-   cd terraform && terraform plan -no-color
-   ```
-   *Confirms isolated infrastructure network and auxiliary volume remain managed with 0 drift.*
-
-5. **Demonstrate Puppet Desired-State Policy Enforcement & Drift Healing**:
-   ```bash
-   make puppet-test
-   ```
-   *Applies host policy, asserts idempotency, injects unauthorized port modification, and observes automatic drift recovery.*
-
-6. **Demonstrate Ansible Deployment Automation & Error Handling**:
-   ```bash
-   make ansible-test
-   ```
-   *Executes preflight check, rolling deploy, HTTP smoke tests, architecture boundary audit, and graceful error interception.*
-
-7. **Demonstrate Nagios Observability, Failure Detection & Recovery**:
-   ```bash
-   make nagios-test
-   ```
-   *Executes intra-container probe, stops autoops-app, observes Nagios detect CRITICAL failure, restarts autoops-app, and observes automated recovery back to OK.*
-
----
 
 ## 9. Continuous Integration Architecture & Quality Gates
 
