@@ -16,7 +16,7 @@ export const ArchitectureSection: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">RESOURCE TOPOLOGY</h2>
           <p className="section-subtitle">
-            STRICT RESOURCE BOUNDARIES PARTITION RUNTIME DOCKER COMPOSE ORCHESTRATION FROM ISOLATED TERRAFORM INFRASTRUCTURE AND HOST CONFIGURATION.
+            Strict resource boundaries partition runtime Docker Compose orchestration from isolated Terraform infrastructure and host configuration.
           </p>
         </div>
 

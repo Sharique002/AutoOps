@@ -1,9 +1,39 @@
-import React from 'react';
-import { CheckCircle2, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  CheckCircle2,
+  Activity,
+  Copy,
+  Check,
+  Layers,
+  GitBranch,
+  Radio,
+  Shield,
+  FileCheck,
+  FileText,
+} from 'lucide-react';
 import { PROJECT_METADATA } from '../data/projectData';
 import { ArchitectureSvg } from './ArchitectureSvg';
 
 export const HeroSection: React.FC = () => {
+  const [copiedCommit, setCopiedCommit] = useState(false);
+
+  const handleCopyCommit = () => {
+    navigator.clipboard.writeText(PROJECT_METADATA.latestCommit).then(() => {
+      setCopiedCommit(true);
+      setTimeout(() => setCopiedCommit(false), 2000);
+    });
+  };
+
+  const quickLinks = [
+    { label: 'Architecture', href: '#architecture', icon: Layers },
+    { label: 'Pipeline', href: '#pipeline', icon: GitBranch },
+    { label: 'Monitoring', href: '#monitoring', icon: Radio },
+    { label: 'Security', href: '#security', icon: Shield },
+    { label: 'Milestones', href: '#milestones', icon: FileCheck },
+    { label: 'QA Matrix', href: '#verification', icon: CheckCircle2 },
+    { label: 'Docs', href: '#documentation', icon: FileText },
+  ];
+
   return (
     <section id="overview" className="tomorrow-hero">
       <div className="container">
@@ -25,9 +55,11 @@ export const HeroSection: React.FC = () => {
               <span className="title-break">TOMORROW</span>
             </h1>
 
-            {/* 4. Wide-Tracked Subcopy Block */}
+            {/* 4. Readable Subcopy Block (User-Friendly Sentence Case) */}
             <p className="hero-subcopy-block">
-              AN END-TO-END REPRODUCIBLE INFRASTRUCTURE PLATFORM BRINGING DOCKER CONTAINERIZATION, TERRAFORM INFRASTRUCTURE, PUPPET POLICY ENFORCEMENT, ANSIBLE DEPLOYMENTS, AND CONTINUOUS ACTIVE OBSERVABILITY INTO ONE COHESIVE SYSTEM.
+              An end-to-end reproducible infrastructure platform bringing Docker containerization,
+              Terraform infrastructure, Puppet policy enforcement, Ansible deployments, and continuous
+              active observability into one cohesive system.
             </p>
 
             {/* 5. Pill Outline CTA Buttons */}
@@ -38,9 +70,25 @@ export const HeroSection: React.FC = () => {
               </a>
 
               <a href="#documentation" className="btn-pill-editorial">
-                <span>VIEW PROJECT REPORT</span>
+                <span>VIEW PROJECT REPORTS</span>
                 <span className="arrow-icon">→</span>
               </a>
+            </div>
+
+            {/* 6. Quick Jump Pills for Fast Usability */}
+            <div className="hero-quick-jump">
+              <span className="quick-jump-label">QUICK JUMP:</span>
+              <div className="quick-jump-list">
+                {quickLinks.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <a key={item.href} href={item.href} className="quick-jump-pill">
+                      <Icon size={12} color="var(--accent-orange)" />
+                      <span>{item.label}</span>
+                    </a>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Context Attribution Strip */}
@@ -54,7 +102,21 @@ export const HeroSection: React.FC = () => {
               </span>
               <span className="attr-sep">/</span>
               <span className="attr-item">
-                <strong>BASELINE:</strong> COMMIT <code>{PROJECT_METADATA.latestCommit}</code>
+                <strong>BASELINE:</strong>
+                <button
+                  type="button"
+                  className="commit-copy-pill"
+                  onClick={handleCopyCommit}
+                  title="Copy commit hash"
+                >
+                  <code>{PROJECT_METADATA.latestCommit}</code>
+                  {copiedCommit ? (
+                    <Check size={11} color="var(--accent-orange)" />
+                  ) : (
+                    <Copy size={11} />
+                  )}
+                  {copiedCommit && <span className="copy-hint">COPIED</span>}
+                </button>
               </span>
             </div>
           </div>
@@ -164,26 +226,76 @@ export const HeroSection: React.FC = () => {
           display: block;
         }
 
-        /* 4. Wide-Tracked Subcopy Block */
+        /* 4. Readable Subcopy Block */
         .hero-subcopy-block {
           font-family: var(--font-sans);
-          font-size: 0.78rem;
+          font-size: 0.95rem;
           font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.22em;
-          line-height: 1.75;
+          text-transform: none;
+          letter-spacing: 0.01em;
+          line-height: 1.65;
           color: var(--ink-secondary);
-          max-width: 480px;
-          margin-top: 28px;
-          margin-bottom: 36px;
+          max-width: 540px;
+          margin-top: 22px;
+          margin-bottom: 28px;
         }
 
         /* 5. Pill Outline Buttons */
         .hero-cta-group {
           display: flex;
           flex-wrap: wrap;
+          align-items: center;
           gap: 16px;
-          margin-bottom: 36px;
+          margin-bottom: 24px;
+        }
+
+        /* 6. Quick Jump Navigation */
+        .hero-quick-jump {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 28px;
+        }
+
+        .quick-jump-label {
+          font-family: var(--font-sans);
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--ink-muted);
+          margin-right: 4px;
+        }
+
+        .quick-jump-list {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .quick-jump-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          border-radius: 9999px;
+          background: rgba(255, 255, 255, 0.22);
+          border: 1px solid var(--border-hairline);
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 600;
+          color: var(--ink-primary);
+          text-decoration: none;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .quick-jump-pill:hover {
+          background: rgba(255, 255, 255, 0.45);
+          border-color: var(--ink-primary);
+          color: var(--ink-primary);
+          transform: translateY(-1px);
         }
 
         /* Attribution Strip */
@@ -197,6 +309,36 @@ export const HeroSection: React.FC = () => {
           color: var(--ink-secondary);
           padding-top: 20px;
           border-top: 1px solid var(--border-hairline);
+        }
+
+        .commit-copy-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          margin-left: 6px;
+          padding: 2px 8px;
+          border-radius: 6px;
+          background: rgba(48, 1, 58, 0.08);
+          border: 1px solid var(--border-hairline);
+          cursor: pointer;
+          color: var(--ink-primary);
+          transition: all 0.2s ease;
+        }
+
+        .commit-copy-pill:hover {
+          background: rgba(255, 255, 255, 0.35);
+          border-color: var(--ink-primary);
+        }
+
+        .commit-copy-pill code {
+          font-size: 0.72rem;
+          font-weight: 700;
+        }
+
+        .copy-hint {
+          font-size: 0.6rem;
+          font-weight: 700;
+          color: var(--accent-orange-deep);
         }
 
         .attr-item strong {

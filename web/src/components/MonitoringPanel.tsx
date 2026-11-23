@@ -16,7 +16,7 @@ export const MonitoringPanel: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">NAGIOS MONITORING</h2>
           <p className="section-subtitle">
-            ACTIVE SERVICE CHECKS PROBE FASTAPI WITHIN ISOLATED DOCKER BRIDGE NETWORKS WITH REAL-TIME FAILURE INJECTION AND RECOVERY.
+            Active service checks probe FastAPI within isolated Docker bridge networks with real-time failure injection and recovery.
           </p>
         </div>
 
@@ -241,6 +241,9 @@ export const MonitoringPanel: React.FC = () => {
           border: 1px solid var(--border-hairline);
           border-radius: 24px;
           padding: 24px;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
           box-shadow: 0 8px 24px rgba(48, 1, 58, 0.05);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -285,6 +288,7 @@ export const MonitoringPanel: React.FC = () => {
           display: flex;
           flex-direction: column;
           gap: 8px;
+          flex: 1;
         }
 
         .check-detail-row {
@@ -309,7 +313,8 @@ export const MonitoringPanel: React.FC = () => {
           font-size: 0.75rem;
           color: var(--ink-secondary);
           line-height: 1.5;
-          margin-top: 6px;
+          margin-top: auto;
+          padding-top: 8px;
         }
 
         /* Recovery Card */

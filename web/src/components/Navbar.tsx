@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, Command } from 'lucide-react';
 import { PROJECT_METADATA } from '../data/projectData';
+import { QuickSearchModal } from './QuickSearchModal';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const navLinks = [
     { label: 'OVERVIEW', href: '#overview' },
@@ -17,6 +19,17 @@ export const Navbar: React.FC = () => {
     { label: 'VERIFICATION', href: '#verification' },
     { label: 'DOCS', href: '#documentation' },
   ];
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,12 +111,9 @@ export const Navbar: React.FC = () => {
           <button
             type="button"
             className="btn-search-trigger"
-            title="Search Platform Documentation"
-            aria-label="Search"
-            onClick={() => {
-              const docEl = document.getElementById('documentation');
-              if (docEl) docEl.scrollIntoView({ behavior: 'smooth' });
-            }}
+            title="Search Platform Documentation & Resources (Cmd+K)"
+            aria-label="Search Platform"
+            onClick={() => setSearchOpen(true)}
           >
             <Search size={16} strokeWidth={1.5} color="var(--ink-primary)" />
             <span className="search-cmd-pill">
@@ -134,6 +144,21 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
 
+            <div className="drawer-search-box">
+              <button
+                type="button"
+                className="drawer-search-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSearchOpen(true);
+                }}
+              >
+                <Search size={15} color="var(--accent-orange)" />
+                <span>Search sections &amp; reports...</span>
+                <kbd>Cmd+K</kbd>
+              </button>
+            </div>
+
             <nav className="mobile-drawer-nav">
               {navLinks.map((link, idx) => (
                 <a
@@ -156,6 +181,15 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Interactive Quick Search Modal */}
+      <QuickSearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onOpenDoc={(docId) => {
+          window.location.hash = `#doc-${docId}`;
+        }}
+      />
 
       <style>{`
         .tomorrow-navbar {
@@ -398,7 +432,37 @@ export const Navbar: React.FC = () => {
           justify-content: space-between;
           padding-bottom: 24px;
           border-bottom: 1.5px solid var(--ink-primary);
-          margin-bottom: 28px;
+          margin-bottom: 20px;
+        }
+
+        .drawer-search-box {
+          margin-bottom: 24px;
+        }
+
+        .drawer-search-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          padding: 12px 18px;
+          border-radius: 9999px;
+          border: 1.5px solid var(--accent-orange);
+          background: rgba(255, 255, 255, 0.45);
+          font-family: var(--font-sans);
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: var(--ink-primary);
+          cursor: pointer;
+        }
+
+        .drawer-search-btn kbd {
+          font-family: var(--font-mono);
+          font-size: 0.65rem;
+          padding: 2px 6px;
+          border-radius: 4px;
+          background: rgba(48, 1, 58, 0.1);
+          color: var(--ink-primary);
         }
 
         .drawer-title {

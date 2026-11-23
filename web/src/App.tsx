@@ -11,6 +11,7 @@ import { MilestoneTimeline } from './components/MilestoneTimeline';
 import { VerificationTable } from './components/VerificationTable';
 import { DocumentationGrid } from './components/DocumentationGrid';
 import { Footer } from './components/Footer';
+import { BackToTop } from './components/BackToTop';
 
 export const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ export const App: React.FC = () => {
           <DocumentationGrid />
         </main>
         <Footer />
+        <BackToTop />
       </div>
     </ThemeProvider>
   );

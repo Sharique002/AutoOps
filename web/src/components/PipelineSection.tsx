@@ -16,7 +16,7 @@ export const PipelineSection: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">AUTOMATION PIPELINE</h2>
           <p className="section-subtitle">
-            AUTOMATED CI QUALITY GATES IN GITHUB ACTIONS PARTITIONED FROM LOCAL DOCKER AND ANSIBLE OPERATIONAL RUNTIME.
+            Automated CI quality gates in GitHub Actions partitioned from local Docker and Ansible operational runtime.
           </p>
         </div>
 

@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { Filter, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Filter, CheckCircle2, AlertCircle, Copy, Check } from 'lucide-react';
 import { VERIFICATION_TESTS } from '../data/projectData';
 import { TestStatus } from '../types';
 
 export const VerificationTable: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'ALL' | TestStatus>('ALL');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [copiedCmdId, setCopiedCmdId] = useState<string | null>(null);
 
   const categories = ['ALL', 'Application', 'Infrastructure', 'Configuration', 'Observability', 'CI / Workflow', 'Security'];
+
+  const handleCopyCmd = (id: string, cmd: string) => {
+    navigator.clipboard.writeText(cmd).then(() => {
+      setCopiedCmdId(id);
+      setTimeout(() => setCopiedCmdId(null), 2000);
+    });
+  };
 
   const filteredTests = VERIFICATION_TESTS.filter((t) => {
     const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
@@ -27,7 +35,7 @@ export const VerificationTable: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">ACCEPTANCE MATRIX</h2>
           <p className="section-subtitle">
-            DETERMINISTIC EVALUATION ACROSS ALL DEVOPS LAYERS. REMOTE GITHUB ACTIONS IS TRANSPARENTLY DOCUMENTED AS NOT RUN.
+            Deterministic evaluation across all DevOps layers. Remote GitHub Actions is transparently documented as not run.
           </p>
         </div>
 
@@ -101,7 +109,22 @@ export const VerificationTable: React.FC = () => {
                       <div className="qa-notes">{test.notes}</div>
                     </td>
                     <td>
-                      <code className="qa-command-code">{test.command}</code>
+                      <div className="qa-command-wrapper">
+                        <code className="qa-command-code">{test.command}</code>
+                        <button
+                          type="button"
+                          className="qa-copy-cmd-btn"
+                          onClick={() => handleCopyCmd(test.id, test.command)}
+                          title="Copy test command"
+                          aria-label="Copy command"
+                        >
+                          {copiedCmdId === test.id ? (
+                            <Check size={11} color="var(--accent-orange)" />
+                          ) : (
+                            <Copy size={11} />
+                          )}
+                        </button>
+                      </div>
                     </td>
                     <td>
                       <span className="qa-target">{test.target}</span>
@@ -192,7 +215,9 @@ export const VerificationTable: React.FC = () => {
           background: rgba(255, 255, 255, 0.18);
         }
 
-        .tomorrow-cat-select cat-select {
+        .category-select-wrapper select.tomorrow-cat-select,
+        .category-select-wrapper select.cat-select,
+        select.tomorrow-cat-select {
           background: transparent;
           border: none;
           font-family: var(--font-sans);
@@ -205,9 +230,36 @@ export const VerificationTable: React.FC = () => {
           outline: none;
         }
 
-        .tomorrow-cat-select cat-select option {
+        .category-select-wrapper select option {
           background: #E3ABDA;
           color: #30013A;
+        }
+
+        .qa-command-wrapper {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          max-width: 100%;
+        }
+
+        .qa-copy-cmd-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 3px 5px;
+          border-radius: 4px;
+          border: 1px solid var(--border-hairline);
+          background: rgba(255, 255, 255, 0.25);
+          color: var(--ink-secondary);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .qa-copy-cmd-btn:hover {
+          border-color: var(--ink-primary);
+          color: var(--ink-primary);
+          background: rgba(255, 255, 255, 0.45);
         }
 
         /* Table Card */

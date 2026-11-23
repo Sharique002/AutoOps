@@ -49,7 +49,7 @@ export const SecuritySection: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">CONTAINER SECURITY</h2>
           <p className="section-subtitle">
-            IMMUTABLE ROOT FILESYSTEMS, DROPPED KERNEL CAPABILITIES, NON-ROOT EXECUTION, AND RIGOROUS SECRET SCANNING AUDIT.
+            Immutable root filesystems, dropped kernel capabilities, non-root execution, and rigorous secret scanning audit.
           </p>
         </div>
 
@@ -119,6 +119,7 @@ export const SecuritySection: React.FC = () => {
           padding: 24px;
           display: flex;
           flex-direction: column;
+          height: 100%;
           box-shadow: 0 8px 24px rgba(48, 1, 58, 0.05);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -190,6 +191,7 @@ export const SecuritySection: React.FC = () => {
           gap: 8px;
           padding-top: 14px;
           border-top: 1px solid var(--border-hairline);
+          margin-top: auto;
         }
 
         .sec-ev-label {

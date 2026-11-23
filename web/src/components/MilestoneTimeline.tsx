@@ -25,7 +25,7 @@ export const MilestoneTimeline: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">MILESTONE LIFECYCLE</h2>
           <p className="section-subtitle">
-            EVERY PHASE WAS DEVELOPED INCREMENTALLY WITH PREFLIGHT AUDITS, FORMAL TEST EXECUTION, AND AUDITED EVIDENCE LOGS.
+            Every phase was developed incrementally with preflight audits, formal test execution, and audited evidence logs.
           </p>
         </div>
 
@@ -208,6 +208,7 @@ export const MilestoneTimeline: React.FC = () => {
         .ms-accordion-box {
           border-top: 1px solid var(--border-hairline);
           padding-top: 14px;
+          margin-top: auto;
           margin-bottom: 14px;
         }
 

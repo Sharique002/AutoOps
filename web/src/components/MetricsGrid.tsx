@@ -53,6 +53,7 @@ export const MetricsGrid: React.FC = () => {
           padding: 24px;
           display: flex;
           flex-direction: column;
+          height: 100%;
           box-shadow: 0 8px 24px rgba(48, 1, 58, 0.05);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           border-top: 3px solid var(--accent-orange);
@@ -101,10 +102,11 @@ export const MetricsGrid: React.FC = () => {
 
         .metric-narrative {
           font-family: var(--font-sans);
-          font-size: 0.72rem;
-          letter-spacing: 0.06em;
+          font-size: 0.78rem;
+          letter-spacing: 0.01em;
           color: var(--ink-secondary);
           line-height: 1.6;
+          margin-top: auto;
         }
 
         @media (max-width: 1024px) {

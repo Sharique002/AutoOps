@@ -86,7 +86,7 @@ export const DocumentationGrid: React.FC = () => {
           <div className="editorial-rule-38" />
           <h2 className="section-title">PROJECT REPORTS</h2>
           <p className="section-subtitle">
-            ALL ENGINEERING DECISIONS, ARCHITECTURAL MODELS, SECURITY CONTROLS, AND VERIFICATION EVIDENCE ARE DOCUMENTED IN COMPREHENSIVE ACADEMIC MARKDOWN REPORTS.
+            All engineering decisions, architectural models, security controls, and verification evidence are documented in comprehensive academic markdown reports.
           </p>
         </div>
 
@@ -321,7 +321,7 @@ export const DocumentationGrid: React.FC = () => {
 
         .doc-desc-body {
           font-family: var(--font-sans);
-          font-size: 0.78rem;
+          font-size: 0.82rem;
           color: var(--ink-secondary);
           line-height: 1.6;
           margin-bottom: 20px;
@@ -329,16 +329,21 @@ export const DocumentationGrid: React.FC = () => {
         }
 
         .doc-actions-wrap {
-          display: flex;
-          flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 10px;
+          margin-top: auto;
           margin-bottom: 16px;
+          width: 100%;
         }
 
         .doc-btn-sm {
-          padding: 10px 18px;
+          padding: 10px 12px;
           font-size: 0.68rem;
-          gap: 12px;
+          gap: 6px;
+          width: 100%;
+          min-height: 38px;
+          justify-content: center;
         }
 
         .doc-card-footer-strip {
