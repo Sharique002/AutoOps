@@ -64,6 +64,14 @@ Thumbs.db
 
 # Node & Frontend
 node_modules/
+**/node_modules/
 web/dist/
 web/.vite/
 
+# Temporary Archives & Screenshot Artifacts
+website-screenshots-*/
+*.zip
+*.tar.gz
+*.tgz
+*.bak
+*.tmp

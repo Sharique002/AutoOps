@@ -1,20 +1,44 @@
+# Version Control & Config
 .git
 .gitignore
+.dockerignore
+.env
+.env.*
+!.env.example
+
+# Python & Virtual Environments
 .venv
-tests
-docs
-scripts
-milestone-00-environment-and-architecture.md
-README.md
-Makefile
-requirements-dev.txt
-.pytest_cache
 __pycache__
 *.pyc
 *.pyo
 *.pyd
+.pytest_cache
 .coverage
 htmlcov
+requirements-dev.txt
+
+# Documentation & Non-runtime Assets
+docs
+milestone-00-environment-and-architecture.md
+README.md
+Makefile
+scripts
+tests
+website-screenshots-*/
+*.log
+
+# Frontend (served separately; not part of backend container)
+web
+
+# Infrastructure Subsystems (managed independently)
+ansible
+puppet
+nagios
+terraform
 .terraform
 *.tfstate*
 *.tfplan
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
