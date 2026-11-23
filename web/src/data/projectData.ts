@@ -667,6 +667,16 @@ export const VERIFICATION_TESTS: VerificationTestItem[] = [
 
 export const DOCUMENTATION_RESOURCES: DocResource[] = [
   {
+    id: 'doc-user-manual',
+    title: 'Easy Step-by-Step User Manual',
+    category: 'User Guide',
+    description: 'Beginner-friendly user manual explaining how to start, use, explore, and test AutoOps in simple, easy-to-understand language.',
+    relativePath: 'HOW_TO_USE.md',
+    publicUrl: '/docs/HOW_TO_USE.md',
+    format: 'Markdown',
+    sizeOrSections: 'Complete Guide • 7.5 KB',
+  },
+  {
     id: 'doc-final-report',
     title: 'AutoOps Final Academic Project Report',
     category: 'Master Report',
