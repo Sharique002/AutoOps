@@ -62,23 +62,36 @@ Click the links below to open each service:
 
 Open [http://localhost:5173](http://localhost:5173) in your browser. Here is what you can do:
 
-### 1. Instant Navigation (<kbd>Cmd</kbd> + <kbd>K</kbd> / <kbd>Ctrl</kbd> + <kbd>K</kbd>)
+### 1. Run Automated Quick Demo (Single Click ⚡)
+- Click the vibrant orange button **`[ ⚡ QUICK DEMO RUN (AUTOMATIC) ]`** in the Hero section (or the **`[ ⚡ QUICK DEMO ]`** pill in the top navigation bar).
+- The automated demo runner will immediately start and execute live checks across all 7 platform layers:
+  1. **Application Microservice:** FastAPI HTTP 200 contract verification.
+  2. **Container Orchestration:** Docker Compose multi-container runtime & network isolation.
+  3. **Active Observability:** Nagios Core health probes and zero-flapping checks.
+  4. **Infrastructure as Code:** Terraform auxiliary state & drift verification.
+  5. **Configuration Management:** Puppet desired-state policy compliance.
+  6. **Deployment Orchestration:** Ansible automated playbook execution.
+  7. **Security Hardening:** Container defense-in-depth and secret leak audit.
+- Watch the live telemetry logs stream in real time.
+- Upon completion, review the **Final Demonstration Audit Report** table, click **`[ DOWNLOAD REPORT (.MD) ]`** to save the generated markdown report, or click **`[ COPY REPORT ]`** to copy the summary.
+
+### 2. Instant Navigation (<kbd>Cmd</kbd> + <kbd>K</kbd> / <kbd>Ctrl</kbd> + <kbd>K</kbd>)
 - Press <kbd>Ctrl</kbd> + <kbd>K</kbd> on Windows or <kbd>Cmd</kbd> + <kbd>K</kbd> on Mac (or click the search button in the top bar).
 - Type keywords like `docker`, `nagios`, `terraform`, `report`, or `pytest`.
 - Click any result to immediately jump to that section or copy the command.
 
-### 2. Quick Jump Bar
+### 3. Quick Jump Bar
 - Directly under the main title on the homepage, click any pill button (`Architecture`, `Pipeline`, `Monitoring`, `Security`, `Milestones`, `QA Matrix`, `Docs`) to smoothly scroll right to that section.
 
-### 3. Read Academic Reports Directly on Screen
+### 4. Read Academic Reports Directly on Screen
 - Scroll down to the **Project Reports** section.
 - Click **`READ REPORT →`** on any card. An interactive modal popup will open displaying the full technical markdown report.
 - Click **`RAW FILE`** if you prefer reading the raw markdown file in a new tab.
 
-### 4. Copy Test Commands with 1 Click
+### 5. Copy Test Commands with 1 Click
 - In the **Acceptance Matrix** table, click the small copy icon next to any test command to copy it directly to your clipboard.
 
-### 5. Floating "Back to Top"
+### 6. Floating "Back to Top"
 - When scrolling down, a floating **`[ ↑ TOP ]`** button appears in the bottom-right corner. Click it anytime to return to the top instantly.
 
 ---

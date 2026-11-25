@@ -3,7 +3,11 @@ import { Search, X, Command } from 'lucide-react';
 import { PROJECT_METADATA } from '../data/projectData';
 import { QuickSearchModal } from './QuickSearchModal';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onOpenDemo?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
@@ -106,8 +110,19 @@ export const Navbar: React.FC = () => {
           })}
         </nav>
 
-        {/* Right Zone: Search trigger + Status Pill */}
+        {/* Right Zone: Demo + Search trigger + Status Pill */}
         <div className="navbar-zone-right">
+          <button
+            type="button"
+            className="btn-navbar-demo"
+            onClick={onOpenDemo}
+            title="Single-click Automated Live Demo Run & Audit Report"
+            aria-label="Quick Demo Run"
+          >
+            <span className="demo-bolt-icon">⚡</span>
+            <span className="btn-navbar-demo-text">QUICK DEMO</span>
+          </button>
+
           <button
             type="button"
             className="btn-search-trigger"
@@ -156,6 +171,22 @@ export const Navbar: React.FC = () => {
                 <Search size={15} color="var(--accent-orange)" />
                 <span>Search sections &amp; reports...</span>
                 <kbd>Cmd+K</kbd>
+              </button>
+            </div>
+
+            {/* Quick Demo CTA inside Mobile Drawer */}
+            <div className="drawer-demo-banner">
+              <button
+                type="button"
+                className="drawer-demo-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenDemo?.();
+                }}
+              >
+                <span className="demo-bolt-icon">⚡</span>
+                <span className="drawer-demo-text">QUICK DEMO RUN (AUTOMATIC)</span>
+                <span className="drawer-demo-arrow">→</span>
               </button>
             </div>
 
@@ -384,6 +415,64 @@ export const Navbar: React.FC = () => {
           color: var(--ink-primary);
         }
 
+        .btn-navbar-demo {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          height: 36px;
+          padding: 0 14px;
+          border-radius: 9999px;
+          background: var(--accent-orange);
+          color: #FFFFFF;
+          border: 1.5px solid var(--accent-orange);
+          font-family: var(--font-sans);
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 2px 10px rgba(242, 93, 23, 0.28);
+        }
+
+        .btn-navbar-demo:hover {
+          background: #d94d0e;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 14px rgba(242, 93, 23, 0.42);
+        }
+
+        .btn-navbar-demo-text {
+          font-family: var(--font-sans);
+          letter-spacing: 0.08em;
+        }
+
+        .drawer-demo-banner {
+          margin-bottom: 24px;
+        }
+
+        .drawer-demo-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 18px;
+          border-radius: 9999px;
+          background: var(--accent-orange);
+          color: #FFFFFF;
+          border: 1.5px solid var(--accent-orange);
+          font-family: var(--font-sans);
+          font-size: 0.74rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(242, 93, 23, 0.35);
+          transition: all 0.2s ease;
+        }
+
+        .drawer-demo-btn:hover {
+          background: #d94d0e;
+          transform: translateY(-1px);
+        }
+
         /* Responsive Breakpoints */
         @media (max-width: 1080px) {
           .navbar-zone-center {
@@ -397,6 +486,15 @@ export const Navbar: React.FC = () => {
           }
           .search-cmd-pill {
             display: none;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .btn-navbar-demo-text {
+            display: none;
+          }
+          .btn-navbar-demo {
+            padding: 0 10px;
           }
         }
 

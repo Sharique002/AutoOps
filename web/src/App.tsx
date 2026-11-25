@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
@@ -12,14 +12,17 @@ import { VerificationTable } from './components/VerificationTable';
 import { DocumentationGrid } from './components/DocumentationGrid';
 import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
+import { QuickDemoModal } from './components/QuickDemoModal';
 
 export const App: React.FC = () => {
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
+
   return (
     <ThemeProvider>
       <div className="app-layout">
-        <Navbar />
+        <Navbar onOpenDemo={() => setDemoModalOpen(true)} />
         <main id="main-content">
-          <HeroSection />
+          <HeroSection onOpenDemo={() => setDemoModalOpen(true)} />
           <MetricsGrid />
           <ArchitectureSection />
           <PipelineSection />
@@ -31,6 +34,10 @@ export const App: React.FC = () => {
         </main>
         <Footer />
         <BackToTop />
+        <QuickDemoModal
+          isOpen={demoModalOpen}
+          onClose={() => setDemoModalOpen(false)}
+        />
       </div>
     </ThemeProvider>
   );

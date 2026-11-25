@@ -14,7 +14,11 @@ import {
 import { PROJECT_METADATA } from '../data/projectData';
 import { ArchitectureSvg } from './ArchitectureSvg';
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onOpenDemo?: () => void;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenDemo }) => {
   const [copiedCommit, setCopiedCommit] = useState(false);
 
   const handleCopyCommit = () => {
@@ -64,7 +68,18 @@ export const HeroSection: React.FC = () => {
 
             {/* 5. Pill Outline CTA Buttons */}
             <div className="hero-cta-group">
-              <a href="#architecture" className="btn-pill-editorial btn-accent">
+              <button
+                type="button"
+                onClick={onOpenDemo}
+                className="btn-pill-editorial btn-accent btn-quick-demo"
+                title="Run automated live verification across all 7 platform layers and generate instant report"
+              >
+                <span className="demo-bolt-icon">⚡</span>
+                <span>QUICK DEMO RUN (AUTOMATIC)</span>
+                <span className="arrow-icon">→</span>
+              </button>
+
+              <a href="#architecture" className="btn-pill-editorial">
                 <span>EXPLORE ARCHITECTURE</span>
                 <span className="arrow-icon">→</span>
               </a>
@@ -247,6 +262,36 @@ export const HeroSection: React.FC = () => {
           align-items: center;
           gap: 16px;
           margin-bottom: 24px;
+        }
+
+        .btn-quick-demo {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          box-shadow: 0 4px 18px rgba(242, 93, 23, 0.28);
+          animation: pulseBorder 3s infinite ease-in-out;
+        }
+
+        .btn-quick-demo:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 24px rgba(242, 93, 23, 0.45);
+        }
+
+        .demo-bolt-icon {
+          font-size: 1.05rem;
+          line-height: 1;
+        }
+
+        @keyframes pulseBorder {
+          0%, 100% {
+            box-shadow: 0 4px 18px rgba(242, 93, 23, 0.25);
+          }
+          50% {
+            box-shadow: 0 4px 26px rgba(242, 93, 23, 0.55);
+          }
         }
 
         /* 6. Quick Jump Navigation */
